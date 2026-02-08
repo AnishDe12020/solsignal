@@ -1,10 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Connection, PublicKey } from '@solana/web3.js';
+import { useState } from 'react';
+import { PublicKey } from '@solana/web3.js';
 
 const PROGRAM_ID = new PublicKey('6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp');
-const RPC_URL = 'https://api.devnet.solana.com';
 
 interface SignalData {
   publicKey: string;
@@ -39,6 +38,20 @@ const DEMO_SIGNALS: SignalData[] = [
     stopLoss: 0.78,
     timeHorizon: new Date('2026-02-09T06:32:15.000Z'),
     createdAt: new Date('2026-02-08T18:32:15.000Z'),
+    resolved: false,
+    outcome: 'pending',
+  },
+  {
+    publicKey: '7TE1maMWLfMdxfwf2Z2D31gRHqbqsNi4928bZE8kWQgU',
+    agent: 'batman',
+    asset: 'BONK/USDC',
+    direction: 'long',
+    confidence: 65,
+    entryPrice: 0.0000185,
+    targetPrice: 0.0000220,
+    stopLoss: 0.0000165,
+    timeHorizon: new Date('2026-02-09T12:34:34.000Z'),
+    createdAt: new Date('2026-02-08T18:34:34.000Z'),
     resolved: false,
     outcome: 'pending',
   },
@@ -88,8 +101,8 @@ const DEMO_SIGNALS: SignalData[] = [
 
 export default function Home() {
   const [signals] = useState<SignalData[]>(DEMO_SIGNALS);
-  const [registry] = useState<RegistryData>({ totalSignals: 4, totalAgents: 1 });
-  const [loading, setLoading] = useState(false);
+  const [registry] = useState<RegistryData>({ totalSignals: 5, totalAgents: 1 });
+  const [loading] = useState(false);
 
   return (
     <div className="space-y-8">
@@ -168,18 +181,18 @@ export default function Home() {
               </div>
               <div>
                 <div className="text-zinc-500">Entry</div>
-                <div className="font-medium">${signal.entryPrice.toLocaleString()}</div>
+                <div className="font-medium">${signal.entryPrice < 0.01 ? signal.entryPrice.toFixed(8) : signal.entryPrice.toLocaleString()}</div>
               </div>
               <div>
                 <div className="text-zinc-500">Target</div>
                 <div className="font-medium text-emerald-400">
-                  ${signal.targetPrice.toLocaleString()} (+{((signal.targetPrice / signal.entryPrice - 1) * 100).toFixed(1)}%)
+                  ${signal.targetPrice < 0.01 ? signal.targetPrice.toFixed(8) : signal.targetPrice.toLocaleString()} (+{((signal.targetPrice / signal.entryPrice - 1) * 100).toFixed(1)}%)
                 </div>
               </div>
               <div>
                 <div className="text-zinc-500">Stop Loss</div>
                 <div className="font-medium text-red-400">
-                  ${signal.stopLoss.toLocaleString()} ({((signal.stopLoss / signal.entryPrice - 1) * 100).toFixed(1)}%)
+                  ${signal.stopLoss < 0.01 ? signal.stopLoss.toFixed(8) : signal.stopLoss.toLocaleString()} ({((signal.stopLoss / signal.entryPrice - 1) * 100).toFixed(1)}%)
                 </div>
               </div>
             </div>
