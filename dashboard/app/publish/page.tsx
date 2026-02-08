@@ -89,6 +89,18 @@ function buildRegisterAgentData(name: string): Buffer {
   ]);
 }
 
+interface FieldErrors {
+  entryPrice?: string;
+  targetPrice?: string;
+  stopLoss?: string;
+  reasoning?: string;
+}
+
+function InlineError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="text-red-400 text-xs mt-1">{message}</p>;
+}
+
 export default function PublishPage() {
   const { connection } = useConnection();
   const { publicKey, sendTransaction, connected } = useWallet();
@@ -109,6 +121,91 @@ export default function PublishPage() {
   const [error, setError] = useState<string | null>(null);
   const [registering, setRegistering] = useState(false);
   const [needsRegistration, setNeedsRegistration] = useState<boolean | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  // Validate a single field
+  const validateField = useCallback((name: string, value: string, allData: typeof formData): string | undefined => {
+    const entry = parseFloat(allData.entryPrice);
+    const target = parseFloat(allData.targetPrice);
+    const stop = parseFloat(allData.stopLoss);
+
+    switch (name) {
+      case 'entryPrice': {
+        if (!value.trim()) return 'Entry price is required';
+        const v = parseFloat(value);
+        if (isNaN(v) || v <= 0) return 'Must be a positive number';
+        return undefined;
+      }
+      case 'targetPrice': {
+        if (!value.trim()) return 'Target price is required';
+        const v = parseFloat(value);
+        if (isNaN(v) || v <= 0) return 'Must be a positive number';
+        if (!isNaN(entry) && entry > 0) {
+          if (allData.direction === 'long' && v <= entry) return 'Target must be above entry for longs';
+          if (allData.direction === 'short' && v >= entry) return 'Target must be below entry for shorts';
+        }
+        return undefined;
+      }
+      case 'stopLoss': {
+        if (!value.trim()) return 'Stop loss is required';
+        const v = parseFloat(value);
+        if (isNaN(v) || v <= 0) return 'Must be a positive number';
+        if (!isNaN(entry) && entry > 0) {
+          if (allData.direction === 'long' && v >= entry) return 'Stop loss must be below entry for longs';
+          if (allData.direction === 'short' && v <= entry) return 'Stop loss must be above entry for shorts';
+        }
+        return undefined;
+      }
+      case 'reasoning': {
+        if (value.length > 512) return 'Maximum 512 characters';
+        return undefined;
+      }
+      default:
+        return undefined;
+    }
+  }, []);
+
+  // Re-validate dependent fields when direction changes
+  useEffect(() => {
+    const newErrors: FieldErrors = {};
+    if (touched.targetPrice) {
+      newErrors.targetPrice = validateField('targetPrice', formData.targetPrice, formData);
+    }
+    if (touched.stopLoss) {
+      newErrors.stopLoss = validateField('stopLoss', formData.stopLoss, formData);
+    }
+    setFieldErrors(prev => ({ ...prev, ...newErrors }));
+  }, [formData.direction, formData.entryPrice, formData.targetPrice, formData.stopLoss, touched, validateField]);
+
+  const handleFieldChange = (name: string, value: string) => {
+    const newData = { ...formData, [name]: value };
+    setFormData(newData);
+    // Validate on change if field was already touched
+    if (touched[name]) {
+      setFieldErrors(prev => ({ ...prev, [name]: validateField(name, value, newData) }));
+    }
+  };
+
+  const handleBlur = (name: string) => {
+    setTouched(prev => ({ ...prev, [name]: true }));
+    setFieldErrors(prev => ({
+      ...prev,
+      [name]: validateField(name, (formData as any)[name], formData),
+    }));
+  };
+
+  const validateAll = (): boolean => {
+    const errors: FieldErrors = {
+      entryPrice: validateField('entryPrice', formData.entryPrice, formData),
+      targetPrice: validateField('targetPrice', formData.targetPrice, formData),
+      stopLoss: validateField('stopLoss', formData.stopLoss, formData),
+      reasoning: validateField('reasoning', formData.reasoning, formData),
+    };
+    setFieldErrors(errors);
+    setTouched({ entryPrice: true, targetPrice: true, stopLoss: true, reasoning: true });
+    return !errors.entryPrice && !errors.targetPrice && !errors.stopLoss && !errors.reasoning;
+  };
 
   // Check if agent is registered
   const checkRegistration = useCallback(async () => {
@@ -171,14 +268,11 @@ export default function PublishPage() {
   const handlePublish = async () => {
     if (!publicKey || !sendTransaction) return;
 
+    if (!validateAll()) return;
+
     const entry = parseFloat(formData.entryPrice);
     const target = parseFloat(formData.targetPrice);
     const stop = parseFloat(formData.stopLoss);
-
-    if (!entry || !target || !stop) {
-      setError('Please fill in all price fields');
-      return;
-    }
 
     setPublishing(true);
     setError(null);
@@ -238,12 +332,22 @@ export default function PublishPage() {
     }
   };
 
+  const hasErrors = !!(fieldErrors.entryPrice || fieldErrors.targetPrice || fieldErrors.stopLoss || fieldErrors.reasoning);
+
   const canPublish = connected &&
     formData.entryPrice &&
     formData.targetPrice &&
     formData.stopLoss &&
     !publishing &&
-    !needsRegistration;
+    !needsRegistration &&
+    !hasErrors;
+
+  const inputClass = (field: keyof FieldErrors) =>
+    `w-full bg-zinc-900 border rounded-lg px-4 py-3 text-white focus:ring-1 outline-none transition-colors ${
+      fieldErrors[field] && touched[field as string]
+        ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+        : 'border-zinc-700 focus:border-emerald-500 focus:ring-emerald-500'
+    }`;
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
@@ -399,9 +503,11 @@ export default function PublishPage() {
               step="any"
               placeholder="125.00"
               value={formData.entryPrice}
-              onChange={(e) => setFormData({ ...formData, entryPrice: e.target.value })}
-              className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+              onChange={(e) => handleFieldChange('entryPrice', e.target.value)}
+              onBlur={() => handleBlur('entryPrice')}
+              className={inputClass('entryPrice')}
             />
+            <InlineError message={touched.entryPrice ? fieldErrors.entryPrice : undefined} />
           </div>
           <div>
             <label className="block text-sm text-zinc-400 mb-2">Target Price ($)</label>
@@ -410,9 +516,11 @@ export default function PublishPage() {
               step="any"
               placeholder="145.00"
               value={formData.targetPrice}
-              onChange={(e) => setFormData({ ...formData, targetPrice: e.target.value })}
-              className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+              onChange={(e) => handleFieldChange('targetPrice', e.target.value)}
+              onBlur={() => handleBlur('targetPrice')}
+              className={inputClass('targetPrice')}
             />
+            <InlineError message={touched.targetPrice ? fieldErrors.targetPrice : undefined} />
           </div>
           <div>
             <label className="block text-sm text-zinc-400 mb-2">Stop Loss ($)</label>
@@ -421,9 +529,11 @@ export default function PublishPage() {
               step="any"
               placeholder="118.00"
               value={formData.stopLoss}
-              onChange={(e) => setFormData({ ...formData, stopLoss: e.target.value })}
-              className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+              onChange={(e) => handleFieldChange('stopLoss', e.target.value)}
+              onBlur={() => handleBlur('stopLoss')}
+              className={inputClass('stopLoss')}
             />
+            <InlineError message={touched.stopLoss ? fieldErrors.stopLoss : undefined} />
           </div>
         </div>
 
@@ -448,13 +558,17 @@ export default function PublishPage() {
           <textarea
             placeholder="Technical analysis, market thesis, catalysts..."
             value={formData.reasoning}
-            onChange={(e) => setFormData({ ...formData, reasoning: e.target.value })}
+            onChange={(e) => handleFieldChange('reasoning', e.target.value)}
+            onBlur={() => handleBlur('reasoning')}
             rows={4}
             maxLength={512}
-            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg px-4 py-3 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none resize-none"
+            className={`resize-none ${inputClass('reasoning')}`}
           />
-          <div className="text-xs text-zinc-500 mt-1 text-right">
-            {formData.reasoning.length}/512 characters
+          <div className="flex justify-between mt-1">
+            <InlineError message={touched.reasoning ? fieldErrors.reasoning : undefined} />
+            <span className={`text-xs ${formData.reasoning.length > 480 ? 'text-amber-400' : 'text-zinc-500'}`}>
+              {formData.reasoning.length}/512 characters
+            </span>
           </div>
         </div>
 
@@ -502,6 +616,8 @@ export default function PublishPage() {
             ? 'Connect Wallet to Publish'
             : needsRegistration
             ? 'Register Agent First'
+            : hasErrors
+            ? 'Fix Errors to Publish'
             : 'Publish Signal On-Chain'}
         </button>
 

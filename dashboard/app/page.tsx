@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import { useSignals, Signal } from '../hooks/useSignals';
 import { usePrices } from '../hooks/usePrices';
+import { SignalFeed } from '../components/SignalFeed';
+import { useToast, ToastContainer } from '../components/Toast';
 
 const PROGRAM_ID = new PublicKey('6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp');
 
@@ -56,20 +58,44 @@ function formatCountdown(ms: number): string {
   return `${minutes}m`;
 }
 
+function formatLastUpdated(ts: number | null): string {
+  if (!ts) return 'Loading...';
+  const diff = Math.floor((Date.now() - ts) / 1000);
+  if (diff < 5) return 'Just now';
+  if (diff < 60) return `${diff}s ago`;
+  return `${Math.floor(diff / 60)}m ago`;
+}
+
 export default function Home() {
-  const { signals, loading: signalsLoading } = useSignals();
+  const { signals, loading: signalsLoading, lastUpdated, newSignals, clearNewSignals } = useSignals();
   const { prices, loading: pricesLoading } = usePrices();
   const [registry, setRegistry] = useState({ totalSignals: 0, totalAgents: 0 });
   const [now, setNow] = useState(Date.now());
   const [filterAsset, setFilterAsset] = useState('all');
   const [filterDirection, setFilterDirection] = useState<'all' | 'long' | 'short'>('all');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'expired' | 'correct' | 'incorrect'>('all');
+  const [viewMode, setViewMode] = useState<'cards' | 'feed'>('cards');
+  const { toasts, addToast, dismissToast } = useToast();
+  const [lastUpdatedDisplay, setLastUpdatedDisplay] = useState('');
 
-  // Update countdown every minute
+  // Update "last updated" display every second
   useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 60000);
+    const interval = setInterval(() => {
+      setLastUpdatedDisplay(formatLastUpdated(lastUpdated));
+      setNow(Date.now());
+    }, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [lastUpdated]);
+
+  // Show toasts for new signals
+  useEffect(() => {
+    if (newSignals.length > 0) {
+      newSignals.forEach(s => {
+        addToast(`${s.asset} ${s.direction.toUpperCase()} @ $${formatPrice(s.entryPrice)}`, s.direction);
+      });
+      clearNewSignals();
+    }
+  }, [newSignals, addToast, clearNewSignals]);
 
   useEffect(() => {
     async function fetchRegistry() {
@@ -110,6 +136,9 @@ export default function Home() {
 
   return (
     <div className="space-y-12">
+      {/* Toast notifications */}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+
       {/* Hero Section */}
       <section className="text-center py-12 md:py-20 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/10 via-transparent to-transparent rounded-3xl" />
@@ -185,18 +214,46 @@ export default function Home() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-bold">Live Signals</h2>
-            <p className="text-sm text-zinc-500">
-              Refreshes every 60s &middot; Prices via Pyth Oracle
+            <p className="text-sm text-zinc-500 flex items-center gap-2">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Auto-refreshes every 30s
+              </span>
+              <span className="text-zinc-700">&middot;</span>
+              <span>Updated {lastUpdatedDisplay || 'Loading...'}</span>
+              <span className="text-zinc-700">&middot;</span>
+              <span>Prices via Pyth Oracle</span>
             </p>
           </div>
-          <a
-            href={`https://solscan.io/account/${PROGRAM_ID.toBase58()}?cluster=devnet`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-zinc-500 hover:text-zinc-300 font-mono border border-zinc-800 px-3 py-1.5 rounded-lg"
-          >
-            View Program on Solscan
-          </a>
+          <div className="flex items-center gap-2">
+            {/* View mode toggle */}
+            <div className="hidden sm:flex items-center bg-zinc-900 border border-zinc-800 rounded-lg p-0.5">
+              <button
+                onClick={() => setViewMode('cards')}
+                className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                  viewMode === 'cards' ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                Cards
+              </button>
+              <button
+                onClick={() => setViewMode('feed')}
+                className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                  viewMode === 'feed' ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                Feed
+              </button>
+            </div>
+            <a
+              href={`https://solscan.io/account/${PROGRAM_ID.toBase58()}?cluster=devnet`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-zinc-500 hover:text-zinc-300 font-mono border border-zinc-800 px-3 py-1.5 rounded-lg"
+            >
+              View Program on Solscan
+            </a>
+          </div>
         </div>
 
         {/* Filter bar */}
@@ -253,6 +310,8 @@ export default function Home() {
               <p className="text-zinc-500">Loading signals from chain...</p>
             </div>
           </div>
+        ) : viewMode === 'feed' ? (
+          <SignalFeed signals={filteredSignals} prices={prices} />
         ) : (
           <div className="grid gap-4">
             {filteredSignals.map((signal) => {

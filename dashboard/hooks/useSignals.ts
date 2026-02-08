@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 export interface Signal {
   publicKey: string;
@@ -22,27 +22,44 @@ export function useSignals() {
   const [signals, setSignals] = useState<Signal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<number | null>(null);
+  const [newSignals, setNewSignals] = useState<Signal[]>([]);
+  const prevKeysRef = useRef<Set<string>>(new Set());
 
-  useEffect(() => {
-    async function fetchSignals() {
-      try {
-        const res = await fetch('/api/signals');
-        const data = await res.json();
-        if (data.signals) {
-          setSignals(data.signals);
+  const fetchSignals = useCallback(async () => {
+    try {
+      const res = await fetch('/api/signals');
+      const data = await res.json();
+      if (data.signals) {
+        const incoming: Signal[] = data.signals;
+
+        // Detect new signals
+        if (prevKeysRef.current.size > 0) {
+          const fresh = incoming.filter(s => !prevKeysRef.current.has(s.publicKey));
+          if (fresh.length > 0) {
+            setNewSignals(fresh);
+          }
         }
-        setLoading(false);
-      } catch (e) {
-        setError('Failed to fetch signals');
-        setLoading(false);
-      }
-    }
 
-    fetchSignals();
-    // Refresh every 60 seconds
-    const interval = setInterval(fetchSignals, 60000);
-    return () => clearInterval(interval);
+        prevKeysRef.current = new Set(incoming.map(s => s.publicKey));
+        setSignals(incoming);
+        setLastUpdated(Date.now());
+      }
+      setLoading(false);
+    } catch {
+      setError('Failed to fetch signals');
+      setLoading(false);
+    }
   }, []);
 
-  return { signals, loading, error };
+  useEffect(() => {
+    fetchSignals();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchSignals, 30000);
+    return () => clearInterval(interval);
+  }, [fetchSignals]);
+
+  const clearNewSignals = useCallback(() => setNewSignals([]), []);
+
+  return { signals, loading, error, lastUpdated, newSignals, clearNewSignals };
 }

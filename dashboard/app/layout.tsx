@@ -43,8 +43,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.className} bg-zinc-950 text-zinc-100 min-h-screen`}>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function() {
+            var theme = localStorage.getItem('solsignal-theme') || 'dark';
+            document.documentElement.className = theme;
+          })();
+        `}} />
+      </head>
+      <body className={`${inter.className} bg-zinc-950 dark:bg-zinc-950 text-zinc-100 dark:text-zinc-100 min-h-screen transition-colors`}>
         <Providers>
           <Nav />
           <main className="max-w-7xl mx-auto px-6 py-8">
