@@ -1,11 +1,101 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import {
+  PublicKey,
+  SystemProgram,
+  TransactionMessage,
+  TransactionInstruction,
+  VersionedTransaction,
+} from '@solana/web3.js';
+
+const PROGRAM_ID = new PublicKey('6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp');
+
+// Instruction discriminators from the IDL
+const PUBLISH_SIGNAL_DISC = Buffer.from([169, 80, 49, 93, 169, 216, 95, 190]);
+const REGISTER_AGENT_DISC = Buffer.from([135, 157, 66, 195, 2, 113, 175, 30]);
+
+function getRegistryPDA(): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from('registry')],
+    PROGRAM_ID
+  )[0];
+}
+
+function getAgentProfilePDA(agent: PublicKey): PublicKey {
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from('agent'), agent.toBuffer()],
+    PROGRAM_ID
+  )[0];
+}
+
+function getSignalPDA(agent: PublicKey, index: number): PublicKey {
+  const indexBuf = Buffer.alloc(8);
+  indexBuf.writeBigUInt64LE(BigInt(index));
+  return PublicKey.findProgramAddressSync(
+    [Buffer.from('signal'), agent.toBuffer(), indexBuf],
+    PROGRAM_ID
+  )[0];
+}
+
+function encodeBorshString(s: string): Buffer {
+  const strBytes = Buffer.from(s, 'utf8');
+  const lenBuf = Buffer.alloc(4);
+  lenBuf.writeUInt32LE(strBytes.length);
+  return Buffer.concat([lenBuf, strBytes]);
+}
+
+function encodeU64(val: number): Buffer {
+  const buf = Buffer.alloc(8);
+  buf.writeBigUInt64LE(BigInt(Math.round(val)));
+  return buf;
+}
+
+function encodeI64(val: number): Buffer {
+  const buf = Buffer.alloc(8);
+  buf.writeBigInt64LE(BigInt(Math.round(val)));
+  return buf;
+}
+
+function buildPublishSignalData(params: {
+  asset: string;
+  direction: 'long' | 'short';
+  confidence: number;
+  entryPrice: number;
+  targetPrice: number;
+  stopLoss: number;
+  timeHorizon: number;
+  reasoning: string;
+}): Buffer {
+  return Buffer.concat([
+    PUBLISH_SIGNAL_DISC,
+    encodeBorshString(params.asset),
+    Buffer.from([params.direction === 'long' ? 0 : 1]), // Direction enum
+    Buffer.from([params.confidence]),                     // u8
+    encodeU64(params.entryPrice * 1e6),                   // u64 micro-units
+    encodeU64(params.targetPrice * 1e6),                  // u64
+    encodeU64(params.stopLoss * 1e6),                     // u64
+    encodeI64(params.timeHorizon),                        // i64 unix timestamp
+    encodeBorshString(params.reasoning),
+  ]);
+}
+
+function buildRegisterAgentData(name: string): Buffer {
+  return Buffer.concat([
+    REGISTER_AGENT_DISC,
+    encodeBorshString(name),
+  ]);
+}
 
 export default function PublishPage() {
+  const { connection } = useConnection();
+  const { publicKey, sendTransaction, connected } = useWallet();
+
   const [formData, setFormData] = useState({
     asset: 'SOL/USDC',
-    direction: 'long',
+    direction: 'long' as 'long' | 'short',
     confidence: 75,
     entryPrice: '',
     targetPrice: '',
@@ -13,6 +103,147 @@ export default function PublishPage() {
     timeHorizon: '24',
     reasoning: '',
   });
+
+  const [publishing, setPublishing] = useState(false);
+  const [txResult, setTxResult] = useState<{ sig: string; signalPDA: string } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [registering, setRegistering] = useState(false);
+  const [needsRegistration, setNeedsRegistration] = useState<boolean | null>(null);
+
+  // Check if agent is registered
+  const checkRegistration = useCallback(async () => {
+    if (!publicKey) return;
+    try {
+      const agentProfilePDA = getAgentProfilePDA(publicKey);
+      const account = await connection.getAccountInfo(agentProfilePDA);
+      setNeedsRegistration(!account);
+    } catch {
+      setNeedsRegistration(true);
+    }
+  }, [publicKey, connection]);
+
+  // Check on connect
+  useEffect(() => {
+    if (connected && publicKey) {
+      checkRegistration();
+    }
+  }, [connected, publicKey, checkRegistration]);
+
+  const handleRegister = async () => {
+    if (!publicKey || !sendTransaction) return;
+    setRegistering(true);
+    setError(null);
+
+    try {
+      const agentProfilePDA = getAgentProfilePDA(publicKey);
+      const registryPDA = getRegistryPDA();
+
+      const ix = new TransactionInstruction({
+        programId: PROGRAM_ID,
+        keys: [
+          { pubkey: agentProfilePDA, isSigner: false, isWritable: true },
+          { pubkey: registryPDA, isSigner: false, isWritable: true },
+          { pubkey: publicKey, isSigner: true, isWritable: true },
+          { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+        ],
+        data: buildRegisterAgentData('agent'),
+      });
+
+      const { blockhash } = await connection.getLatestBlockhash();
+      const message = new TransactionMessage({
+        payerKey: publicKey,
+        recentBlockhash: blockhash,
+        instructions: [ix],
+      }).compileToV0Message();
+
+      const tx = new VersionedTransaction(message);
+      const sig = await sendTransaction(tx, connection);
+      await connection.confirmTransaction(sig, 'confirmed');
+
+      setNeedsRegistration(false);
+    } catch (e: any) {
+      setError(`Registration failed: ${e.message}`);
+    } finally {
+      setRegistering(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!publicKey || !sendTransaction) return;
+
+    const entry = parseFloat(formData.entryPrice);
+    const target = parseFloat(formData.targetPrice);
+    const stop = parseFloat(formData.stopLoss);
+
+    if (!entry || !target || !stop) {
+      setError('Please fill in all price fields');
+      return;
+    }
+
+    setPublishing(true);
+    setError(null);
+    setTxResult(null);
+
+    try {
+      // Fetch registry to get next signal index
+      const registryRes = await fetch('/api/registry');
+      const registryData = await registryRes.json();
+      const nextIndex = registryData.totalSignals + 1;
+
+      const agentProfilePDA = getAgentProfilePDA(publicKey);
+      const registryPDA = getRegistryPDA();
+      const signalPDA = getSignalPDA(publicKey, nextIndex);
+
+      const timeHorizonUnix = Math.floor(Date.now() / 1000) + parseInt(formData.timeHorizon) * 3600;
+
+      const data = buildPublishSignalData({
+        asset: formData.asset,
+        direction: formData.direction,
+        confidence: formData.confidence,
+        entryPrice: entry,
+        targetPrice: target,
+        stopLoss: stop,
+        timeHorizon: timeHorizonUnix,
+        reasoning: formData.reasoning || 'No reasoning provided',
+      });
+
+      const ix = new TransactionInstruction({
+        programId: PROGRAM_ID,
+        keys: [
+          { pubkey: signalPDA, isSigner: false, isWritable: true },
+          { pubkey: agentProfilePDA, isSigner: false, isWritable: true },
+          { pubkey: registryPDA, isSigner: false, isWritable: true },
+          { pubkey: publicKey, isSigner: true, isWritable: true },
+          { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+        ],
+        data,
+      });
+
+      const { blockhash } = await connection.getLatestBlockhash();
+      const message = new TransactionMessage({
+        payerKey: publicKey,
+        recentBlockhash: blockhash,
+        instructions: [ix],
+      }).compileToV0Message();
+
+      const tx = new VersionedTransaction(message);
+      const sig = await sendTransaction(tx, connection);
+      await connection.confirmTransaction(sig, 'confirmed');
+
+      setTxResult({ sig, signalPDA: signalPDA.toBase58() });
+    } catch (e: any) {
+      setError(`Publish failed: ${e.message}`);
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const canPublish = connected &&
+    formData.entryPrice &&
+    formData.targetPrice &&
+    formData.stopLoss &&
+    !publishing &&
+    !needsRegistration;
 
   return (
     <div className="max-w-2xl mx-auto space-y-8">
@@ -24,10 +255,77 @@ export default function PublishPage() {
       </div>
 
       <div className="bg-amber-900/20 border border-amber-700/50 rounded-lg p-4 text-amber-200 text-sm">
-        ⚠️ Signals are permanent. They affect your on-chain reputation. Think before you publish.
+        Signals are permanent. They affect your on-chain reputation. Think before you publish.
       </div>
 
-      <form className="space-y-6">
+      {/* Wallet Connection */}
+      <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4 flex items-center justify-between">
+        <div>
+          <div className="text-sm text-zinc-400">
+            {connected ? 'Wallet Connected' : 'Connect your wallet to publish signals'}
+          </div>
+          {publicKey && (
+            <div className="font-mono text-xs text-zinc-500 mt-1">
+              {publicKey.toBase58().slice(0, 12)}...{publicKey.toBase58().slice(-8)}
+            </div>
+          )}
+        </div>
+        <WalletMultiButton />
+      </div>
+
+      {/* Agent Registration */}
+      {connected && needsRegistration && (
+        <div className="bg-blue-900/20 border border-blue-700/50 rounded-lg p-4">
+          <p className="text-blue-200 text-sm mb-3">
+            You need to register as an agent before publishing signals.
+          </p>
+          <button
+            onClick={handleRegister}
+            disabled={registering}
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+          >
+            {registering ? 'Registering...' : 'Register Agent'}
+          </button>
+        </div>
+      )}
+
+      {/* Success message */}
+      {txResult && (
+        <div className="bg-emerald-900/20 border border-emerald-700/50 rounded-lg p-4">
+          <p className="text-emerald-200 font-medium mb-2">Signal published successfully!</p>
+          <div className="text-sm space-y-1">
+            <div>
+              <span className="text-zinc-400">Transaction: </span>
+              <a
+                href={`https://solscan.io/tx/${txResult.sig}?cluster=devnet`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-emerald-400 hover:text-emerald-300 font-mono"
+              >
+                {txResult.sig.slice(0, 16)}... &rarr;
+              </a>
+            </div>
+            <div>
+              <span className="text-zinc-400">Signal: </span>
+              <a
+                href={`/signal/${txResult.signalPDA}`}
+                className="text-emerald-400 hover:text-emerald-300 font-mono"
+              >
+                View signal &rarr;
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Error */}
+      {error && (
+        <div className="bg-red-900/20 border border-red-700/50 rounded-lg p-4 text-red-200 text-sm">
+          {error}
+        </div>
+      )}
+
+      <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
         <div className="grid md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm text-zinc-400 mb-2">Asset Pair</label>
@@ -56,7 +354,7 @@ export default function PublishPage() {
                     : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
                 }`}
               >
-                📈 LONG
+                LONG
               </button>
               <button
                 type="button"
@@ -67,7 +365,7 @@ export default function PublishPage() {
                     : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
                 }`}
               >
-                📉 SHORT
+                SHORT
               </button>
             </div>
           </div>
@@ -98,6 +396,7 @@ export default function PublishPage() {
             <label className="block text-sm text-zinc-400 mb-2">Entry Price ($)</label>
             <input
               type="number"
+              step="any"
               placeholder="125.00"
               value={formData.entryPrice}
               onChange={(e) => setFormData({ ...formData, entryPrice: e.target.value })}
@@ -108,6 +407,7 @@ export default function PublishPage() {
             <label className="block text-sm text-zinc-400 mb-2">Target Price ($)</label>
             <input
               type="number"
+              step="any"
               placeholder="145.00"
               value={formData.targetPrice}
               onChange={(e) => setFormData({ ...formData, targetPrice: e.target.value })}
@@ -118,6 +418,7 @@ export default function PublishPage() {
             <label className="block text-sm text-zinc-400 mb-2">Stop Loss ($)</label>
             <input
               type="number"
+              step="any"
               placeholder="118.00"
               value={formData.stopLoss}
               onChange={(e) => setFormData({ ...formData, stopLoss: e.target.value })}
@@ -187,14 +488,33 @@ export default function PublishPage() {
 
         <button
           type="button"
-          disabled
-          className="w-full bg-zinc-700 text-zinc-400 py-4 rounded-lg font-semibold cursor-not-allowed"
+          onClick={handlePublish}
+          disabled={!canPublish}
+          className={`w-full py-4 rounded-lg font-semibold transition-colors ${
+            canPublish
+              ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+              : 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
+          }`}
         >
-          🔒 Connect Wallet to Publish
+          {publishing
+            ? 'Publishing...'
+            : !connected
+            ? 'Connect Wallet to Publish'
+            : needsRegistration
+            ? 'Register Agent First'
+            : 'Publish Signal On-Chain'}
         </button>
 
         <p className="text-xs text-zinc-500 text-center">
-          Publishing requires a Solana wallet with devnet SOL. Use the SDK for programmatic access.
+          Publishing requires a Solana wallet with devnet SOL.{' '}
+          <a
+            href="https://faucet.solana.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-emerald-400 hover:text-emerald-300 underline"
+          >
+            Get devnet SOL
+          </a>
         </p>
       </form>
     </div>

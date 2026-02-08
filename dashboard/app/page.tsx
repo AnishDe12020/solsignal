@@ -25,13 +25,25 @@ function getPnL(current: number, entry: number, direction: 'long' | 'short'): nu
 export default function Home() {
   const { signals, loading: signalsLoading } = useSignals();
   const { prices, loading: pricesLoading } = usePrices();
-  const [registry, setRegistry] = useState({ totalSignals: 0, totalAgents: 1 });
+  const [registry, setRegistry] = useState({ totalSignals: 0, totalAgents: 0 });
 
   useEffect(() => {
-    if (signals.length > 0) {
-      setRegistry({ totalSignals: signals.length, totalAgents: 1 });
+    async function fetchRegistry() {
+      try {
+        const res = await fetch('/api/registry');
+        const data = await res.json();
+        if (data.totalSignals !== undefined) {
+          setRegistry({ totalSignals: data.totalSignals, totalAgents: data.totalAgents });
+        }
+      } catch {
+        // Fall back to signal count
+        if (signals.length > 0) {
+          setRegistry(prev => ({ ...prev, totalSignals: signals.length }));
+        }
+      }
     }
-  }, [signals]);
+    fetchRegistry();
+  }, [signals.length]);
 
   return (
     <div className="space-y-8">
@@ -77,9 +89,10 @@ export default function Home() {
             const isExpired = Date.now() > signal.timeHorizon;
 
             return (
-              <div
+              <a
+                href={`/signal/${signal.publicKey}`}
                 key={signal.publicKey}
-                className="bg-zinc-900 border border-zinc-800 rounded-lg p-6"
+                className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 block hover:border-zinc-700 transition-colors"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
@@ -165,7 +178,7 @@ export default function Home() {
                     {signal.outcome.charAt(0).toUpperCase() + signal.outcome.slice(1)}
                   </div>
                 </div>
-              </div>
+              </a>
             );
           })}
         </div>
