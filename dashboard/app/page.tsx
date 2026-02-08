@@ -48,10 +48,28 @@ function AnimatedCounter({ target, label, color }: { target: number; label: stri
   );
 }
 
+function formatCountdown(ms: number): string {
+  if (ms <= 0) return 'Expired';
+  const hours = Math.floor(ms / 3600000);
+  const minutes = Math.floor((ms % 3600000) / 60000);
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
+
 export default function Home() {
   const { signals, loading: signalsLoading } = useSignals();
   const { prices, loading: pricesLoading } = usePrices();
   const [registry, setRegistry] = useState({ totalSignals: 0, totalAgents: 0 });
+  const [now, setNow] = useState(Date.now());
+  const [filterAsset, setFilterAsset] = useState('all');
+  const [filterDirection, setFilterDirection] = useState<'all' | 'long' | 'short'>('all');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'expired' | 'correct' | 'incorrect'>('all');
+
+  // Update countdown every minute
+  useEffect(() => {
+    const interval = setInterval(() => setNow(Date.now()), 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     async function fetchRegistry() {
@@ -70,10 +88,25 @@ export default function Home() {
     fetchRegistry();
   }, [signals.length]);
 
-  const activeSignals = signals.filter(s => s.outcome === 'pending' && Date.now() <= s.timeHorizon).length;
+  const activeSignals = signals.filter(s => s.outcome === 'pending' && now <= s.timeHorizon).length;
   const correctSignals = signals.filter(s => s.outcome === 'correct').length;
   const resolvedSignals = signals.filter(s => s.outcome === 'correct' || s.outcome === 'incorrect').length;
   const accuracy = resolvedSignals > 0 ? Math.round((correctSignals / resolvedSignals) * 100) : 0;
+
+  const uniqueAssets = [...new Set(signals.map(s => s.asset))].sort();
+
+  const filteredSignals = signals.filter(s => {
+    if (filterAsset !== 'all' && s.asset !== filterAsset) return false;
+    if (filterDirection !== 'all' && s.direction !== filterDirection) return false;
+    if (filterStatus !== 'all') {
+      const isExp = now > s.timeHorizon;
+      if (filterStatus === 'active' && (s.outcome !== 'pending' || isExp)) return false;
+      if (filterStatus === 'expired' && !(s.outcome === 'pending' && isExp)) return false;
+      if (filterStatus === 'correct' && s.outcome !== 'correct') return false;
+      if (filterStatus === 'incorrect' && s.outcome !== 'incorrect') return false;
+    }
+    return true;
+  });
 
   return (
     <div className="space-y-12">
@@ -166,6 +199,53 @@ export default function Home() {
           </a>
         </div>
 
+        {/* Filter bar */}
+        {!signalsLoading && signals.length > 0 && (
+          <div className="flex flex-wrap items-center gap-3 mb-6 bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+            <select
+              value={filterAsset}
+              onChange={(e) => setFilterAsset(e.target.value)}
+              className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+            >
+              <option value="all">All Assets</option>
+              {uniqueAssets.map((asset) => (
+                <option key={asset} value={asset}>{asset}</option>
+              ))}
+            </select>
+            <select
+              value={filterDirection}
+              onChange={(e) => setFilterDirection(e.target.value as 'all' | 'long' | 'short')}
+              className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+            >
+              <option value="all">All Directions</option>
+              <option value="long">Long</option>
+              <option value="short">Short</option>
+            </select>
+            <select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as 'all' | 'active' | 'expired' | 'correct' | 'incorrect')}
+              className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none"
+            >
+              <option value="all">All Statuses</option>
+              <option value="active">Active</option>
+              <option value="expired">Expired</option>
+              <option value="correct">Correct</option>
+              <option value="incorrect">Incorrect</option>
+            </select>
+            {(filterAsset !== 'all' || filterDirection !== 'all' || filterStatus !== 'all') && (
+              <button
+                onClick={() => { setFilterAsset('all'); setFilterDirection('all'); setFilterStatus('all'); }}
+                className="text-xs text-zinc-400 hover:text-white px-2 py-1"
+              >
+                Clear filters
+              </button>
+            )}
+            <span className="text-xs text-zinc-500 ml-auto">
+              {filteredSignals.length} of {signals.length} signals
+            </span>
+          </div>
+        )}
+
         {signalsLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
@@ -175,10 +255,11 @@ export default function Home() {
           </div>
         ) : (
           <div className="grid gap-4">
-            {signals.map((signal) => {
+            {filteredSignals.map((signal) => {
               const currentPrice = prices[signal.asset];
               const pnl = currentPrice ? getPnL(currentPrice, signal.entryPrice, signal.direction) : null;
-              const isExpired = Date.now() > signal.timeHorizon;
+              const isExpired = now > signal.timeHorizon;
+              const remaining = signal.timeHorizon - now;
 
               return (
                 <a
@@ -246,8 +327,8 @@ export default function Home() {
                     </div>
                     <div>
                       <div className="text-zinc-500">Status</div>
-                      <div className={`font-medium ${isExpired ? 'text-yellow-400' : 'text-zinc-300'}`}>
-                        {isExpired ? 'Expired (awaiting resolution)' : `${Math.floor((signal.timeHorizon - Date.now()) / 3600000)}h remaining`}
+                      <div className={`font-medium ${isExpired ? 'text-yellow-400' : 'text-emerald-400'}`}>
+                        {isExpired ? 'Expired (awaiting resolution)' : `${formatCountdown(remaining)} remaining`}
                       </div>
                     </div>
                   </div>
