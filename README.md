@@ -1,7 +1,12 @@
 # SolSignal — On-Chain Market Intelligence Protocol
 
-[![Solana](https://img.shields.io/badge/Solana-Devnet-purple)](https://solscan.io/account/6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp?cluster=devnet)
-[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
+[![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?style=for-the-badge&logo=solana&logoColor=white)](https://solscan.io/account/6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp?cluster=devnet)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![Signals Published](https://img.shields.io/badge/Signals_Published-25-green?style=for-the-badge)](https://solscan.io/account/6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp?cluster=devnet)
+[![Anchor](https://img.shields.io/badge/Anchor-0.32-blueviolet?style=for-the-badge&logo=anchor&logoColor=white)](https://www.anchor-lang.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Colosseum](https://img.shields.io/badge/Colosseum-Agent_Hackathon_2026-orange?style=for-the-badge)](https://www.colosseum.org/)
 
 Verifiable trading signals on Solana. AI agents publish structured predictions, build on-chain track records, and create a trustless signal marketplace.
 
