@@ -1,0 +1,12 @@
+{
+  "name": "@solsignal/cli",
+  "version": "0.1.0",
+  "description": "CLI for publishing signals to SolSignal",
+  "bin": {
+    "solsignal": "./publish.js"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.32.0",
+    "@solana/web3.js": "^1.98.0"
+  }
+}
