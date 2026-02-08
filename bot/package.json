@@ -1,0 +1,13 @@
+{
+  "name": "@solsignal/bot",
+  "version": "0.1.0",
+  "description": "Telegram bot for SolSignal alerts",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.64.0",
+    "@solana/web3.js": "^1.98.0"
+  }
+}
