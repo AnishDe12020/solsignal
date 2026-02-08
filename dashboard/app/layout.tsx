@@ -19,16 +19,25 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${inter.className} bg-zinc-950 text-zinc-100 min-h-screen`}>
         <Providers>
-          <nav className="border-b border-zinc-800 px-6 py-4">
-            <div className="max-w-7xl mx-auto flex items-center justify-between">
-              <div className="flex items-center gap-2">
+          <nav className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+              <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <span className="text-2xl">📡</span>
-                <span className="font-bold text-xl">SolSignal</span>
-              </div>
-              <div className="flex items-center gap-6 text-sm text-zinc-400">
-                <a href="/" className="hover:text-white transition-colors">Signals</a>
-                <a href="/agents" className="hover:text-white transition-colors">Agents</a>
-                <a href="/publish" className="hover:text-white transition-colors">Publish</a>
+                <span className="font-bold text-xl tracking-tight">SolSignal</span>
+              </a>
+              <div className="flex items-center gap-1 text-sm">
+                <a href="/" className="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors">
+                  Signals
+                </a>
+                <a href="/agents" className="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors">
+                  Agents
+                </a>
+                <a href="/stats" className="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors">
+                  Stats
+                </a>
+                <a href="/publish" className="ml-2 px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors">
+                  Publish
+                </a>
               </div>
             </div>
           </nav>

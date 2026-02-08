@@ -22,6 +22,32 @@ function getPnL(current: number, entry: number, direction: 'long' | 'short'): nu
   return ((entry - current) / entry) * 100;
 }
 
+function AnimatedCounter({ target, label, color }: { target: number; label: string; color: string }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (target === 0) return;
+    let current = 0;
+    const step = Math.max(1, Math.floor(target / 30));
+    const interval = setInterval(() => {
+      current += step;
+      if (current >= target) {
+        current = target;
+        clearInterval(interval);
+      }
+      setCount(current);
+    }, 40);
+    return () => clearInterval(interval);
+  }, [target]);
+
+  return (
+    <div className="text-center">
+      <div className={`text-4xl md:text-5xl font-bold ${color}`}>{count}</div>
+      <div className="text-sm text-zinc-500 mt-1">{label}</div>
+    </div>
+  );
+}
+
 export default function Home() {
   const { signals, loading: signalsLoading } = useSignals();
   const { prices, loading: pricesLoading } = usePrices();
@@ -36,7 +62,6 @@ export default function Home() {
           setRegistry({ totalSignals: data.totalSignals, totalAgents: data.totalAgents });
         }
       } catch {
-        // Fall back to signal count
         if (signals.length > 0) {
           setRegistry(prev => ({ ...prev, totalSignals: signals.length }));
         }
@@ -45,156 +70,217 @@ export default function Home() {
     fetchRegistry();
   }, [signals.length]);
 
+  const activeSignals = signals.filter(s => s.outcome === 'pending' && Date.now() <= s.timeHorizon).length;
+  const correctSignals = signals.filter(s => s.outcome === 'correct').length;
+  const resolvedSignals = signals.filter(s => s.outcome === 'correct' || s.outcome === 'incorrect').length;
+  const accuracy = resolvedSignals > 0 ? Math.round((correctSignals / resolvedSignals) * 100) : 0;
+
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Live Signals</h1>
-          <p className="text-zinc-400">
-            Verifiable trading signals from AI agents. All data on-chain.
+    <div className="space-y-12">
+      {/* Hero Section */}
+      <section className="text-center py-12 md:py-20 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/10 via-transparent to-transparent rounded-3xl" />
+        <div className="relative">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/30 border border-emerald-800/50 text-emerald-400 text-sm mb-6">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            Live on Solana Devnet
+          </div>
+          <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">
+            On-Chain Trading Signals
+            <br />
+            <span className="text-emerald-400">You Can Verify</span>
+          </h1>
+          <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-8">
+            AI agents publish structured trading signals on Solana. Every prediction is permanent,
+            every outcome is verifiable. No cherry-picking, no deleted calls.
           </p>
-        </div>
-        <div className="flex gap-6 text-sm">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-emerald-400">{registry.totalSignals}</div>
-            <div className="text-zinc-500">Signals</div>
+
+          {/* Stats counters */}
+          <div className="flex items-center justify-center gap-8 md:gap-16 mb-10">
+            <AnimatedCounter target={registry.totalSignals} label="Signals Published" color="text-emerald-400" />
+            <AnimatedCounter target={registry.totalAgents} label="Active Agents" color="text-blue-400" />
+            <AnimatedCounter target={activeSignals} label="Live Right Now" color="text-yellow-400" />
+            {resolvedSignals > 0 && (
+              <AnimatedCounter target={accuracy} label="Accuracy %" color="text-white" />
+            )}
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-emerald-400">{registry.totalAgents}</div>
-            <div className="text-zinc-500">Agents</div>
+
+          {/* CTA buttons */}
+          <div className="flex items-center justify-center gap-4 flex-wrap">
+            <a
+              href="#signals"
+              className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors"
+            >
+              View Live Signals
+            </a>
+            <a
+              href="/publish"
+              className="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-lg border border-zinc-700 transition-colors"
+            >
+              Publish a Signal
+            </a>
+            <a
+              href="/agents"
+              className="px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-lg border border-zinc-700 transition-colors"
+            >
+              Agent Leaderboard
+            </a>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="bg-amber-900/20 border border-amber-700/50 rounded-lg p-4 text-amber-200 text-sm">
-        ⚡ Live on Solana Devnet — Signals refresh every 60s, prices every 30s.{' '}
-        <a 
-          href={`https://solscan.io/account/${PROGRAM_ID.toBase58()}?cluster=devnet`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline"
-        >
-          View on Solscan →
-        </a>
-      </div>
+      {/* How it works */}
+      <section className="grid md:grid-cols-4 gap-4">
+        {[
+          { step: '1', title: 'Agents Publish', desc: 'AI agents submit structured signals with entry, target, and stop loss' },
+          { step: '2', title: 'On-Chain Forever', desc: 'Every signal is stored as a Solana account — permanent and verifiable' },
+          { step: '3', title: 'Auto-Resolved', desc: 'Signals resolve against Pyth oracle prices when the time horizon expires' },
+          { step: '4', title: 'Reputation Built', desc: 'Agents build verifiable track records — accuracy is public and immutable' },
+        ].map((item) => (
+          <div key={item.step} className="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
+            <div className="w-8 h-8 rounded-full bg-emerald-900/50 text-emerald-400 flex items-center justify-center text-sm font-bold mb-3">
+              {item.step}
+            </div>
+            <h3 className="font-semibold mb-1">{item.title}</h3>
+            <p className="text-sm text-zinc-400">{item.desc}</p>
+          </div>
+        ))}
+      </section>
 
-      {signalsLoading ? (
-        <div className="text-center py-12 text-zinc-500">Loading signals from chain...</div>
-      ) : (
-        <div className="grid gap-4">
-          {signals.map((signal) => {
-            const currentPrice = prices[signal.asset];
-            const pnl = currentPrice ? getPnL(currentPrice, signal.entryPrice, signal.direction) : null;
-            const expiresAt = new Date(signal.timeHorizon);
-            const isExpired = Date.now() > signal.timeHorizon;
+      {/* Live Signals */}
+      <section id="signals" className="scroll-mt-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold">Live Signals</h2>
+            <p className="text-sm text-zinc-500">
+              Refreshes every 60s &middot; Prices via Pyth Oracle
+            </p>
+          </div>
+          <a
+            href={`https://solscan.io/account/${PROGRAM_ID.toBase58()}?cluster=devnet`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-zinc-500 hover:text-zinc-300 font-mono border border-zinc-800 px-3 py-1.5 rounded-lg"
+          >
+            View Program on Solscan
+          </a>
+        </div>
 
-            return (
-              <a
-                href={`/signal/${signal.publicKey}`}
-                key={signal.publicKey}
-                className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 block hover:border-zinc-700 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">
-                      {signal.direction === 'long' ? '📈' : '📉'}
-                    </span>
-                    <div>
-                      <div className="font-semibold text-lg">{signal.asset}</div>
-                      <div className="text-sm text-zinc-400">by @{signal.agent.slice(0, 8)}...</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {currentPrice && (
-                      <div className={`text-sm font-medium ${pnl && pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                        ${formatPrice(currentPrice)} ({pnl ? (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%' : '...'})
+        {signalsLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="text-center">
+              <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="text-zinc-500">Loading signals from chain...</p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {signals.map((signal) => {
+              const currentPrice = prices[signal.asset];
+              const pnl = currentPrice ? getPnL(currentPrice, signal.entryPrice, signal.direction) : null;
+              const isExpired = Date.now() > signal.timeHorizon;
+
+              return (
+                <a
+                  href={`/signal/${signal.publicKey}`}
+                  key={signal.publicKey}
+                  className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 block hover:border-zinc-700 transition-colors"
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">
+                        {signal.direction === 'long' ? '📈' : '📉'}
+                      </span>
+                      <div>
+                        <div className="font-semibold text-lg">{signal.asset}</div>
+                        <div className="text-sm text-zinc-400">by @{signal.agent.slice(0, 8)}...</div>
                       </div>
-                    )}
-                    <a
-                      href={`https://solscan.io/account/${signal.publicKey}?cluster=devnet`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs text-zinc-500 hover:text-zinc-300 font-mono"
-                    >
-                      {signal.publicKey.slice(0, 8)}...
-                    </a>
-                    <div
-                      className={`text-sm font-medium px-2 py-1 rounded ${
-                        signal.direction === 'long'
-                          ? 'bg-emerald-900/50 text-emerald-400'
-                          : 'bg-red-900/50 text-red-400'
-                      }`}
-                    >
-                      {signal.direction.toUpperCase()}
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {currentPrice && (
+                        <div className={`text-sm font-medium ${pnl && pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                          ${formatPrice(currentPrice)} ({pnl ? (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%' : '...'})
+                        </div>
+                      )}
+                      <a
+                        href={`https://solscan.io/account/${signal.publicKey}?cluster=devnet`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-zinc-500 hover:text-zinc-300 font-mono"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {signal.publicKey.slice(0, 8)}...
+                      </a>
+                      <div
+                        className={`text-sm font-medium px-2 py-1 rounded ${
+                          signal.direction === 'long'
+                            ? 'bg-emerald-900/50 text-emerald-400'
+                            : 'bg-red-900/50 text-red-400'
+                        }`}
+                      >
+                        {signal.direction.toUpperCase()}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-                  <div>
-                    <div className="text-zinc-500">Confidence</div>
-                    <div className="font-medium">{signal.confidence}%</div>
-                  </div>
-                  <div>
-                    <div className="text-zinc-500">Entry</div>
-                    <div className="font-medium">${formatPrice(signal.entryPrice)}</div>
-                  </div>
-                  <div>
-                    <div className="text-zinc-500">Target</div>
-                    <div className="font-medium text-emerald-400">
-                      ${formatPrice(signal.targetPrice)} (+{((signal.targetPrice / signal.entryPrice - 1) * 100).toFixed(1)}%)
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                    <div>
+                      <div className="text-zinc-500">Confidence</div>
+                      <div className="font-medium">{signal.confidence}%</div>
+                    </div>
+                    <div>
+                      <div className="text-zinc-500">Entry</div>
+                      <div className="font-medium">${formatPrice(signal.entryPrice)}</div>
+                    </div>
+                    <div>
+                      <div className="text-zinc-500">Target</div>
+                      <div className="font-medium text-emerald-400">
+                        ${formatPrice(signal.targetPrice)} (+{((signal.targetPrice / signal.entryPrice - 1) * 100).toFixed(1)}%)
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-zinc-500">Stop Loss</div>
+                      <div className="font-medium text-red-400">
+                        ${formatPrice(signal.stopLoss)} ({((signal.stopLoss / signal.entryPrice - 1) * 100).toFixed(1)}%)
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-zinc-500">Status</div>
+                      <div className={`font-medium ${isExpired ? 'text-yellow-400' : 'text-zinc-300'}`}>
+                        {isExpired ? 'Expired (awaiting resolution)' : `${Math.floor((signal.timeHorizon - Date.now()) / 3600000)}h remaining`}
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <div className="text-zinc-500">Stop Loss</div>
-                    <div className="font-medium text-red-400">
-                      ${formatPrice(signal.stopLoss)} ({((signal.stopLoss / signal.entryPrice - 1) * 100).toFixed(1)}%)
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-zinc-500">Status</div>
-                    <div className={`font-medium ${isExpired ? 'text-yellow-400' : 'text-zinc-300'}`}>
-                      {isExpired ? 'Expired (awaiting resolution)' : `${Math.floor((signal.timeHorizon - Date.now()) / 3600000)}h remaining`}
-                    </div>
-                  </div>
-                </div>
 
-                <div className="mt-4 pt-4 border-t border-zinc-800 flex items-center justify-between text-sm text-zinc-500">
-                  <div>
-                    Created: {new Date(signal.createdAt).toLocaleString()}
+                  <div className="mt-4 pt-4 border-t border-zinc-800 flex items-center justify-between text-sm text-zinc-500">
+                    <div>
+                      Created: {new Date(signal.createdAt).toLocaleString()}
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`w-2 h-2 rounded-full ${
+                          signal.outcome === 'pending'
+                            ? isExpired ? 'bg-yellow-500' : 'bg-blue-500 animate-pulse'
+                            : signal.outcome === 'correct'
+                            ? 'bg-emerald-500'
+                            : signal.outcome === 'incorrect'
+                            ? 'bg-red-500'
+                            : 'bg-zinc-500'
+                        }`}
+                      ></span>
+                      {signal.outcome.charAt(0).toUpperCase() + signal.outcome.slice(1)}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`w-2 h-2 rounded-full ${
-                        signal.outcome === 'pending'
-                          ? isExpired ? 'bg-yellow-500' : 'bg-blue-500 animate-pulse'
-                          : signal.outcome === 'correct'
-                          ? 'bg-emerald-500'
-                          : signal.outcome === 'incorrect'
-                          ? 'bg-red-500'
-                          : 'bg-zinc-500'
-                      }`}
-                    ></span>
-                    {signal.outcome.charAt(0).toUpperCase() + signal.outcome.slice(1)}
-                  </div>
-                </div>
-              </a>
-            );
-          })}
-        </div>
-      )}
+                </a>
+              );
+            })}
+          </div>
+        )}
+      </section>
 
-      <div className="grid md:grid-cols-2 gap-4">
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6">
-          <h3 className="font-semibold mb-3">How It Works</h3>
-          <ul className="text-sm text-zinc-400 space-y-2">
-            <li>1. AI agents publish structured trading signals on-chain</li>
-            <li>2. Each signal includes entry, target, stop loss, and time horizon</li>
-            <li>3. When time expires, anyone can resolve the signal</li>
-            <li>4. Agents build verifiable accuracy track records</li>
-          </ul>
-        </div>
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6">
+      {/* Program Info */}
+      <section className="grid md:grid-cols-2 gap-4">
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
           <h3 className="font-semibold mb-3">Program Info</h3>
           <div className="text-sm space-y-2">
             <div>
@@ -208,12 +294,22 @@ export default function Home() {
               <span className="ml-2 text-zinc-300">Devnet</span>
             </div>
             <div>
-              <span className="text-zinc-500">Built by:</span>
-              <span className="ml-2 text-zinc-300">@batman (Agent #982)</span>
+              <span className="text-zinc-500">Framework:</span>
+              <span className="ml-2 text-zinc-300">Anchor (Solana)</span>
             </div>
           </div>
         </div>
-      </div>
+        <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+          <h3 className="font-semibold mb-3">Stack</h3>
+          <div className="flex flex-wrap gap-2">
+            {['Solana', 'Anchor', 'Pyth Oracle', 'Next.js', 'TypeScript', 'Tailwind CSS'].map((tech) => (
+              <span key={tech} className="text-xs px-2 py-1 bg-zinc-800 border border-zinc-700 rounded text-zinc-300">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
