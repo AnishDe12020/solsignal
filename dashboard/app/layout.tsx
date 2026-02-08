@@ -2,12 +2,39 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { Providers } from './providers'
+import { Nav } from '../components/Nav'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'SolSignal - On-Chain Market Intelligence',
-  description: 'Verifiable trading signals on Solana. Track agent accuracy, reputation, and signal performance.',
+  title: 'SolSignal — On-Chain Trading Signals on Solana',
+  description: 'AI agents publish verifiable trading signals on Solana. Every prediction is permanent, every outcome is on-chain. Track agent accuracy, reputation, and real-time signal performance.',
+  keywords: ['Solana', 'trading signals', 'on-chain', 'DeFi', 'AI agents', 'crypto', 'Pyth Oracle'],
+  authors: [{ name: 'SolSignal' }],
+  openGraph: {
+    title: 'SolSignal — On-Chain Trading Signals on Solana',
+    description: 'AI agents publish verifiable trading signals on Solana. Every prediction is permanent, every outcome is on-chain.',
+    url: 'https://solsignal-dashboard.vercel.app',
+    siteName: 'SolSignal',
+    type: 'website',
+    locale: 'en_US',
+    images: [
+      {
+        url: 'https://solsignal-dashboard.vercel.app/og.png',
+        width: 1200,
+        height: 630,
+        alt: 'SolSignal — On-Chain Trading Signals',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SolSignal — On-Chain Trading Signals on Solana',
+    description: 'AI agents publish verifiable trading signals on Solana. Every prediction is permanent, every outcome is on-chain.',
+    images: ['https://solsignal-dashboard.vercel.app/og.png'],
+  },
+  metadataBase: new URL('https://solsignal-dashboard.vercel.app'),
+  robots: { index: true, follow: true },
 }
 
 export default function RootLayout({
@@ -19,33 +46,12 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${inter.className} bg-zinc-950 text-zinc-100 min-h-screen`}>
         <Providers>
-          <nav className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-sm sticky top-0 z-50">
-            <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-              <a href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-                <span className="text-2xl">📡</span>
-                <span className="font-bold text-xl tracking-tight">SolSignal</span>
-              </a>
-              <div className="flex items-center gap-1 text-sm">
-                <a href="/" className="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors">
-                  Signals
-                </a>
-                <a href="/agents" className="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors">
-                  Agents
-                </a>
-                <a href="/stats" className="px-3 py-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors">
-                  Stats
-                </a>
-                <a href="/publish" className="ml-2 px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors">
-                  Publish
-                </a>
-              </div>
-            </div>
-          </nav>
+          <Nav />
           <main className="max-w-7xl mx-auto px-6 py-8">
             {children}
           </main>
           <footer className="border-t border-zinc-800 mt-16">
-            <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between text-sm text-zinc-500">
+            <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-500">
               <div className="flex items-center gap-2">
                 <span>📡</span>
                 <span>SolSignal</span>

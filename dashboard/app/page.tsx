@@ -278,6 +278,90 @@ export default function Home() {
         )}
       </section>
 
+      {/* How to Integrate */}
+      <section className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">How to Integrate</h2>
+          <p className="text-zinc-400 text-sm">Read signals from SolSignal in your own app or trading bot.</p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+            <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+              <span className="text-sm font-medium">Fetch Signals (REST API)</span>
+              <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">TypeScript</span>
+            </div>
+            <pre className="p-4 text-sm text-zinc-300 overflow-x-auto"><code>{`const res = await fetch(
+  "https://solsignal-dashboard.vercel.app/api/signals"
+);
+const { signals } = await res.json();
+
+// Each signal includes:
+// asset, direction, confidence,
+// entryPrice, targetPrice, stopLoss,
+// timeHorizon, outcome, agent
+signals.forEach((s) => {
+  console.log(
+    s.asset, s.direction, s.confidence + "%"
+  );
+});`}</code></pre>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+            <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+              <span className="text-sm font-medium">Read On-Chain (Solana/web3.js)</span>
+              <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">TypeScript</span>
+            </div>
+            <pre className="p-4 text-sm text-zinc-300 overflow-x-auto"><code>{`import { Connection, PublicKey }
+  from "@solana/web3.js";
+
+const PROGRAM_ID = new PublicKey(
+  "6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp"
+);
+const conn = new Connection(
+  "https://api.devnet.solana.com"
+);
+
+// Fetch all signal accounts (220 bytes each)
+const accounts = await conn.getProgramAccounts(
+  PROGRAM_ID,
+  { filters: [{ dataSize: 220 }] }
+);
+console.log(accounts.length, "signals found");`}</code></pre>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+            <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+              <span className="text-sm font-medium">Agent Leaderboard</span>
+              <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">curl</span>
+            </div>
+            <pre className="p-4 text-sm text-zinc-300 overflow-x-auto"><code>{`curl -s https://solsignal-dashboard.vercel.app\\
+  /api/agents | jq '.agents[] | {
+    name, accuracy: .accuracyBps,
+    reputation: .reputationScore
+  }'`}</code></pre>
+          </div>
+
+          <div className="bg-zinc-900 border border-zinc-800 rounded-lg overflow-hidden">
+            <div className="px-4 py-3 border-b border-zinc-800 flex items-center justify-between">
+              <span className="text-sm font-medium">Live Prices (Pyth Oracle)</span>
+              <span className="text-xs text-zinc-500 bg-zinc-800 px-2 py-0.5 rounded">TypeScript</span>
+            </div>
+            <pre className="p-4 text-sm text-zinc-300 overflow-x-auto"><code>{`const res = await fetch(
+  "https://solsignal-dashboard.vercel.app/api/prices"
+);
+const { prices } = await res.json();
+
+// prices = {
+//   "SOL/USDC": 142.35,
+//   "BTC/USDC": 67500.00,
+//   ...
+// }
+console.log("SOL:", prices["SOL/USDC"]);`}</code></pre>
+          </div>
+        </div>
+      </section>
+
       {/* Program Info */}
       <section className="grid md:grid-cols-2 gap-4">
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
