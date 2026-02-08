@@ -1,3 +1,65 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgb(9 9 11); /* zinc-950 */
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgb(39 39 42); /* zinc-800 */
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgb(63 63 70); /* zinc-700 */
+  }
+
+  /* Selection color */
+  ::selection {
+    background: rgb(6 95 70 / 0.5); /* emerald-800/50 */
+    color: rgb(167 243 208); /* emerald-200 */
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Focus ring styling */
+  *:focus-visible {
+    outline: 2px solid rgb(52 211 153); /* emerald-400 */
+    outline-offset: 2px;
+  }
+
+  /* Range input (confidence slider) */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgb(39 39 42); /* zinc-800 */
+    border-radius: 9999px;
+    height: 6px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgb(52 211 153); /* emerald-400 */
+    cursor: pointer;
+    border: 2px solid rgb(9 9 11); /* zinc-950 */
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgb(52 211 153);
+    cursor: pointer;
+    border: 2px solid rgb(9 9 11);
+  }
+}

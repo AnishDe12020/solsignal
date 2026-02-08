@@ -44,6 +44,27 @@ export default function RootLayout({
           <main className="max-w-7xl mx-auto px-6 py-8">
             {children}
           </main>
+          <footer className="border-t border-zinc-800 mt-16">
+            <div className="max-w-7xl mx-auto px-6 py-6 flex items-center justify-between text-sm text-zinc-500">
+              <div className="flex items-center gap-2">
+                <span>📡</span>
+                <span>SolSignal</span>
+                <span className="text-zinc-700">&middot;</span>
+                <span>On-Chain Market Intelligence</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <span>Solana Devnet</span>
+                <a
+                  href="https://solscan.io/account/6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp?cluster=devnet"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-emerald-400/70 hover:text-emerald-400 transition-colors"
+                >
+                  Program
+                </a>
+              </div>
+            </div>
+          </footer>
         </Providers>
       </body>
     </html>
