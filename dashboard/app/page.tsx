@@ -1,108 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PublicKey } from '@solana/web3.js';
+import { useSignals, Signal } from '../hooks/useSignals';
+import { usePrices } from '../hooks/usePrices';
 
 const PROGRAM_ID = new PublicKey('6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp');
 
-interface SignalData {
-  publicKey: string;
-  agent: string;
-  asset: string;
-  direction: 'long' | 'short';
-  confidence: number;
-  entryPrice: number;
-  targetPrice: number;
-  stopLoss: number;
-  timeHorizon: Date;
-  createdAt: Date;
-  resolved: boolean;
-  outcome: 'pending' | 'correct' | 'incorrect' | 'expired';
+function formatPrice(price: number): string {
+  if (price < 0.0001) return price.toFixed(10);
+  if (price < 0.01) return price.toFixed(8);
+  if (price < 1) return price.toFixed(4);
+  if (price < 100) return price.toFixed(2);
+  return price.toLocaleString();
 }
 
-interface RegistryData {
-  totalSignals: number;
-  totalAgents: number;
+function getPnL(current: number, entry: number, direction: 'long' | 'short'): number {
+  if (direction === 'long') {
+    return ((current - entry) / entry) * 100;
+  }
+  return ((entry - current) / entry) * 100;
 }
-
-// Live signals from chain
-const DEMO_SIGNALS: SignalData[] = [
-  {
-    publicKey: 'DTfQoGc7ryEWjZhzbZaHvZbxqaVgWDzVygpdS8NvKwB',
-    agent: 'batman',
-    asset: 'JUP/USDC',
-    direction: 'long',
-    confidence: 72,
-    entryPrice: 0.85,
-    targetPrice: 0.95,
-    stopLoss: 0.78,
-    timeHorizon: new Date('2026-02-09T06:32:15.000Z'),
-    createdAt: new Date('2026-02-08T18:32:15.000Z'),
-    resolved: false,
-    outcome: 'pending',
-  },
-  {
-    publicKey: '7TE1maMWLfMdxfwf2Z2D31gRHqbqsNi4928bZE8kWQgU',
-    agent: 'batman',
-    asset: 'BONK/USDC',
-    direction: 'long',
-    confidence: 65,
-    entryPrice: 0.0000185,
-    targetPrice: 0.0000220,
-    stopLoss: 0.0000165,
-    timeHorizon: new Date('2026-02-09T12:34:34.000Z'),
-    createdAt: new Date('2026-02-08T18:34:34.000Z'),
-    resolved: false,
-    outcome: 'pending',
-  },
-  {
-    publicKey: '66NTG8d7irpQkvcx1BdUYUUZqfgSd1haPLJZdsr2mAC7',
-    agent: 'batman',
-    asset: 'SOL/USDC',
-    direction: 'long',
-    confidence: 85,
-    entryPrice: 125,
-    targetPrice: 145,
-    stopLoss: 118,
-    timeHorizon: new Date('2026-02-09T18:18:47.000Z'),
-    createdAt: new Date('2026-02-08T18:18:47.000Z'),
-    resolved: false,
-    outcome: 'pending',
-  },
-  {
-    publicKey: 'Fxf2FLzWq7AgNfTJyXt2uPKFfvGrPH16z721HTTXKMnr',
-    agent: 'batman',
-    asset: 'ETH/USDC',
-    direction: 'long',
-    confidence: 78,
-    entryPrice: 2650,
-    targetPrice: 2850,
-    stopLoss: 2550,
-    timeHorizon: new Date('2026-02-10T06:23:00.000Z'),
-    createdAt: new Date('2026-02-08T18:23:30.000Z'),
-    resolved: false,
-    outcome: 'pending',
-  },
-  {
-    publicKey: 'B2A1dpr1eh9zUAsHeaTAKyGTRRd5rH82uQ64gQispq5Z',
-    agent: 'batman',
-    asset: 'BTC/USDC',
-    direction: 'short',
-    confidence: 70,
-    entryPrice: 97500,
-    targetPrice: 92000,
-    stopLoss: 99500,
-    timeHorizon: new Date('2026-02-10T18:23:00.000Z'),
-    createdAt: new Date('2026-02-08T18:23:00.000Z'),
-    resolved: false,
-    outcome: 'pending',
-  },
-];
 
 export default function Home() {
-  const [signals] = useState<SignalData[]>(DEMO_SIGNALS);
-  const [registry] = useState<RegistryData>({ totalSignals: 5, totalAgents: 1 });
-  const [loading] = useState(false);
+  const { signals, loading: signalsLoading } = useSignals();
+  const { prices, loading: pricesLoading } = usePrices();
+  const [registry, setRegistry] = useState({ totalSignals: 0, totalAgents: 1 });
+
+  useEffect(() => {
+    if (signals.length > 0) {
+      setRegistry({ totalSignals: signals.length, totalAgents: 1 });
+    }
+  }, [signals]);
 
   return (
     <div className="space-y-8">
@@ -126,7 +55,7 @@ export default function Home() {
       </div>
 
       <div className="bg-amber-900/20 border border-amber-700/50 rounded-lg p-4 text-amber-200 text-sm">
-        ⚡ Live on Solana Devnet — All signals are published on-chain and verifiable.{' '}
+        ⚡ Live on Solana Devnet — Signals refresh every 60s, prices every 30s.{' '}
         <a 
           href={`https://solscan.io/account/${PROGRAM_ID.toBase58()}?cluster=devnet`}
           target="_blank"
@@ -137,88 +66,110 @@ export default function Home() {
         </a>
       </div>
 
-      <div className="grid gap-4">
-        {signals.map((signal) => (
-          <div
-            key={signal.publicKey}
-            className="bg-zinc-900 border border-zinc-800 rounded-lg p-6"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">
-                  {signal.direction === 'long' ? '📈' : '📉'}
-                </span>
-                <div>
-                  <div className="font-semibold text-lg">{signal.asset}</div>
-                  <div className="text-sm text-zinc-400">by @{signal.agent}</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <a
-                  href={`https://solscan.io/account/${signal.publicKey}?cluster=devnet`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-zinc-500 hover:text-zinc-300 font-mono"
-                >
-                  {signal.publicKey.slice(0, 8)}...
-                </a>
-                <div
-                  className={`text-sm font-medium px-2 py-1 rounded ${
-                    signal.direction === 'long'
-                      ? 'bg-emerald-900/50 text-emerald-400'
-                      : 'bg-red-900/50 text-red-400'
-                  }`}
-                >
-                  {signal.direction.toUpperCase()}
-                </div>
-              </div>
-            </div>
+      {signalsLoading ? (
+        <div className="text-center py-12 text-zinc-500">Loading signals from chain...</div>
+      ) : (
+        <div className="grid gap-4">
+          {signals.map((signal) => {
+            const currentPrice = prices[signal.asset];
+            const pnl = currentPrice ? getPnL(currentPrice, signal.entryPrice, signal.direction) : null;
+            const expiresAt = new Date(signal.timeHorizon);
+            const isExpired = Date.now() > signal.timeHorizon;
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-              <div>
-                <div className="text-zinc-500">Confidence</div>
-                <div className="font-medium">{signal.confidence}%</div>
-              </div>
-              <div>
-                <div className="text-zinc-500">Entry</div>
-                <div className="font-medium">${signal.entryPrice < 0.01 ? signal.entryPrice.toFixed(8) : signal.entryPrice.toLocaleString()}</div>
-              </div>
-              <div>
-                <div className="text-zinc-500">Target</div>
-                <div className="font-medium text-emerald-400">
-                  ${signal.targetPrice < 0.01 ? signal.targetPrice.toFixed(8) : signal.targetPrice.toLocaleString()} (+{((signal.targetPrice / signal.entryPrice - 1) * 100).toFixed(1)}%)
+            return (
+              <div
+                key={signal.publicKey}
+                className="bg-zinc-900 border border-zinc-800 rounded-lg p-6"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">
+                      {signal.direction === 'long' ? '📈' : '📉'}
+                    </span>
+                    <div>
+                      <div className="font-semibold text-lg">{signal.asset}</div>
+                      <div className="text-sm text-zinc-400">by @{signal.agent.slice(0, 8)}...</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {currentPrice && (
+                      <div className={`text-sm font-medium ${pnl && pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                        ${formatPrice(currentPrice)} ({pnl ? (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%' : '...'})
+                      </div>
+                    )}
+                    <a
+                      href={`https://solscan.io/account/${signal.publicKey}?cluster=devnet`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-zinc-500 hover:text-zinc-300 font-mono"
+                    >
+                      {signal.publicKey.slice(0, 8)}...
+                    </a>
+                    <div
+                      className={`text-sm font-medium px-2 py-1 rounded ${
+                        signal.direction === 'long'
+                          ? 'bg-emerald-900/50 text-emerald-400'
+                          : 'bg-red-900/50 text-red-400'
+                      }`}
+                    >
+                      {signal.direction.toUpperCase()}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="text-zinc-500">Stop Loss</div>
-                <div className="font-medium text-red-400">
-                  ${signal.stopLoss < 0.01 ? signal.stopLoss.toFixed(8) : signal.stopLoss.toLocaleString()} ({((signal.stopLoss / signal.entryPrice - 1) * 100).toFixed(1)}%)
-                </div>
-              </div>
-            </div>
 
-            <div className="mt-4 pt-4 border-t border-zinc-800 flex items-center justify-between text-sm text-zinc-500">
-              <div>
-                Expires: {signal.timeHorizon.toLocaleDateString()} {signal.timeHorizon.toLocaleTimeString()}
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                  <div>
+                    <div className="text-zinc-500">Confidence</div>
+                    <div className="font-medium">{signal.confidence}%</div>
+                  </div>
+                  <div>
+                    <div className="text-zinc-500">Entry</div>
+                    <div className="font-medium">${formatPrice(signal.entryPrice)}</div>
+                  </div>
+                  <div>
+                    <div className="text-zinc-500">Target</div>
+                    <div className="font-medium text-emerald-400">
+                      ${formatPrice(signal.targetPrice)} (+{((signal.targetPrice / signal.entryPrice - 1) * 100).toFixed(1)}%)
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-zinc-500">Stop Loss</div>
+                    <div className="font-medium text-red-400">
+                      ${formatPrice(signal.stopLoss)} ({((signal.stopLoss / signal.entryPrice - 1) * 100).toFixed(1)}%)
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-zinc-500">Status</div>
+                    <div className={`font-medium ${isExpired ? 'text-yellow-400' : 'text-zinc-300'}`}>
+                      {isExpired ? 'Expired (awaiting resolution)' : `${Math.floor((signal.timeHorizon - Date.now()) / 3600000)}h remaining`}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-zinc-800 flex items-center justify-between text-sm text-zinc-500">
+                  <div>
+                    Created: {new Date(signal.createdAt).toLocaleString()}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        signal.outcome === 'pending'
+                          ? isExpired ? 'bg-yellow-500' : 'bg-blue-500 animate-pulse'
+                          : signal.outcome === 'correct'
+                          ? 'bg-emerald-500'
+                          : signal.outcome === 'incorrect'
+                          ? 'bg-red-500'
+                          : 'bg-zinc-500'
+                      }`}
+                    ></span>
+                    {signal.outcome.charAt(0).toUpperCase() + signal.outcome.slice(1)}
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    signal.outcome === 'pending'
-                      ? 'bg-yellow-500 animate-pulse'
-                      : signal.outcome === 'correct'
-                      ? 'bg-emerald-500'
-                      : signal.outcome === 'incorrect'
-                      ? 'bg-red-500'
-                      : 'bg-zinc-500'
-                  }`}
-                ></span>
-                {signal.outcome.charAt(0).toUpperCase() + signal.outcome.slice(1)}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 gap-4">
         <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-6">

@@ -3,6 +3,6 @@
   "/api/prices/route": "app/api/prices/route.js",
   "/api/signals/route": "app/api/signals/route.js",
   "/agents/page": "app/agents/page.js",
-  "/page": "app/page.js",
-  "/publish/page": "app/publish/page.js"
+  "/publish/page": "app/publish/page.js",
+  "/page": "app/page.js"
 }

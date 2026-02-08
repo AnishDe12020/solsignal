@@ -3,6 +3,6 @@
   "/api/prices/route": "/api/prices",
   "/api/signals/route": "/api/signals",
   "/agents/page": "/agents",
-  "/page": "/",
-  "/publish/page": "/publish"
+  "/publish/page": "/publish",
+  "/page": "/"
 }
