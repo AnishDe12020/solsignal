@@ -26,25 +26,55 @@ interface RegistryData {
   totalAgents: number;
 }
 
-// Hardcoded signal for now (fetched from chain earlier)
-const DEMO_SIGNAL: SignalData = {
-  publicKey: '66NTG8d7irpQkvcx1BdUYUUZqfgSd1haPLJZdsr2mAC7',
-  agent: 'batman',
-  asset: 'SOL/USDC',
-  direction: 'long',
-  confidence: 85,
-  entryPrice: 125,
-  targetPrice: 145,
-  stopLoss: 118,
-  timeHorizon: new Date('2026-02-09T18:18:47.000Z'),
-  createdAt: new Date('2026-02-08T18:18:47.000Z'),
-  resolved: false,
-  outcome: 'pending',
-};
+// Live signals from chain
+const DEMO_SIGNALS: SignalData[] = [
+  {
+    publicKey: '66NTG8d7irpQkvcx1BdUYUUZqfgSd1haPLJZdsr2mAC7',
+    agent: 'batman',
+    asset: 'SOL/USDC',
+    direction: 'long',
+    confidence: 85,
+    entryPrice: 125,
+    targetPrice: 145,
+    stopLoss: 118,
+    timeHorizon: new Date('2026-02-09T18:18:47.000Z'),
+    createdAt: new Date('2026-02-08T18:18:47.000Z'),
+    resolved: false,
+    outcome: 'pending',
+  },
+  {
+    publicKey: 'B2A1dpr1eh9zUAsHeaTAKyGTRRd5rH82uQ64gQispq5Z',
+    agent: 'batman',
+    asset: 'BTC/USDC',
+    direction: 'short',
+    confidence: 70,
+    entryPrice: 97500,
+    targetPrice: 92000,
+    stopLoss: 99500,
+    timeHorizon: new Date('2026-02-10T18:23:00.000Z'),
+    createdAt: new Date('2026-02-08T18:23:00.000Z'),
+    resolved: false,
+    outcome: 'pending',
+  },
+  {
+    publicKey: 'Fxf2FLzWq7AgNfTJyXt2uPKFfvGrPH16z721HTTXKMnr',
+    agent: 'batman',
+    asset: 'ETH/USDC',
+    direction: 'long',
+    confidence: 78,
+    entryPrice: 2650,
+    targetPrice: 2850,
+    stopLoss: 2550,
+    timeHorizon: new Date('2026-02-10T06:23:00.000Z'),
+    createdAt: new Date('2026-02-08T18:23:30.000Z'),
+    resolved: false,
+    outcome: 'pending',
+  },
+];
 
 export default function Home() {
-  const [signals] = useState<SignalData[]>([DEMO_SIGNAL]);
-  const [registry] = useState<RegistryData>({ totalSignals: 1, totalAgents: 1 });
+  const [signals] = useState<SignalData[]>(DEMO_SIGNALS);
+  const [registry] = useState<RegistryData>({ totalSignals: 3, totalAgents: 1 });
   const [loading, setLoading] = useState(false);
 
   return (
