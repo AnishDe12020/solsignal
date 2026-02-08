@@ -12,7 +12,7 @@
       "static/chunks/4bd1b696-21f374d1156f834a.js",
       "static/chunks/255-a41b0d888672637a.js",
       "static/chunks/main-app-7ec590f9994938c4.js",
-      "static/css/a9033bbdb45e1559.css",
+      "static/css/543efc15bc54f546.css",
       "static/chunks/3a91511d-a441c04719a0c65c.js",
       "static/chunks/528-3da3ab49ce45e7bd.js",
       "static/chunks/405-6cbd07462a008f18.js",
@@ -23,7 +23,14 @@
       "static/chunks/4bd1b696-21f374d1156f834a.js",
       "static/chunks/255-a41b0d888672637a.js",
       "static/chunks/main-app-7ec590f9994938c4.js",
-      "static/chunks/app/api/prices/route-daffefcad158f8bb.js"
+      "static/chunks/app/api/prices/route-2f5dc135b300d0d9.js"
+    ],
+    "/api/signals/route": [
+      "static/chunks/webpack-21c5f3e61fc9629a.js",
+      "static/chunks/4bd1b696-21f374d1156f834a.js",
+      "static/chunks/255-a41b0d888672637a.js",
+      "static/chunks/main-app-7ec590f9994938c4.js",
+      "static/chunks/app/api/signals/route-2f5dc135b300d0d9.js"
     ],
     "/agents/page": [
       "static/chunks/webpack-21c5f3e61fc9629a.js",

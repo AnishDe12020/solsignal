@@ -1,6 +1,7 @@
 {
   "/_not-found/page": "/_not-found",
   "/api/prices/route": "/api/prices",
+  "/api/signals/route": "/api/signals",
   "/agents/page": "/agents",
   "/page": "/",
   "/publish/page": "/publish"
