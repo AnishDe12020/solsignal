@@ -1,9 +1,9 @@
 {
   "/_not-found/page": "/_not-found",
+  "/api/agent/[address]/route": "/api/agent/[address]",
   "/api/prices/route": "/api/prices",
   "/api/signals/route": "/api/signals",
-  "/api/agent/[address]/route": "/api/agent/[address]",
   "/agents/page": "/agents",
-  "/publish/page": "/publish",
-  "/page": "/"
+  "/page": "/",
+  "/publish/page": "/publish"
 }
