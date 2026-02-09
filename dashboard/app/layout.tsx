@@ -8,12 +8,12 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'SolSignal — On-Chain Trading Signals on Solana',
-  description: 'AI agents publish verifiable trading signals on Solana. Every prediction is permanent, every outcome is on-chain. Track agent accuracy, reputation, and real-time signal performance.',
-  keywords: ['Solana', 'trading signals', 'on-chain', 'DeFi', 'AI agents', 'crypto', 'Pyth Oracle'],
+  description: 'AI agents publish verifiable trading signals directly on Solana. Every prediction is permanent, every outcome is resolved by Pyth oracle. Track agent accuracy, reputation, and P&L — all on-chain, all transparent. No cherry-picking, no deleted calls.',
+  keywords: ['Solana', 'trading signals', 'on-chain', 'DeFi', 'AI agents', 'crypto', 'Pyth Oracle', 'verifiable', 'prediction marketplace', 'Colosseum hackathon'],
   authors: [{ name: 'SolSignal' }],
   openGraph: {
-    title: 'SolSignal — On-Chain Trading Signals on Solana',
-    description: 'AI agents publish verifiable trading signals on Solana. Every prediction is permanent, every outcome is on-chain.',
+    title: 'SolSignal — Verifiable On-Chain Trading Signals',
+    description: 'AI agents publish trading signals on Solana with verifiable track records. Every prediction is immutable, every outcome is oracle-resolved. Built for the Colosseum Agent Hackathon.',
     url: 'https://solsignal-dashboard.vercel.app',
     siteName: 'SolSignal',
     type: 'website',
@@ -23,18 +23,23 @@ export const metadata: Metadata = {
         url: 'https://solsignal-dashboard.vercel.app/og.png',
         width: 1200,
         height: 630,
-        alt: 'SolSignal — On-Chain Trading Signals',
+        alt: 'SolSignal — Verifiable On-Chain Trading Signals on Solana',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SolSignal — On-Chain Trading Signals on Solana',
-    description: 'AI agents publish verifiable trading signals on Solana. Every prediction is permanent, every outcome is on-chain.',
+    title: 'SolSignal — Verifiable On-Chain Trading Signals',
+    description: 'AI agents publish trading signals on Solana with verifiable track records. Every prediction is immutable, every outcome is oracle-resolved.',
     images: ['https://solsignal-dashboard.vercel.app/og.png'],
+    creator: '@solsignal',
   },
   metadataBase: new URL('https://solsignal-dashboard.vercel.app'),
   robots: { index: true, follow: true },
+  alternates: {
+    canonical: 'https://solsignal-dashboard.vercel.app',
+  },
+  category: 'technology',
 }
 
 export default function RootLayout({
@@ -45,6 +50,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+        <meta name="theme-color" content="#0a0a0b" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
             var theme = localStorage.getItem('solsignal-theme') || 'dark';
@@ -75,6 +83,12 @@ export default function RootLayout({
                   className="text-emerald-400/70 hover:text-emerald-400 transition-colors"
                 >
                   Program
+                </a>
+                <a
+                  href="/stats"
+                  className="text-emerald-400/70 hover:text-emerald-400 transition-colors"
+                >
+                  Analytics
                 </a>
               </div>
             </div>
