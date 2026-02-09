@@ -1,87 +1,111 @@
 import { NextResponse } from 'next/server';
-import { Connection, Keypair, PublicKey, SystemProgram } from '@solana/web3.js';
-import { AnchorProvider, Program, BN, Wallet } from '@coral-xyz/anchor';
-import { IDL } from '@/lib/idl'; // We'll need to create this or import it properly
+import { Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
+import { BN } from '@coral-xyz/anchor';
+import crypto from 'crypto';
 
 const PROGRAM_ID = new PublicKey("6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp");
 const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
 
-// Handle publishing directly in the API route (serverless function)
+// publish_signal discriminator from IDL
+const PUBLISH_SIGNAL_DISC = Buffer.from([169, 80, 49, 93, 169, 216, 95, 190]);
+
+function encodeString(s: string): Buffer {
+  const buf = Buffer.alloc(4 + s.length);
+  buf.writeUInt32LE(s.length, 0);
+  Buffer.from(s, 'utf8').copy(buf, 4);
+  return buf;
+}
+
+function encodeDirection(dir: string): Buffer {
+  return Buffer.from([dir === 'long' ? 0 : 1]);
+}
+
+function encodeU8(n: number): Buffer {
+  return Buffer.from([n]);
+}
+
+function encodeU64(n: BN): Buffer {
+  return n.toArrayLike(Buffer, 'le', 8);
+}
+
+function encodeI64(n: BN): Buffer {
+  return n.toArrayLike(Buffer, 'le', 8);
+}
+
 async function publishOnChain(signal: any) {
-  if (!process.env.ANCHOR_WALLET_KEY) {
-    console.warn('ANCHOR_WALLET_KEY not set, skipping on-chain publish');
-    return null;
-  }
+  const walletKey = process.env.ANCHOR_WALLET_KEY;
+  if (!walletKey) return null;
 
-  try {
-    const secretKey = JSON.parse(process.env.ANCHOR_WALLET_KEY);
-    const keypair = Keypair.fromSecretKey(new Uint8Array(secretKey));
-    
-    const connection = new Connection(RPC_URL, 'confirmed');
-    const wallet = new Wallet(keypair);
-    const provider = new AnchorProvider(connection, wallet, { commitment: 'confirmed' });
-    
-    // Initialize program with IDL
-    // Note: In Next.js we might need to inline the IDL or import it
-    const program = new Program(IDL as any, provider); // Cast to any to avoid strict typing issues for now
+  const secretKey = JSON.parse(walletKey);
+  const keypair = Keypair.fromSecretKey(new Uint8Array(secretKey));
+  const connection = new Connection(RPC_URL, 'confirmed');
 
-    const { asset, direction, confidence, entryPrice, targetPrice, stopLoss, timeHorizonHours, reasoning, agentName } = signal;
+  const { asset, direction, confidence, entryPrice, targetPrice, stopLoss, timeHorizonHours, reasoning, agentName } = signal;
 
-    // Get registry for next index
-    const [registryPDA] = PublicKey.findProgramAddressSync([Buffer.from('registry')], PROGRAM_ID);
-    const registry = await program.account.registry.fetch(registryPDA) as any;
-    const nextIndex = Number(registry.totalSignals) + 1;
-    
-    const [agentProfilePDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from('agent'), keypair.publicKey.toBuffer()],
-      PROGRAM_ID
-    );
-    
-    const indexBuf = Buffer.alloc(8);
-    indexBuf.writeBigUInt64LE(BigInt(nextIndex));
-    const [signalPDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from('signal'), keypair.publicKey.toBuffer(), indexBuf],
-      PROGRAM_ID
-    );
-    
-    const directionEnum = direction === 'long' ? { long: {} } : { short: {} };
-    const timeHorizon = Math.floor(Date.now() / 1000) + (timeHorizonHours * 3600);
-    
-    // Prepend agent name to reasoning
-    const fullReasoning = agentName ? `[${agentName}] ${reasoning}`.substring(0, 512) : reasoning.substring(0, 512);
-    
-    const tx = await program.methods
-      .publishSignal(
-        asset,
-        directionEnum,
-        confidence,
-        new BN(Math.round(entryPrice * 1e6)),
-        new BN(Math.round(targetPrice * 1e6)),
-        new BN(Math.round(stopLoss * 1e6)),
-        new BN(timeHorizon),
-        fullReasoning
-      )
-      .accounts({
-        signal: signalPDA,
-        agentProfile: agentProfilePDA,
-        registry: registryPDA,
-        agent: keypair.publicKey,
-        systemProgram: SystemProgram.programId,
-      })
-      .rpc();
-      
-    return { tx, signalPDA: signalPDA.toBase58(), index: nextIndex };
-  } catch (err: any) {
-    console.error('On-chain publish error:', err);
-    throw err;
-  }
+  // Fetch registry to get next index
+  const [registryPDA] = PublicKey.findProgramAddressSync([Buffer.from('registry')], PROGRAM_ID);
+  const registryInfo = await connection.getAccountInfo(registryPDA);
+  if (!registryInfo) throw new Error('Registry not found');
+
+  // Parse totalSignals from registry (skip 8 byte discriminator + 32 byte authority = offset 40, u64)
+  const totalSignals = registryInfo.data.readBigUInt64LE(40);
+  const nextIndex = Number(totalSignals) + 1;
+
+  const [agentProfilePDA] = PublicKey.findProgramAddressSync(
+    [Buffer.from('agent'), keypair.publicKey.toBuffer()],
+    PROGRAM_ID
+  );
+
+  const indexBuf = Buffer.alloc(8);
+  indexBuf.writeBigUInt64LE(BigInt(nextIndex));
+  const [signalPDA] = PublicKey.findProgramAddressSync(
+    [Buffer.from('signal'), keypair.publicKey.toBuffer(), indexBuf],
+    PROGRAM_ID
+  );
+
+  const timeHorizon = Math.floor(Date.now() / 1000) + (timeHorizonHours * 3600);
+  const fullReasoning = agentName ? `[${agentName}] ${reasoning}`.substring(0, 512) : reasoning.substring(0, 512);
+
+  // Build instruction data manually
+  const data = Buffer.concat([
+    PUBLISH_SIGNAL_DISC,
+    encodeString(asset),
+    encodeDirection(direction),
+    encodeU8(confidence),
+    encodeU64(new BN(Math.round(entryPrice * 1e6))),
+    encodeU64(new BN(Math.round(targetPrice * 1e6))),
+    encodeU64(new BN(Math.round(stopLoss * 1e6))),
+    encodeI64(new BN(timeHorizon)),
+    encodeString(fullReasoning),
+  ]);
+
+  const ix = new TransactionInstruction({
+    programId: PROGRAM_ID,
+    keys: [
+      { pubkey: signalPDA, isSigner: false, isWritable: true },
+      { pubkey: agentProfilePDA, isSigner: false, isWritable: true },
+      { pubkey: registryPDA, isSigner: false, isWritable: true },
+      { pubkey: keypair.publicKey, isSigner: true, isWritable: true },
+      { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+    ],
+    data,
+  });
+
+  const tx = new Transaction().add(ix);
+  tx.feePayer = keypair.publicKey;
+  tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+  tx.sign(keypair);
+
+  const sig = await connection.sendRawTransaction(tx.serialize());
+  await connection.confirmTransaction(sig, 'confirmed');
+
+  return { tx: sig, signalPDA: signalPDA.toBase58(), index: nextIndex };
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    // Validate required fields
     const required = ['asset', 'direction', 'confidence', 'entryPrice', 'targetPrice', 'stopLoss', 'timeHorizonHours', 'reasoning'];
     for (const field of required) {
       if (body[field] === undefined) {
@@ -91,7 +115,6 @@ export async function POST(request: Request) {
 
     const { asset, direction, confidence, entryPrice, targetPrice, stopLoss, timeHorizonHours, reasoning, agentName } = body;
 
-    // Validate
     if (!['long', 'short'].includes(direction)) {
       return NextResponse.json({ error: 'direction must be "long" or "short"' }, { status: 400 });
     }
@@ -105,13 +128,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'reasoning must be max 512 chars' }, { status: 400 });
     }
 
-    // Try to publish immediately if key is available
     let onChainResult = null;
     try {
-        onChainResult = await publishOnChain(body);
+      onChainResult = await publishOnChain(body);
     } catch (e: any) {
-        console.error("Failed to publish on-chain:", e);
-        // Continue to return accepted status even if on-chain fails (fallback to log)
+      console.error("On-chain publish failed:", e.message);
     }
 
     const signal = {
@@ -127,13 +148,13 @@ export async function POST(request: Request) {
       submittedAt: new Date().toISOString(),
     };
 
-    console.log(`[SolSignal API] Signal submission from ${agentName || 'anonymous'}: ${asset} ${direction} ${confidence}%`);
+    console.log(`[SolSignal API] ${agentName || 'anonymous'}: ${asset} ${direction} ${confidence}% → ${onChainResult ? 'ON-CHAIN ' + onChainResult.tx : 'queued'}`);
 
     return NextResponse.json({
       success: true,
-      message: onChainResult 
+      message: onChainResult
         ? `Signal published on-chain! TX: ${onChainResult.tx}`
-        : `Signal accepted! ${asset} ${direction.toUpperCase()} @ ${confidence}% confidence`,
+        : `Signal accepted for relay`,
       signal: {
         asset: signal.asset,
         direction: signal.direction,
@@ -144,15 +165,16 @@ export async function POST(request: Request) {
         timeHorizonHours: signal.timeHorizonHours,
         agentName: signal.agentName,
       },
-      tx: onChainResult?.tx,
+      ...(onChainResult && {
+        tx: onChainResult.tx,
+        signalPDA: onChainResult.signalPDA,
+        index: onChainResult.index,
+        verify: `https://solscan.io/tx/${onChainResult.tx}?cluster=devnet`,
+      }),
       status: onChainResult ? 'published' : 'accepted',
-      note: onChainResult 
-        ? 'View on Solscan: https://solscan.io/tx/' + onChainResult.tx + '?cluster=devnet'
-        : 'Your signal will be published on-chain by the relay server.',
       dashboard: 'https://solsignal-dashboard.vercel.app',
-      leaderboard: 'https://solsignal-dashboard.vercel.app/agents',
       program: '6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp',
-    }, { status: 202 });
+    }, { status: onChainResult ? 200 : 202 });
   } catch (error: any) {
     console.error('[SolSignal API] Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
