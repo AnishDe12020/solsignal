@@ -1,0 +1,15 @@
+{
+  "dependencies": {
+    "@remotion/bundler": "^4.0.419",
+    "@remotion/cli": "^4.0.419",
+    "@types/react": "^19.2.13",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "remotion": "^4.0.419",
+    "typescript": "^5.9.3"
+  },
+  "scripts": {
+    "render": "npx remotion render SolSignalDemo out/solsignal-demo.mp4",
+    "preview": "npx remotion preview"
+  }
+}

@@ -1,0 +1,95 @@
+[2026-02-09T07:25:53.230Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T07:25:53.232Z]   🤖 SolSignal Autonomous Analyst — Agent #982 (batman)
+[2026-02-09T07:25:53.232Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T07:25:53.232Z]   ⚠️  DRY RUN MODE — will not publish on-chain
+[2026-02-09T07:25:53.232Z] 
+[2026-02-09T07:25:53.232Z] 📡 Step 1: Fetching live prices from Pyth...
+[2026-02-09T07:25:56.362Z]   ⚠️ Pyth error for feed 4ca4beec...: Unexpected token 'P', "Price ids "... is not valid JSON
+[2026-02-09T07:25:56.563Z]   ✅ Got prices for 9 assets
+[2026-02-09T07:25:56.563Z]     SOL/USDC: $86.3321 (±$0.0529)
+[2026-02-09T07:25:56.563Z]     BTC/USDC: $70634.2600 (±$34.9974)
+[2026-02-09T07:25:56.563Z]     ETH/USDC: $2080.3806 (±$1.3468)
+[2026-02-09T07:25:56.563Z]     JUP/USDC: $0.1594 (±$0.0002)
+[2026-02-09T07:25:56.563Z]     BONK/USDC: $0.00000624 (±$0.00000001)
+[2026-02-09T07:25:56.563Z]     SUI/USDC: $0.9746 (±$0.0010)
+[2026-02-09T07:25:56.563Z]     DOGE/USDC: $0.0955 (±$0.0001)
+[2026-02-09T07:25:56.563Z]     AVAX/USDC: $9.0577 (±$0.0073)
+[2026-02-09T07:25:56.563Z]     LINK/USDC: $8.7784 (±$0.0070)
+[2026-02-09T07:25:56.563Z] 
+[2026-02-09T07:25:56.563Z] 📊 Step 2: Loading price history...
+[2026-02-09T07:25:56.563Z]   History: SOL/USDC:1pts, BTC/USDC:1pts, ETH/USDC:1pts, JUP/USDC:1pts, BONK/USDC:1pts, SUI/USDC:1pts, DOGE/USDC:1pts, AVAX/USDC:1pts, LINK/USDC:1pts
+[2026-02-09T07:25:56.563Z] 
+[2026-02-09T07:25:56.563Z] 🔗 Step 3: Connecting to Solana devnet...
+[2026-02-09T07:25:56.592Z]   Wallet: HhC3onKVvMcW1vdBR5W6hYFJMr9ehpPerEZ4yKzdJnhb
+[2026-02-09T07:25:56.592Z]   RPC: https://api.devnet.solana.com
+[2026-02-09T07:25:56.592Z] 
+[2026-02-09T07:25:56.592Z] 📜 Step 4: Fetching past on-chain signals...
+[2026-02-09T07:25:56.690Z]   Total: 60 | Resolved: 2 (✅1 ❌1) | Pending: 58
+[2026-02-09T07:25:56.690Z]   Overall accuracy: 50.0%
+[2026-02-09T07:25:56.690Z] 
+[2026-02-09T07:25:56.690Z] 🧠 Step 5: Running technical analysis & signal generation...
+[2026-02-09T07:25:56.690Z]   Generated 1 signal(s):
+[2026-02-09T07:25:56.690Z] 
+[2026-02-09T07:25:56.690Z]   ─── Signal 1 ───
+[2026-02-09T07:25:56.690Z]   Asset:      SOL/USDC
+[2026-02-09T07:25:56.690Z]   Direction:  LONG
+[2026-02-09T07:25:56.690Z]   Confidence: 35%
+[2026-02-09T07:25:56.690Z]   Entry:      $86.3321
+[2026-02-09T07:25:56.690Z]   Target:     $88.0587
+[2026-02-09T07:25:56.690Z]   Stop:       $84.6054
+[2026-02-09T07:25:56.690Z]   Horizon:    6h
+[2026-02-09T07:25:56.690Z]   Reasoning:  Low-conviction default signal. Momentum 0.0%, direction long. Minimal edge, keeping tight stops....
+[2026-02-09T07:25:56.690Z] 
+[2026-02-09T07:25:56.690Z] 🏁 DRY RUN complete — skipping on-chain publish
+[2026-02-09T07:25:56.690Z]   Run without --dry-run to publish signals on-chain
+[2026-02-09T07:26:03.771Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T07:26:03.773Z]   🤖 SolSignal Autonomous Analyst — Agent #982 (batman)
+[2026-02-09T07:26:03.773Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T07:26:03.773Z] 
+[2026-02-09T07:26:03.773Z] 📡 Step 1: Fetching live prices from Pyth...
+[2026-02-09T07:26:06.874Z]   ⚠️ Pyth error for feed 4ca4beec...: Unexpected token 'P', "Price ids "... is not valid JSON
+[2026-02-09T07:26:07.075Z]   ✅ Got prices for 9 assets
+[2026-02-09T07:26:07.075Z]     SOL/USDC: $86.3282 (±$0.0640)
+[2026-02-09T07:26:07.075Z]     BTC/USDC: $70635.6070 (±$33.1101)
+[2026-02-09T07:26:07.075Z]     ETH/USDC: $2080.3607 (±$1.1693)
+[2026-02-09T07:26:07.075Z]     JUP/USDC: $0.1595 (±$0.0002)
+[2026-02-09T07:26:07.075Z]     BONK/USDC: $0.00000624 (±$0.00000001)
+[2026-02-09T07:26:07.075Z]     SUI/USDC: $0.9744 (±$0.0010)
+[2026-02-09T07:26:07.075Z]     DOGE/USDC: $0.0955 (±$0.0001)
+[2026-02-09T07:26:07.075Z]     AVAX/USDC: $9.0573 (±$0.0080)
+[2026-02-09T07:26:07.075Z]     LINK/USDC: $8.7776 (±$0.0065)
+[2026-02-09T07:26:07.075Z] 
+[2026-02-09T07:26:07.075Z] 📊 Step 2: Loading price history...
+[2026-02-09T07:26:07.076Z]   History: SOL/USDC:2pts, BTC/USDC:2pts, ETH/USDC:2pts, JUP/USDC:2pts, BONK/USDC:2pts, SUI/USDC:2pts, DOGE/USDC:2pts, AVAX/USDC:2pts, LINK/USDC:2pts
+[2026-02-09T07:26:07.076Z] 
+[2026-02-09T07:26:07.076Z] 🔗 Step 3: Connecting to Solana devnet...
+[2026-02-09T07:26:07.104Z]   Wallet: HhC3onKVvMcW1vdBR5W6hYFJMr9ehpPerEZ4yKzdJnhb
+[2026-02-09T07:26:07.104Z]   RPC: https://api.devnet.solana.com
+[2026-02-09T07:26:07.104Z] 
+[2026-02-09T07:26:07.104Z] 📜 Step 4: Fetching past on-chain signals...
+[2026-02-09T07:26:07.201Z]   Total: 60 | Resolved: 2 (✅1 ❌1) | Pending: 58
+[2026-02-09T07:26:07.201Z]   Overall accuracy: 50.0%
+[2026-02-09T07:26:07.201Z] 
+[2026-02-09T07:26:07.201Z] 🧠 Step 5: Running technical analysis & signal generation...
+[2026-02-09T07:26:07.201Z]   Generated 1 signal(s):
+[2026-02-09T07:26:07.201Z] 
+[2026-02-09T07:26:07.201Z]   ─── Signal 1 ───
+[2026-02-09T07:26:07.201Z]   Asset:      SOL/USDC
+[2026-02-09T07:26:07.201Z]   Direction:  LONG
+[2026-02-09T07:26:07.202Z]   Confidence: 35%
+[2026-02-09T07:26:07.202Z]   Entry:      $86.3282
+[2026-02-09T07:26:07.202Z]   Target:     $88.0548
+[2026-02-09T07:26:07.202Z]   Stop:       $84.6017
+[2026-02-09T07:26:07.202Z]   Horizon:    6h
+[2026-02-09T07:26:07.202Z]   Reasoning:  Low-conviction default signal. Momentum 0.0%, direction long. Minimal edge, keeping tight stops....
+[2026-02-09T07:26:07.202Z] 
+[2026-02-09T07:26:07.202Z] 🚀 Step 6: Publishing signals on-chain...
+[2026-02-09T07:26:07.202Z]   Publishing SOL/USDC LONG...
+[2026-02-09T07:26:07.692Z]   ✅ Published! Tx: 3RiqWhC7LtQW5bx1nXEcAQmmeE58D1LjbdCzt8p9k84usXryyMNmJ5jfEMBM3Jnty2QFfwdsG5fDoh9zSSdMfyjn
+[2026-02-09T07:26:07.692Z]      PDA: GUjjd1yB4uLg43SR4TFNvvooMYhkLD9qSKARvk7ENGGm
+[2026-02-09T07:26:07.692Z]      Expires: 2026-02-09T13:26:07.000Z
+[2026-02-09T07:26:07.692Z] 
+[2026-02-09T07:26:07.692Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T07:26:07.692Z]   📊 Run Summary: 1/1 signals published
+[2026-02-09T07:26:07.692Z]   🕐 Next run: scheduled via cron
+[2026-02-09T07:26:07.692Z] ═══════════════════════════════════════════════════════════
