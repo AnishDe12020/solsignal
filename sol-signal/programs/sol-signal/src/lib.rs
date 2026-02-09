@@ -119,6 +119,72 @@ pub mod sol_signal {
         Ok(())
     }
 
+    /// Subscribe to an agent's signals by paying a fee
+    pub fn subscribe(ctx: Context<Subscribe>, fee_lamports: u64) -> Result<()> {
+        require!(fee_lamports > 0, SolSignalError::InvalidFee);
+
+        let now = Clock::get()?.unix_timestamp;
+        let thirty_days: i64 = 30 * 24 * 60 * 60;
+
+        // Transfer fee from subscriber to agent
+        let ix = anchor_lang::solana_program::system_instruction::transfer(
+            &ctx.accounts.subscriber.key(),
+            &ctx.accounts.agent.key(),
+            fee_lamports,
+        );
+        anchor_lang::solana_program::program::invoke(
+            &ix,
+            &[
+                ctx.accounts.subscriber.to_account_info(),
+                ctx.accounts.agent.to_account_info(),
+            ],
+        )?;
+
+        let subscription = &mut ctx.accounts.subscription;
+        subscription.subscriber = ctx.accounts.subscriber.key();
+        subscription.agent = ctx.accounts.agent.key();
+        subscription.fee_paid = fee_lamports;
+        subscription.subscribed_at = now;
+        subscription.expires_at = now + thirty_days;
+        subscription.active = true;
+        subscription.bump = ctx.bumps.subscription;
+
+        emit!(SubscriptionCreated {
+            subscriber: ctx.accounts.subscriber.key(),
+            agent: ctx.accounts.agent.key(),
+            fee_paid: fee_lamports,
+            expires_at: now + thirty_days,
+            timestamp: now,
+        });
+
+        Ok(())
+    }
+
+    /// Consume a signal (requires active subscription)
+    pub fn consume_signal(ctx: Context<ConsumeSignal>, signal_index: u64) -> Result<()> {
+        let now = Clock::get()?.unix_timestamp;
+
+        // Validate subscription is active and not expired
+        let subscription = &ctx.accounts.subscription;
+        require!(subscription.active, SolSignalError::SubscriptionInactive);
+        require!(now < subscription.expires_at, SolSignalError::SubscriptionExpired);
+
+        let log = &mut ctx.accounts.consumption_log;
+        log.subscriber = ctx.accounts.subscriber.key();
+        log.signal = ctx.accounts.signal.key();
+        log.consumed_at = now;
+        log.bump = ctx.bumps.consumption_log;
+
+        emit!(SignalConsumed {
+            subscriber: ctx.accounts.subscriber.key(),
+            signal: ctx.accounts.signal.key(),
+            signal_index,
+            timestamp: now,
+        });
+
+        Ok(())
+    }
+
     /// Resolve a signal after its time horizon has passed
     pub fn resolve_signal(
         ctx: Context<ResolveSignal>,
@@ -245,6 +311,46 @@ pub struct PublishSignal<'info> {
 }
 
 #[derive(Accounts)]
+pub struct Subscribe<'info> {
+    #[account(
+        init,
+        payer = subscriber,
+        space = 8 + Subscription::INIT_SPACE,
+        seeds = [b"subscription", subscriber.key().as_ref(), agent.key().as_ref()],
+        bump
+    )]
+    pub subscription: Account<'info, Subscription>,
+    /// CHECK: Agent wallet receiving the fee (validated by PDA seeds)
+    #[account(mut)]
+    pub agent: AccountInfo<'info>,
+    #[account(mut)]
+    pub subscriber: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(signal_index: u64)]
+pub struct ConsumeSignal<'info> {
+    #[account(
+        init,
+        payer = subscriber,
+        space = 8 + ConsumptionLog::INIT_SPACE,
+        seeds = [b"consumption", subscriber.key().as_ref(), signal.key().as_ref()],
+        bump
+    )]
+    pub consumption_log: Account<'info, ConsumptionLog>,
+    #[account(
+        seeds = [b"subscription", subscriber.key().as_ref(), signal.agent.as_ref()],
+        bump = subscription.bump
+    )]
+    pub subscription: Account<'info, Subscription>,
+    pub signal: Account<'info, Signal>,
+    #[account(mut)]
+    pub subscriber: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
 pub struct ResolveSignal<'info> {
     #[account(
         mut,
@@ -310,6 +416,27 @@ pub struct Signal {
     pub bump: u8,
 }
 
+#[account]
+#[derive(InitSpace)]
+pub struct Subscription {
+    pub subscriber: Pubkey,
+    pub agent: Pubkey,
+    pub fee_paid: u64,
+    pub subscribed_at: i64,
+    pub expires_at: i64,
+    pub active: bool,
+    pub bump: u8,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct ConsumptionLog {
+    pub subscriber: Pubkey,
+    pub signal: Pubkey,
+    pub consumed_at: i64,
+    pub bump: u8,
+}
+
 // === Enums ===
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq, InitSpace)]
@@ -351,6 +478,23 @@ pub struct SignalResolved {
     pub timestamp: i64,
 }
 
+#[event]
+pub struct SubscriptionCreated {
+    pub subscriber: Pubkey,
+    pub agent: Pubkey,
+    pub fee_paid: u64,
+    pub expires_at: i64,
+    pub timestamp: i64,
+}
+
+#[event]
+pub struct SignalConsumed {
+    pub subscriber: Pubkey,
+    pub signal: Pubkey,
+    pub signal_index: u64,
+    pub timestamp: i64,
+}
+
 // === Errors ===
 
 #[error_code]
@@ -371,4 +515,10 @@ pub enum SolSignalError {
     TimeHorizonNotReached,
     #[msg("Unauthorized")]
     Unauthorized,
+    #[msg("Subscription fee must be greater than zero")]
+    InvalidFee,
+    #[msg("Subscription is not active")]
+    SubscriptionInactive,
+    #[msg("Subscription has expired")]
+    SubscriptionExpired,
 }

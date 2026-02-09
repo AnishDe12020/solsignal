@@ -6,12 +6,14 @@ import {
   SystemProgram,
   TransactionSignature,
 } from '@solana/web3.js';
-import { PROGRAM_ID, REGISTRY_SEED, AGENT_SEED, SIGNAL_SEED } from './constants';
+import { PROGRAM_ID, REGISTRY_SEED, AGENT_SEED, SIGNAL_SEED, SUBSCRIPTION_SEED, CONSUMPTION_SEED } from './constants';
 import type {
   PublishSignalParams,
   SignalData,
   AgentProfileData,
   RegistryData,
+  SubscriptionData,
+  ConsumptionLogData,
   Direction,
   Outcome,
 } from './types';
@@ -48,6 +50,20 @@ export class SolSignalClient {
     indexBuf.writeBigUInt64LE(BigInt(index));
     return PublicKey.findProgramAddressSync(
       [SIGNAL_SEED, agent.toBuffer(), indexBuf],
+      PROGRAM_ID
+    );
+  }
+
+  getSubscriptionPDA(subscriber: PublicKey, agent: PublicKey): [PublicKey, number] {
+    return PublicKey.findProgramAddressSync(
+      [SUBSCRIPTION_SEED, subscriber.toBuffer(), agent.toBuffer()],
+      PROGRAM_ID
+    );
+  }
+
+  getConsumptionLogPDA(subscriber: PublicKey, signal: PublicKey): [PublicKey, number] {
+    return PublicKey.findProgramAddressSync(
+      [CONSUMPTION_SEED, subscriber.toBuffer(), signal.toBuffer()],
       PROGRAM_ID
     );
   }
@@ -118,6 +134,45 @@ export class SolSignalClient {
       .rpc();
   }
 
+  async subscribe(
+    agent: PublicKey,
+    feeLamports: number | bigint
+  ): Promise<TransactionSignature> {
+    const subscriber = this.provider.wallet.publicKey;
+    const [subscriptionPDA] = this.getSubscriptionPDA(subscriber, agent);
+
+    return this.program.methods
+      .subscribe(new BN(feeLamports.toString()))
+      .accounts({
+        subscription: subscriptionPDA,
+        agent,
+        subscriber,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc();
+  }
+
+  async consumeSignal(
+    signalAddress: PublicKey,
+    signalIndex: number | bigint
+  ): Promise<TransactionSignature> {
+    const subscriber = this.provider.wallet.publicKey;
+    const signal = await this.fetchSignal(signalAddress);
+    const [subscriptionPDA] = this.getSubscriptionPDA(subscriber, signal.agent);
+    const [consumptionLogPDA] = this.getConsumptionLogPDA(subscriber, signalAddress);
+
+    return this.program.methods
+      .consumeSignal(new BN(signalIndex.toString()))
+      .accounts({
+        consumptionLog: consumptionLogPDA,
+        subscription: subscriptionPDA,
+        signal: signalAddress,
+        subscriber,
+        systemProgram: SystemProgram.programId,
+      })
+      .rpc();
+  }
+
   async resolveSignal(
     signalAddress: PublicKey,
     resolutionPrice: number
@@ -152,6 +207,18 @@ export class SolSignalClient {
   async fetchSignal(address: PublicKey): Promise<SignalData> {
     const data = await this.program.account.signal.fetch(address);
     return data as unknown as SignalData;
+  }
+
+  async fetchSubscription(subscriber: PublicKey, agent: PublicKey): Promise<SubscriptionData> {
+    const [subscriptionPDA] = this.getSubscriptionPDA(subscriber, agent);
+    const data = await this.program.account.subscription.fetch(subscriptionPDA);
+    return data as unknown as SubscriptionData;
+  }
+
+  async fetchConsumptionLog(subscriber: PublicKey, signal: PublicKey): Promise<ConsumptionLogData> {
+    const [consumptionLogPDA] = this.getConsumptionLogPDA(subscriber, signal);
+    const data = await this.program.account.consumptionLog.fetch(consumptionLogPDA);
+    return data as unknown as ConsumptionLogData;
   }
 
   async fetchAllSignals(): Promise<{ publicKey: PublicKey; account: SignalData }[]> {

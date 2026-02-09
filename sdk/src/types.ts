@@ -52,3 +52,20 @@ export interface RegistryData {
   signalFee: bigint;
   bump: number;
 }
+
+export interface SubscriptionData {
+  subscriber: PublicKey;
+  agent: PublicKey;
+  feePaid: bigint;
+  subscribedAt: bigint;
+  expiresAt: bigint;
+  active: boolean;
+  bump: number;
+}
+
+export interface ConsumptionLogData {
+  subscriber: PublicKey;
+  signal: PublicKey;
+  consumedAt: bigint;
+  bump: number;
+}
