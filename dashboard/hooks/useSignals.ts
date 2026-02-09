@@ -1,22 +1,9 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import type { Signal, SignalsResponse } from '../lib/types';
 
-export interface Signal {
-  publicKey: string;
-  agent: string;
-  index: number;
-  asset: string;
-  direction: 'long' | 'short';
-  confidence: number;
-  entryPrice: number;
-  targetPrice: number;
-  stopLoss: number;
-  timeHorizon: number;
-  createdAt: number;
-  resolved: boolean;
-  outcome: 'pending' | 'correct' | 'incorrect' | 'expired';
-}
+export type { Signal };
 
 export function useSignals() {
   const [signals, setSignals] = useState<Signal[]>([]);
@@ -29,9 +16,9 @@ export function useSignals() {
   const fetchSignals = useCallback(async () => {
     try {
       const res = await fetch('/api/signals');
-      const data = await res.json();
+      const data: SignalsResponse = await res.json();
       if (data.signals) {
-        const incoming: Signal[] = data.signals;
+        const incoming = data.signals;
 
         // Detect new signals
         if (prevKeysRef.current.size > 0) {

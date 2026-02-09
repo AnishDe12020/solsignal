@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import { useSignals, Signal } from '../hooks/useSignals';
 import { usePrices } from '../hooks/usePrices';
 import { SignalFeed } from '../components/SignalFeed';
 import { useToast, ToastContainer } from '../components/Toast';
+import { RecentActivity } from '../components/RecentActivity';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { LazySignalCard } from '../components/LazySignalCard';
 
 const PROGRAM_ID = new PublicKey('6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp');
 
@@ -77,6 +80,51 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<'cards' | 'feed'>('cards');
   const { toasts, addToast, dismissToast } = useToast();
   const [lastUpdatedDisplay, setLastUpdatedDisplay] = useState('');
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchRef = useRef<HTMLInputElement>(null);
+  const signalCardsRef = useRef<HTMLDivElement>(null);
+
+  // Keyboard shortcuts: n = next signal, p = previous, / = focus search
+  useKeyboardShortcuts({
+    onNext: useCallback(() => {
+      setFocusedIndex(prev => {
+        const next = prev + 1;
+        const cards = signalCardsRef.current?.querySelectorAll('[data-signal-card]');
+        if (cards && next < cards.length) {
+          cards[next].scrollIntoView({ behavior: 'smooth', block: 'center' });
+          return next;
+        }
+        return prev;
+      });
+    }, []),
+    onPrevious: useCallback(() => {
+      setFocusedIndex(prev => {
+        const next = prev - 1;
+        if (next >= 0) {
+          const cards = signalCardsRef.current?.querySelectorAll('[data-signal-card]');
+          if (cards) {
+            cards[next].scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          return next;
+        }
+        return prev;
+      });
+    }, []),
+    onFocusSearch: useCallback(() => {
+      searchRef.current?.focus();
+      searchRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, []),
+  });
+
+  const copySignalId = useCallback((e: React.MouseEvent, publicKey: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigator.clipboard.writeText(publicKey);
+    setCopiedId(publicKey);
+    setTimeout(() => setCopiedId(null), 2000);
+  }, []);
 
   // Update "last updated" display every second
   useEffect(() => {
@@ -130,6 +178,10 @@ export default function Home() {
       if (filterStatus === 'expired' && !(s.outcome === 'pending' && isExp)) return false;
       if (filterStatus === 'correct' && s.outcome !== 'correct') return false;
       if (filterStatus === 'incorrect' && s.outcome !== 'incorrect') return false;
+    }
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      if (!s.asset.toLowerCase().includes(q) && !s.agent.toLowerCase().includes(q) && !s.publicKey.toLowerCase().includes(q)) return false;
     }
     return true;
   });
@@ -209,6 +261,11 @@ export default function Home() {
         ))}
       </section>
 
+      {/* Recent Activity Timeline */}
+      {!signalsLoading && signals.length > 0 && (
+        <RecentActivity signals={signals} />
+      )}
+
       {/* Live Signals */}
       <section id="signals" className="scroll-mt-8">
         <div className="flex items-center justify-between mb-6">
@@ -259,6 +316,14 @@ export default function Home() {
         {/* Filter bar */}
         {!signalsLoading && signals.length > 0 && (
           <div className="flex flex-wrap items-center gap-3 mb-6 bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+            <input
+              ref={searchRef}
+              type="text"
+              placeholder="Search signals... (press /)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none w-48"
+            />
             <select
               value={filterAsset}
               onChange={(e) => setFilterAsset(e.target.value)}
@@ -303,6 +368,13 @@ export default function Home() {
           </div>
         )}
 
+        {/* Keyboard shortcut hint */}
+        <div className="hidden md:flex items-center gap-4 text-xs text-zinc-600 mb-4">
+          <span><kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-400 font-mono">n</kbd> next</span>
+          <span><kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-400 font-mono">p</kbd> previous</span>
+          <span><kbd className="px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-zinc-400 font-mono">/</kbd> search</span>
+        </div>
+
         {signalsLoading ? (
           <div className="flex items-center justify-center py-12">
             <div className="text-center">
@@ -313,107 +385,22 @@ export default function Home() {
         ) : viewMode === 'feed' ? (
           <SignalFeed signals={filteredSignals} prices={prices} />
         ) : (
-          <div className="grid gap-4">
-            {filteredSignals.map((signal) => {
-              const currentPrice = prices[signal.asset];
-              const pnl = currentPrice ? getPnL(currentPrice, signal.entryPrice, signal.direction) : null;
-              const isExpired = now > signal.timeHorizon;
-              const remaining = signal.timeHorizon - now;
-
-              return (
-                <a
-                  href={`/signal/${signal.publicKey}`}
-                  key={signal.publicKey}
-                  className="bg-zinc-900 border border-zinc-800 rounded-lg p-6 block hover:border-zinc-700 transition-colors"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">
-                        {signal.direction === 'long' ? '📈' : '📉'}
-                      </span>
-                      <div>
-                        <div className="font-semibold text-lg">{signal.asset}</div>
-                        <div className="text-sm text-zinc-400">by @{signal.agent.slice(0, 8)}...</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {currentPrice && (
-                        <div className={`text-sm font-medium ${pnl && pnl >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                          ${formatPrice(currentPrice)} ({pnl ? (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + '%' : '...'})
-                        </div>
-                      )}
-                      <a
-                        href={`https://solscan.io/account/${signal.publicKey}?cluster=devnet`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-zinc-500 hover:text-zinc-300 font-mono"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {signal.publicKey.slice(0, 8)}...
-                      </a>
-                      <div
-                        className={`text-sm font-medium px-2 py-1 rounded ${
-                          signal.direction === 'long'
-                            ? 'bg-emerald-900/50 text-emerald-400'
-                            : 'bg-red-900/50 text-red-400'
-                        }`}
-                      >
-                        {signal.direction.toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-                    <div>
-                      <div className="text-zinc-500">Confidence</div>
-                      <div className="font-medium">{signal.confidence}%</div>
-                    </div>
-                    <div>
-                      <div className="text-zinc-500">Entry</div>
-                      <div className="font-medium">${formatPrice(signal.entryPrice)}</div>
-                    </div>
-                    <div>
-                      <div className="text-zinc-500">Target</div>
-                      <div className="font-medium text-emerald-400">
-                        ${formatPrice(signal.targetPrice)} (+{((signal.targetPrice / signal.entryPrice - 1) * 100).toFixed(1)}%)
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-zinc-500">Stop Loss</div>
-                      <div className="font-medium text-red-400">
-                        ${formatPrice(signal.stopLoss)} ({((signal.stopLoss / signal.entryPrice - 1) * 100).toFixed(1)}%)
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-zinc-500">Status</div>
-                      <div className={`font-medium ${isExpired ? 'text-yellow-400' : 'text-emerald-400'}`}>
-                        {isExpired ? 'Expired (awaiting resolution)' : `${formatCountdown(remaining)} remaining`}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 pt-4 border-t border-zinc-800 flex items-center justify-between text-sm text-zinc-500">
-                    <div>
-                      Created: {new Date(signal.createdAt).toLocaleString()}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`w-2 h-2 rounded-full ${
-                          signal.outcome === 'pending'
-                            ? isExpired ? 'bg-yellow-500' : 'bg-blue-500 animate-pulse'
-                            : signal.outcome === 'correct'
-                            ? 'bg-emerald-500'
-                            : signal.outcome === 'incorrect'
-                            ? 'bg-red-500'
-                            : 'bg-zinc-500'
-                        }`}
-                      ></span>
-                      {signal.outcome.charAt(0).toUpperCase() + signal.outcome.slice(1)}
-                    </div>
-                  </div>
-                </a>
-              );
-            })}
+          <div className="grid gap-4" ref={signalCardsRef}>
+            {filteredSignals.map((signal, idx) => (
+              <LazySignalCard
+                key={signal.publicKey}
+                signal={signal}
+                prices={prices}
+                now={now}
+                index={idx}
+                isFocused={idx === focusedIndex}
+                copiedId={copiedId}
+                onCopy={copySignalId}
+                formatPrice={formatPrice}
+                getPnL={getPnL}
+                formatCountdown={formatCountdown}
+              />
+            ))}
           </div>
         )}
       </section>

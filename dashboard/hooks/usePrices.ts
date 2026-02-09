@@ -1,13 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-export interface Prices {
-  [asset: string]: number;
-}
+import type { PricesResponse } from '../lib/types';
 
 export function usePrices() {
-  const [prices, setPrices] = useState<Prices>({});
+  const [prices, setPrices] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,7 +12,7 @@ export function usePrices() {
     async function fetchPrices() {
       try {
         const res = await fetch('/api/prices');
-        const data = await res.json();
+        const data: PricesResponse = await res.json();
         if (data.prices) {
           setPrices(data.prices);
         }

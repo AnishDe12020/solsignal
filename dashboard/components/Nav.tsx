@@ -5,6 +5,7 @@ import { useTheme } from '../hooks/useTheme';
 
 const links = [
   { href: '/', label: 'Signals' },
+  { href: '/compare', label: 'Compare' },
   { href: '/portfolio', label: 'Portfolio' },
   { href: '/agents', label: 'Agents' },
   { href: '/stats', label: 'Stats' },
