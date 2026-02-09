@@ -93,3 +93,83 @@
 [2026-02-09T07:26:07.692Z]   📊 Run Summary: 1/1 signals published
 [2026-02-09T07:26:07.692Z]   🕐 Next run: scheduled via cron
 [2026-02-09T07:26:07.692Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T09:49:16.104Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T09:49:16.105Z]   🤖 SolSignal Autonomous Analyst — Agent #982 (batman)
+[2026-02-09T09:49:16.105Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T09:49:16.105Z] 
+[2026-02-09T09:49:16.105Z] 📡 Step 1: Fetching live prices from Pyth...
+[2026-02-09T09:49:20.734Z]   ✅ Got prices for 10 assets
+[2026-02-09T09:49:20.734Z]     SOL/USDC: $84.0603 (±$0.0597)
+[2026-02-09T09:49:20.734Z]     BTC/USDC: $69695.9013 (±$31.7846)
+[2026-02-09T09:49:20.734Z]     ETH/USDC: $2040.0100 (±$1.1900)
+[2026-02-09T09:49:20.734Z]     JUP/USDC: $0.1545 (±$0.0002)
+[2026-02-09T09:49:20.734Z]     BONK/USDC: $0.00000610 (±$0.00000001)
+[2026-02-09T09:49:20.734Z]     SUI/USDC: $0.9472 (±$0.0009)
+[2026-02-09T09:49:20.734Z]     DOGE/USDC: $0.0939 (±$0.0001)
+[2026-02-09T09:49:20.734Z]     AVAX/USDC: $8.8680 (±$0.0080)
+[2026-02-09T09:49:20.734Z]     LINK/USDC: $8.6010 (±$0.0090)
+[2026-02-09T09:49:20.734Z]     WIF/USDC: $0.2217 (±$0.0005)
+[2026-02-09T09:49:20.734Z] 
+[2026-02-09T09:49:20.734Z] 📊 Step 2: Loading price history...
+[2026-02-09T09:49:20.735Z]   History: SOL/USDC:3pts, BTC/USDC:3pts, ETH/USDC:3pts, JUP/USDC:3pts, BONK/USDC:3pts, SUI/USDC:3pts, DOGE/USDC:3pts, AVAX/USDC:3pts, LINK/USDC:3pts, WIF/USDC:1pts
+[2026-02-09T09:49:20.735Z] 
+[2026-02-09T09:49:20.735Z] 🔗 Step 3: Connecting to Solana devnet...
+[2026-02-09T09:49:20.763Z]   Wallet: HhC3onKVvMcW1vdBR5W6hYFJMr9ehpPerEZ4yKzdJnhb
+[2026-02-09T09:49:20.764Z]   RPC: https://api.devnet.solana.com
+[2026-02-09T09:49:20.764Z] 
+[2026-02-09T09:49:20.764Z] 📜 Step 4: Fetching past on-chain signals...
+[2026-02-09T09:49:21.058Z]   Total: 61 | Resolved: 2 (✅1 ❌1) | Pending: 59
+[2026-02-09T09:49:21.058Z]   Overall accuracy: 50.0%
+[2026-02-09T09:49:21.058Z] 
+[2026-02-09T09:49:21.058Z] 🧠 Step 5: Running technical analysis & signal generation...
+[2026-02-09T09:49:21.059Z]   📊 Calibration for JUP/USDC: 1 past signals, 0% accuracy → confidence 46 → 21 (adj -25)
+[2026-02-09T09:49:21.059Z]   Generated 3 signal(s):
+[2026-02-09T09:49:21.059Z] 
+[2026-02-09T09:49:21.059Z]   ─── Signal 1 ───
+[2026-02-09T09:49:21.059Z]   Asset:      JUP/USDC
+[2026-02-09T09:49:21.059Z]   Direction:  SHORT
+[2026-02-09T09:49:21.059Z]   Confidence: 21%
+[2026-02-09T09:49:21.059Z]   Entry:      $0.1545
+[2026-02-09T09:49:21.059Z]   Target:     $0.1472
+[2026-02-09T09:49:21.059Z]   Stop:       $0.1593
+[2026-02-09T09:49:21.059Z]   Horizon:    12h
+[2026-02-09T09:49:21.059Z]   Reasoning:  Momentum continuation (bearish): -3.1% downward momentum. Short-term momentum -3.1%. Volatility 1.56%....
+[2026-02-09T09:49:21.059Z] 
+[2026-02-09T09:49:21.059Z]   ─── Signal 2 ───
+[2026-02-09T09:49:21.059Z]   Asset:      SUI/USDC
+[2026-02-09T09:49:21.059Z]   Direction:  SHORT
+[2026-02-09T09:49:21.059Z]   Confidence: 45%
+[2026-02-09T09:49:21.059Z]   Entry:      $0.9472
+[2026-02-09T09:49:21.059Z]   Target:     $0.9074
+[2026-02-09T09:49:21.059Z]   Stop:       $0.9735
+[2026-02-09T09:49:21.059Z]   Horizon:    12h
+[2026-02-09T09:49:21.059Z]   Reasoning:  Momentum continuation (bearish): -2.8% downward momentum. Short-term momentum -2.8%. Volatility 1.39%....
+[2026-02-09T09:49:21.059Z] 
+[2026-02-09T09:49:21.059Z]   ─── Signal 3 ───
+[2026-02-09T09:49:21.059Z]   Asset:      SOL/USDC
+[2026-02-09T09:49:21.059Z]   Direction:  SHORT
+[2026-02-09T09:49:21.059Z]   Confidence: 45%
+[2026-02-09T09:49:21.059Z]   Entry:      $84.0603
+[2026-02-09T09:49:21.059Z]   Target:     $80.7422
+[2026-02-09T09:49:21.059Z]   Stop:       $86.2649
+[2026-02-09T09:49:21.059Z]   Horizon:    12h
+[2026-02-09T09:49:21.059Z]   Reasoning:  Momentum continuation (bearish): -2.6% downward momentum. Short-term momentum -2.6%. Volatility 1.31%....
+[2026-02-09T09:49:21.059Z] 
+[2026-02-09T09:49:21.059Z] 🚀 Step 6: Publishing signals on-chain...
+[2026-02-09T09:49:21.059Z]   Publishing JUP/USDC SHORT...
+[2026-02-09T09:49:21.828Z]   ✅ Published! Tx: 53YarTepXu23YUAvE1g9znFHyyxcWn4DAefFnSU6fAK919vMPpMBqc9vG2Hd7FkZgYXiWypT2tuHYrst4AxttGjf
+[2026-02-09T09:49:21.828Z]      PDA: 8WqhiiGrfjkQJ2sRK78hrCvVNWKs1aa3cvwxocAs9XGD
+[2026-02-09T09:49:21.828Z]      Expires: 2026-02-09T21:49:21.000Z
+[2026-02-09T09:49:23.830Z]   Publishing SUI/USDC SHORT...
+[2026-02-09T09:49:24.540Z]   ✅ Published! Tx: 4HzqWdmdjKsCv3rSJ2J1m2Vpmdbm6gNCShXckkFyDKqvW9LnPFb38MxGY7bvJDEhQoAvNW8RRiZ8ec9eWTLPMqq2
+[2026-02-09T09:49:24.540Z]      PDA: 7HP39rGdgwk5DEofjU2SQ1oWoUgyBJQcrxhJmprjhEe1
+[2026-02-09T09:49:24.540Z]      Expires: 2026-02-09T21:49:23.000Z
+[2026-02-09T09:49:26.542Z]   Publishing SOL/USDC SHORT...
+[2026-02-09T09:49:27.348Z]   ✅ Published! Tx: iT8spUezZnksh4FtzGLrQ39qJ6TvCED5JezHHVjUvP6MVuhuCQ9WX4KGMfZd9ecE3XpUv3Qo3FThaELHithH7Jo
+[2026-02-09T09:49:27.348Z]      PDA: 3VHKPL5VwBVonL9hvFaaSfg7rfa5ZUYFhqc44m3EuX4n
+[2026-02-09T09:49:27.348Z]      Expires: 2026-02-09T21:49:26.000Z
+[2026-02-09T09:49:27.348Z] 
+[2026-02-09T09:49:27.348Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T09:49:27.348Z]   📊 Run Summary: 3/3 signals published
+[2026-02-09T09:49:27.349Z]   🕐 Next run: scheduled via cron
+[2026-02-09T09:49:27.349Z] ═══════════════════════════════════════════════════════════
