@@ -225,6 +225,338 @@ function WinRateByAssetChart({ signals }: { signals: Signal[] }) {
   );
 }
 
+// ── Learning & Calibration Components ───────────────────────────
+
+function CalibrationChart({ signals }: { signals: Signal[] }) {
+  const buckets = [
+    { label: '50-60%', min: 50, max: 60 },
+    { label: '60-70%', min: 60, max: 70 },
+    { label: '70-80%', min: 70, max: 80 },
+    { label: '80-90%', min: 80, max: 90 },
+  ];
+
+  const data = buckets.map(b => {
+    const inBucket = signals.filter(
+      s => s.confidence >= b.min && s.confidence < b.max && (s.outcome === 'correct' || s.outcome === 'incorrect')
+    );
+    const correct = inBucket.filter(s => s.outcome === 'correct').length;
+    const total = inBucket.length;
+    const actualAccuracy = total > 0 ? Math.round((correct / total) * 100) : null;
+    const expectedMidpoint = Math.round((b.min + b.max) / 2);
+    return { ...b, correct, total, actualAccuracy, expectedMidpoint };
+  });
+
+  const hasData = data.some(d => d.total > 0);
+
+  if (!hasData) {
+    return <p className="text-zinc-500 text-sm">Need resolved signals with confidence 50%+ for calibration data</p>;
+  }
+
+  return (
+    <div className="space-y-4">
+      {data.map(d => {
+        const expectedPct = d.expectedMidpoint;
+        const actualPct = d.actualAccuracy;
+        const diff = actualPct !== null ? actualPct - expectedPct : null;
+        const isOver = diff !== null && diff > 0;
+        const isUnder = diff !== null && diff < 0;
+
+        return (
+          <div key={d.label} className="space-y-1">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-zinc-300 font-medium w-16">{d.label}</span>
+              <span className="text-xs text-zinc-500">
+                {d.total > 0 ? `${d.correct}/${d.total} signals` : 'No data'}
+              </span>
+              {diff !== null && (
+                <span className={`text-xs font-mono ${isOver ? 'text-emerald-400' : isUnder ? 'text-amber-400' : 'text-zinc-400'}`}>
+                  {diff > 0 ? '+' : ''}{diff}%
+                </span>
+              )}
+            </div>
+            <div className="relative h-7 bg-zinc-800 rounded overflow-hidden">
+              {/* Expected accuracy bar (faded) */}
+              <div
+                className="absolute top-0 left-0 h-full bg-zinc-600/40 rounded transition-all duration-700"
+                style={{ width: `${expectedPct}%` }}
+              />
+              {/* Actual accuracy bar */}
+              {actualPct !== null && (
+                <div
+                  className={`absolute top-0 left-0 h-full rounded transition-all duration-700 ${
+                    isOver ? 'bg-emerald-500/70' : isUnder ? 'bg-amber-500/70' : 'bg-blue-500/70'
+                  }`}
+                  style={{ width: `${actualPct}%` }}
+                />
+              )}
+              {/* Expected line marker */}
+              <div
+                className="absolute top-0 h-full w-0.5 bg-zinc-400"
+                style={{ left: `${expectedPct}%` }}
+              />
+              {/* Labels inside bar */}
+              <div className="absolute inset-0 flex items-center justify-between px-2 text-[10px]">
+                <span className="text-zinc-300">
+                  Actual: {actualPct !== null ? `${actualPct}%` : '—'}
+                </span>
+                <span className="text-zinc-400">
+                  Expected: {expectedPct}%
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      <div className="flex items-center gap-4 text-[10px] text-zinc-500 mt-2">
+        <span className="flex items-center gap-1"><span className="w-3 h-2 bg-zinc-600/40 rounded" /> Expected</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-2 bg-emerald-500/70 rounded" /> Overperforming</span>
+        <span className="flex items-center gap-1"><span className="w-3 h-2 bg-amber-500/70 rounded" /> Underperforming</span>
+        <span className="flex items-center gap-1"><span className="w-0.5 h-3 bg-zinc-400" /> Expected midpoint</span>
+      </div>
+    </div>
+  );
+}
+
+function AssetPerformanceTable({ signals }: { signals: Signal[] }) {
+  const assetStats: Record<string, {
+    correct: number; incorrect: number; total: number;
+    totalConfidence: number; avgEntry: number; bestPnL: number; worstPnL: number;
+  }> = {};
+
+  signals.forEach(s => {
+    if (s.outcome !== 'correct' && s.outcome !== 'incorrect') return;
+    if (!assetStats[s.asset]) {
+      assetStats[s.asset] = { correct: 0, incorrect: 0, total: 0, totalConfidence: 0, avgEntry: 0, bestPnL: -Infinity, worstPnL: Infinity };
+    }
+    const st = assetStats[s.asset];
+    st.total++;
+    st.totalConfidence += s.confidence;
+    if (s.outcome === 'correct') st.correct++;
+    else st.incorrect++;
+
+    // Calculate P&L for this signal
+    if (s.entryPrice > 0 && s.resolutionPrice && s.resolutionPrice > 0) {
+      const pnl = s.direction === 'long'
+        ? ((s.resolutionPrice - s.entryPrice) / s.entryPrice) * 100
+        : ((s.entryPrice - s.resolutionPrice) / s.entryPrice) * 100;
+      if (pnl > st.bestPnL) st.bestPnL = pnl;
+      if (pnl < st.worstPnL) st.worstPnL = pnl;
+    }
+  });
+
+  const entries = Object.entries(assetStats)
+    .map(([asset, st]) => ({
+      asset,
+      accuracy: Math.round((st.correct / st.total) * 100),
+      correct: st.correct,
+      incorrect: st.incorrect,
+      total: st.total,
+      avgConf: Math.round(st.totalConfidence / st.total),
+      bestPnL: st.bestPnL === -Infinity ? null : st.bestPnL,
+      worstPnL: st.worstPnL === Infinity ? null : st.worstPnL,
+    }))
+    .sort((a, b) => b.accuracy - a.accuracy || b.total - a.total);
+
+  if (entries.length === 0) {
+    return <p className="text-zinc-500 text-sm">No resolved signals yet</p>;
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-zinc-800 text-zinc-500 text-xs">
+            <th className="text-left py-2 pr-3">Asset</th>
+            <th className="text-center py-2 px-2">W/L</th>
+            <th className="text-center py-2 px-2">Accuracy</th>
+            <th className="text-center py-2 px-2">Avg Conf</th>
+            <th className="text-center py-2 px-2">Best</th>
+            <th className="text-center py-2 px-2">Worst</th>
+            <th className="text-left py-2 pl-2">Grade</th>
+          </tr>
+        </thead>
+        <tbody>
+          {entries.map(e => {
+            const grade = e.accuracy >= 75 ? { text: '🟢 Strong', cls: 'text-emerald-400' }
+              : e.accuracy >= 55 ? { text: '🟡 Learning', cls: 'text-amber-400' }
+              : { text: '🔴 Weak', cls: 'text-red-400' };
+            return (
+              <tr key={e.asset} className="border-b border-zinc-800/50 hover:bg-zinc-800/30 transition-colors">
+                <td className="py-2 pr-3 text-zinc-200 font-medium">{e.asset}</td>
+                <td className="py-2 px-2 text-center">
+                  <span className="text-emerald-400">{e.correct}</span>
+                  <span className="text-zinc-600">/</span>
+                  <span className="text-red-400">{e.incorrect}</span>
+                </td>
+                <td className="py-2 px-2 text-center font-mono">
+                  <span className={e.accuracy >= 60 ? 'text-emerald-400' : e.accuracy >= 45 ? 'text-amber-400' : 'text-red-400'}>
+                    {e.accuracy}%
+                  </span>
+                </td>
+                <td className="py-2 px-2 text-center text-zinc-400 font-mono">{e.avgConf}%</td>
+                <td className="py-2 px-2 text-center text-emerald-400 font-mono text-xs">
+                  {e.bestPnL !== null ? `+${e.bestPnL.toFixed(1)}%` : '—'}
+                </td>
+                <td className="py-2 px-2 text-center text-red-400 font-mono text-xs">
+                  {e.worstPnL !== null ? `${e.worstPnL.toFixed(1)}%` : '—'}
+                </td>
+                <td className={`py-2 pl-2 text-xs ${grade.cls}`}>{grade.text}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function ConfidenceAdjustmentLog({ signals }: { signals: Signal[] }) {
+  // Group resolved signals by asset, then calculate calibration adjustments
+  const assetGroups: Record<string, Signal[]> = {};
+  signals
+    .filter(s => s.outcome === 'correct' || s.outcome === 'incorrect')
+    .sort((a, b) => a.createdAt - b.createdAt)
+    .forEach(s => {
+      if (!assetGroups[s.asset]) assetGroups[s.asset] = [];
+      assetGroups[s.asset].push(s);
+    });
+
+  interface LogEntry {
+    asset: string;
+    message: string;
+    type: 'reduce' | 'boost' | 'stable';
+    timestamp: number;
+  }
+  const logEntries: LogEntry[] = [];
+
+  Object.entries(assetGroups).forEach(([asset, sigs]) => {
+    if (sigs.length < 2) return;
+
+    // Walk through signals tracking rolling accuracy + confidence adjustments
+    let rollingCorrect = 0;
+    let rollingTotal = 0;
+    let prevConfAvg = 0;
+    let streakIncorrect = 0;
+
+    sigs.forEach((s, i) => {
+      rollingTotal++;
+      if (s.outcome === 'correct') {
+        rollingCorrect++;
+        streakIncorrect = 0;
+      } else {
+        streakIncorrect++;
+      }
+
+      const rollingAccuracy = Math.round((rollingCorrect / rollingTotal) * 100);
+      const currentConfAvg = Math.round(
+        sigs.slice(0, i + 1).reduce((sum, sig) => sum + sig.confidence, 0) / (i + 1)
+      );
+
+      // Detect calibration events
+      if (streakIncorrect >= 2 && i >= 2) {
+        const beforeConf = sigs.slice(Math.max(0, i - streakIncorrect), i - streakIncorrect + 1)
+          .reduce((sum, sig) => sum + sig.confidence, 0) / 1;
+        const afterConf = s.confidence;
+        if (beforeConf > afterConf) {
+          logEntries.push({
+            asset,
+            message: `${asset}: confidence reduced ${Math.round(beforeConf)}% → ${afterConf}% after ${streakIncorrect} incorrect signals`,
+            type: 'reduce',
+            timestamp: s.createdAt,
+          });
+        } else if (beforeConf === afterConf || beforeConf < afterConf) {
+          logEntries.push({
+            asset,
+            message: `${asset}: ${streakIncorrect} consecutive misses (accuracy now ${rollingAccuracy}%) — recalibration needed`,
+            type: 'reduce',
+            timestamp: s.createdAt,
+          });
+        }
+      }
+
+      // Detect confidence boosts after winning streaks
+      if (s.outcome === 'correct' && i >= 3) {
+        const last3 = sigs.slice(i - 2, i + 1);
+        if (last3.every(sig => sig.outcome === 'correct')) {
+          const earlyConf = sigs.slice(Math.max(0, i - 4), Math.max(0, i - 4) + 1)[0]?.confidence || s.confidence;
+          if (s.confidence > earlyConf) {
+            logEntries.push({
+              asset,
+              message: `${asset}: confidence boosted ${earlyConf}% → ${s.confidence}% after 3-win streak (accuracy ${rollingAccuracy}%)`,
+              type: 'boost',
+              timestamp: s.createdAt,
+            });
+          }
+        }
+      }
+
+      prevConfAvg = currentConfAvg;
+    });
+
+    // Summary entry for each asset
+    const accuracy = Math.round((rollingCorrect / rollingTotal) * 100);
+    const avgConf = Math.round(sigs.reduce((sum, s) => sum + s.confidence, 0) / sigs.length);
+    if (rollingTotal >= 3) {
+      const diff = accuracy - avgConf;
+      if (Math.abs(diff) > 10) {
+        logEntries.push({
+          asset,
+          message: `${asset}: avg confidence ${avgConf}% vs actual ${accuracy}% — ${diff > 0 ? 'underconfident by' : 'overconfident by'} ${Math.abs(diff)}%`,
+          type: diff > 0 ? 'boost' : 'reduce',
+          timestamp: Date.now(),
+        });
+      } else {
+        logEntries.push({
+          asset,
+          message: `${asset}: well-calibrated — confidence ${avgConf}% ≈ accuracy ${accuracy}% (${rollingTotal} signals)`,
+          type: 'stable',
+          timestamp: Date.now(),
+        });
+      }
+    }
+  });
+
+  logEntries.sort((a, b) => b.timestamp - a.timestamp);
+
+  if (logEntries.length === 0) {
+    return <p className="text-zinc-500 text-sm">Need 2+ resolved signals per asset for calibration log</p>;
+  }
+
+  return (
+    <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+      {logEntries.slice(0, 20).map((entry, i) => (
+        <div
+          key={i}
+          className={`flex items-start gap-2 text-sm px-3 py-2 rounded-lg border ${
+            entry.type === 'reduce' ? 'bg-red-950/20 border-red-900/30' :
+            entry.type === 'boost' ? 'bg-emerald-950/20 border-emerald-900/30' :
+            'bg-zinc-800/30 border-zinc-700/30'
+          }`}
+        >
+          <span className="mt-0.5 text-base shrink-0">
+            {entry.type === 'reduce' ? '⚠️' : entry.type === 'boost' ? '📈' : '✅'}
+          </span>
+          <div className="flex-1 min-w-0">
+            <p className={`text-xs ${
+              entry.type === 'reduce' ? 'text-red-300' :
+              entry.type === 'boost' ? 'text-emerald-300' :
+              'text-zinc-300'
+            }`}>
+              {entry.message}
+            </p>
+            <p className="text-[10px] text-zinc-600 mt-0.5">
+              {entry.timestamp < Date.now() - 60000
+                ? new Date(entry.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+                : 'Summary'
+              }
+            </p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function PnLChart({ signals }: { signals: Signal[] }) {
   const resolved = signals
     .filter(s => (s.outcome === 'correct' || s.outcome === 'incorrect') && s.entryPrice > 0)
@@ -510,6 +842,45 @@ export default function StatsPage() {
             <div className="flex justify-between text-xs text-zinc-500 mt-2">
               <span>14 days ago</span>
               <span>Today</span>
+            </div>
+          </div>
+
+          {/* ── Learning & Calibration Section ───────────────────── */}
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 sm:p-6">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-violet-700 flex items-center justify-center text-xs">
+                🧠
+              </div>
+              <div>
+                <h2 className="text-xl font-bold">Learning &amp; Calibration</h2>
+                <p className="text-xs text-zinc-500">How well batman&apos;s confidence predictions match actual outcomes</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-zinc-950/50 rounded-lg p-4">
+                <h3 className="font-medium text-sm text-zinc-400 mb-4">Confidence Calibration</h3>
+                <p className="text-[10px] text-zinc-600 mb-3">
+                  Are confidence predictions accurate? Bars show actual accuracy vs expected for each confidence bucket.
+                </p>
+                <CalibrationChart signals={agentSignals} />
+              </div>
+
+              <div className="bg-zinc-950/50 rounded-lg p-4">
+                <h3 className="font-medium text-sm text-zinc-400 mb-4">Confidence Adjustment Log</h3>
+                <p className="text-[10px] text-zinc-600 mb-3">
+                  How the agent adapts confidence over time based on past performance.
+                </p>
+                <ConfidenceAdjustmentLog signals={agentSignals} />
+              </div>
+            </div>
+
+            <div className="mt-6 bg-zinc-950/50 rounded-lg p-4">
+              <h3 className="font-medium text-sm text-zinc-400 mb-4">Per-Asset Performance Breakdown</h3>
+              <p className="text-[10px] text-zinc-600 mb-3">
+                Which assets batman is best and worst at — showing accuracy, average confidence, and P&amp;L extremes.
+              </p>
+              <AssetPerformanceTable signals={agentSignals} />
             </div>
           </div>
 
