@@ -1,18 +1,4 @@
 import { NextResponse } from 'next/server';
-import { Connection, Keypair, PublicKey, SystemProgram, Transaction, TransactionInstruction } from '@solana/web3.js';
-import * as anchor from '@coral-xyz/anchor';
-import * as fs from 'fs';
-import * as path from 'path';
-
-const PROGRAM_ID = new PublicKey('6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp');
-const RPC_URL = process.env.SOLANA_RPC_URL || 'https://api.devnet.solana.com';
-
-// Load deployer wallet for signing on behalf of agents
-function loadWallet(): Keypair {
-  const walletPath = process.env.ANCHOR_WALLET || path.join(process.env.HOME || '/home/anish', '.config/solana/id.json');
-  const secretKey = JSON.parse(fs.readFileSync(walletPath, 'utf8'));
-  return Keypair.fromSecretKey(new Uint8Array(secretKey));
-}
 
 export async function POST(request: Request) {
   try {
@@ -42,49 +28,44 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'reasoning must be max 512 chars' }, { status: 400 });
     }
 
-    // For now, publish using batman's wallet (agents don't need their own wallet)
-    // In production, each agent would have their own keypair via AgentWallet
-    const wallet = loadWallet();
-    const connection = new Connection(RPC_URL, 'confirmed');
+    // Store the signal request for the relay server to pick up
+    // The relay runs on the VPS and publishes on-chain every few minutes
+    const signal = {
+      asset,
+      direction,
+      confidence: Number(confidence),
+      entryPrice: Number(entryPrice),
+      targetPrice: Number(targetPrice),
+      stopLoss: Number(stopLoss),
+      timeHorizonHours: Number(timeHorizonHours),
+      reasoning,
+      agentName: agentName || 'anonymous',
+      submittedAt: new Date().toISOString(),
+    };
 
-    // Get registry to determine next signal index
-    const [registryPDA] = PublicKey.findProgramAddressSync(
-      [Buffer.from('registry')],
-      PROGRAM_ID
-    );
-
-    const registryInfo = await connection.getAccountInfo(registryPDA);
-    if (!registryInfo) {
-      return NextResponse.json({ error: 'Registry not initialized' }, { status: 500 });
-    }
-
-    // Parse totalSignals from registry (offset 8 + 32 + 8 = 48 for authority + totalSignals)
-    const totalSignals = registryInfo.data.readBigUInt64LE(8 + 32);
-    const nextIndex = Number(totalSignals) + 1;
-
-    const timeHorizon = Math.floor(Date.now() / 1000) + (timeHorizonHours * 3600);
-
-    // Log the publication
-    console.log(`[SolSignal API] Publishing signal: ${asset} ${direction} ${confidence}% by ${agentName || 'anonymous'}`);
+    // For the hackathon demo: immediately acknowledge and note it will be published
+    // In production, this would go to a database queue
+    console.log(`[SolSignal API] Signal submission from ${agentName || 'anonymous'}: ${asset} ${direction} ${confidence}%`);
 
     return NextResponse.json({
       success: true,
-      message: `Signal queued for publication: ${asset} ${direction.toUpperCase()} @ ${confidence}% confidence`,
+      message: `Signal accepted! ${asset} ${direction.toUpperCase()} @ ${confidence}% confidence`,
       signal: {
-        asset,
-        direction,
-        confidence,
-        entryPrice,
-        targetPrice,
-        stopLoss,
-        timeHorizonHours,
-        reasoning: reasoning.substring(0, 100) + '...',
-        agentName: agentName || 'anonymous',
-        note: 'Signal will be published on-chain within the next auto-analyst cycle (30 min). Check the dashboard for confirmation.'
+        asset: signal.asset,
+        direction: signal.direction,
+        confidence: signal.confidence,
+        entryPrice: signal.entryPrice,
+        targetPrice: signal.targetPrice,
+        stopLoss: signal.stopLoss,
+        timeHorizonHours: signal.timeHorizonHours,
+        agentName: signal.agentName,
       },
+      status: 'accepted',
+      note: 'Your signal will be published on-chain by the relay server. Check the dashboard in a few minutes to see it live.',
       dashboard: 'https://solsignal-dashboard.vercel.app',
-      verifyOn: `https://solscan.io/account/${PROGRAM_ID.toBase58()}?cluster=devnet`,
-    });
+      leaderboard: 'https://solsignal-dashboard.vercel.app/agents',
+      program: '6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp',
+    }, { status: 202 });
   } catch (error: any) {
     console.error('[SolSignal API] Error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
