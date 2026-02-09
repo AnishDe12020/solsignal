@@ -1,0 +1,10 @@
+
+📡 SolSignal Relay Server
+   Port: 3847
+   Network: devnet
+   Program: 6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp
+   Wallet: HhC3onKVvMcW1vdBR5W6hYFJMr9ehpPerEZ4yKzdJnhb
+
+   POST /publish — submit a signal
+   GET /health — server status
+

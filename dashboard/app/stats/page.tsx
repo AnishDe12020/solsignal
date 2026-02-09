@@ -732,12 +732,13 @@ export default function StatsPage() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 sm:gap-4">
             <StatCard label="Total Signals" value={total} color="text-emerald-400" />
             <StatCard label="Active" value={active} sub="Currently live" color="text-blue-400" />
             <StatCard label="Awaiting Resolution" value={expired} color="text-yellow-400" />
             <StatCard label="Resolved" value={resolved} sub={`${correct}W / ${incorrect}L`} color="text-zinc-100" />
             <StatCard label="Accuracy" value={resolved > 0 ? `${accuracy}%` : '—'} sub={resolved > 0 ? `${resolved} resolved` : 'No resolved signals'} color="text-emerald-400" />
+            <StatCard label="Resolution Rate" value={total > 0 ? `${Math.round((resolved / total) * 100)}%` : '—'} sub={`${resolved} of ${total} signals`} color="text-purple-400" />
             <StatCard label="Agents" value={agents.length} sub={topAgent ? `Top: @${topAgent.name}` : ''} color="text-blue-400" />
           </div>
 

@@ -264,21 +264,41 @@ export default function SignalDetailPage() {
       {isResolved && <ResolutionBanner signal={signal} />}
 
       {!isResolved && (
-        <div className={`rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 ${
+        <div className={`rounded-xl p-5 sm:p-6 ${
           isExpired
-            ? 'bg-yellow-900/20 border border-yellow-700/50 text-yellow-200'
-            : 'bg-blue-900/20 border border-blue-700/50 text-blue-200'
+            ? 'bg-yellow-900/20 border-2 border-yellow-600/50'
+            : 'bg-blue-900/20 border-2 border-blue-600/50'
         }`}>
-          <div className="flex items-center gap-2">
-            <span className={`w-3 h-3 rounded-full ${
-              isExpired ? 'bg-yellow-500 badge-pulse' : 'bg-blue-500 badge-pulse'
-            }`}></span>
-            <span className="font-medium">
-              {isExpired ? 'Awaiting Resolution' : 'Active'}
-            </span>
-          </div>
-          <div className="text-sm font-mono">
-            {isExpired ? 'Expired' : countdown}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                isExpired ? 'bg-yellow-500/20' : 'bg-blue-500/20'
+              }`}>
+                {isExpired ? (
+                  <svg className="w-7 h-7 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                ) : (
+                  <span className="w-4 h-4 rounded-full bg-blue-400 animate-pulse" />
+                )}
+              </div>
+              <div>
+                <div className={`text-lg font-bold ${isExpired ? 'text-yellow-400' : 'text-blue-400'}`}>
+                  {isExpired ? 'AWAITING RESOLUTION' : 'ACTIVE'}
+                </div>
+                <div className={`text-sm ${isExpired ? 'text-yellow-200/70' : 'text-blue-200/70'}`}>
+                  {isExpired ? 'Time horizon passed — awaiting on-chain resolution' : 'Signal is live and being tracked'}
+                </div>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className={`text-xs uppercase tracking-wide ${isExpired ? 'text-yellow-400/60' : 'text-blue-400/60'}`}>
+                {isExpired ? 'Expired' : 'Time Remaining'}
+              </div>
+              <div className={`text-2xl font-bold font-mono ${isExpired ? 'text-yellow-400' : 'text-blue-400'}`}>
+                {isExpired ? '0:00:00' : countdown}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -423,6 +443,17 @@ export default function SignalDetailPage() {
               className="text-emerald-400 hover:text-emerald-300 font-mono text-xs sm:text-sm break-all"
             >
               6TtRYm...7dXp →
+            </a>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+            <span className="text-zinc-500">Pyth Price Feed</span>
+            <a
+              href={`https://pyth.network/price-feeds/crypto-${signal.asset.replace('/', '-').toLowerCase()}?cluster=devnet`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-emerald-400 hover:text-emerald-300 font-mono text-xs sm:text-sm"
+            >
+              {signal.asset} on Pyth →
             </a>
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">

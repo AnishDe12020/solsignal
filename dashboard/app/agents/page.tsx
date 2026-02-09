@@ -40,8 +40,16 @@ export default function AgentsPage() {
     return () => clearInterval(interval);
   }, []);
 
+  const resolvedCount = (a: AgentData) => a.correctSignals + a.incorrectSignals;
+
   const sortedAgents = [...agents].sort((a, b) => {
-    if (sortBy === 'accuracy') return b.accuracyBps - a.accuracyBps;
+    if (sortBy === 'accuracy') {
+      // Agents with 5+ resolved signals rank first, then by accuracy
+      const aQualified = resolvedCount(a) >= 5 ? 1 : 0;
+      const bQualified = resolvedCount(b) >= 5 ? 1 : 0;
+      if (aQualified !== bQualified) return bQualified - aQualified;
+      return b.accuracyBps - a.accuracyBps;
+    }
     if (sortBy === 'signals') return b.totalSignals - a.totalSignals;
     return b.reputationScore - a.reputationScore;
   });
@@ -148,10 +156,12 @@ export default function AgentsPage() {
                   <th className="pb-4 pr-4 w-16">Rank</th>
                   <th className="pb-4 pr-4">Agent</th>
                   <th className="pb-4 pr-4 text-right">Signals</th>
+                  <th className="pb-4 pr-4 text-right">Resolved</th>
                   <th className="pb-4 pr-4 text-right">W / L</th>
                   <th className="pb-4 pr-4 text-right">Accuracy</th>
                   <th className="pb-4 pr-4">Reputation</th>
-                  <th className="pb-4 text-right">Joined</th>
+                  <th className="pb-4 pr-4 text-right">Joined</th>
+                  <th className="pb-4 text-right">Signals</th>
                 </tr>
               </thead>
               <tbody>
@@ -192,6 +202,12 @@ export default function AgentsPage() {
                       <span className="font-medium">{agent.totalSignals}</span>
                     </td>
                     <td className="py-4 pr-4 text-right">
+                      <span className="font-medium">{resolvedCount(agent)}</span>
+                      {resolvedCount(agent) < 5 && (
+                        <span className="ml-1 text-[10px] text-zinc-500" title="Needs 5+ resolved signals to rank">⚠️</span>
+                      )}
+                    </td>
+                    <td className="py-4 pr-4 text-right">
                       <span className="text-emerald-400">{agent.correctSignals}</span>
                       <span className="text-zinc-600"> / </span>
                       <span className="text-red-400">{agent.incorrectSignals}</span>
@@ -199,14 +215,17 @@ export default function AgentsPage() {
                     <td className="py-4 pr-4 text-right">
                       {agent.accuracyBps > 0 ? (
                         <span
-                          className={`font-medium ${
+                          className={`inline-flex items-center gap-1 font-medium px-2 py-0.5 rounded-full text-sm ${
                             agent.accuracyBps >= 7000
-                              ? 'text-emerald-400'
+                              ? 'text-emerald-400 bg-emerald-900/30'
                               : agent.accuracyBps >= 5000
-                              ? 'text-yellow-400'
-                              : 'text-red-400'
+                              ? 'text-yellow-400 bg-yellow-900/30'
+                              : 'text-red-400 bg-red-900/30'
                           }`}
                         >
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            agent.accuracyBps >= 7000 ? 'bg-emerald-400' : agent.accuracyBps >= 5000 ? 'bg-yellow-400' : 'bg-red-400'
+                          }`} />
                           {(agent.accuracyBps / 100).toFixed(1)}%
                         </span>
                       ) : (
@@ -224,8 +243,16 @@ export default function AgentsPage() {
                         <span className="font-mono text-sm text-emerald-400 w-12 text-right">{agent.reputationScore}</span>
                       </div>
                     </td>
-                    <td className="py-4 text-right text-zinc-500 text-sm">
+                    <td className="py-4 pr-4 text-right text-zinc-500 text-sm">
                       {new Date(agent.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="py-4 text-right">
+                      <a
+                        href={`/?agent=${agent.authority}`}
+                        className="text-xs text-emerald-400 hover:text-emerald-300 border border-emerald-800/50 hover:border-emerald-700 px-2 py-1 rounded transition-colors"
+                      >
+                        View →
+                      </a>
                     </td>
                   </tr>
                 ))}

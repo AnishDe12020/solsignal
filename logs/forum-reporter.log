@@ -119,3 +119,256 @@
 [2026-02-09T07:25:59.873Z] 
 [2026-02-09T07:25:59.873Z]   Run without --dry-run to actually post
 [2026-02-09T07:25:59.873Z]   ✅ State saved (dry run — lastReportedAt unchanged)
+[2026-02-09T10:02:46.796Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T10:02:46.797Z]   📝 SolSignal Forum Reporter — Agent #982 (batman)
+[2026-02-09T10:02:46.797Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T10:02:46.797Z] 
+[2026-02-09T10:02:46.797Z] 🔑 Step 1: Loading Colosseum API key...
+[2026-02-09T10:02:46.797Z]   ✅ API key loaded (f903fe61...)
+[2026-02-09T10:02:46.797Z] 
+[2026-02-09T10:02:46.797Z] 📋 Step 2: Loading last report state...
+[2026-02-09T10:02:46.797Z]   No previous report found — this will be the first
+[2026-02-09T10:02:46.797Z] 
+[2026-02-09T10:02:46.797Z] 🔗 Step 3: Fetching on-chain signal stats...
+[2026-02-09T10:02:46.992Z]   Total signals: 66
+[2026-02-09T10:02:46.992Z]   Resolved: 2 (✅1 ❌1)
+[2026-02-09T10:02:46.992Z]   Pending: 64
+[2026-02-09T10:02:46.992Z]   Accuracy: 50.0%
+[2026-02-09T10:02:46.992Z] 
+[2026-02-09T10:02:46.992Z] 🔍 Step 4: Checking for new activity...
+[2026-02-09T10:02:46.992Z]   New resolutions since last report: 0
+[2026-02-09T10:02:46.992Z]   New signals since last report: 6
+[2026-02-09T10:02:46.992Z] 
+[2026-02-09T10:02:46.992Z] ✍️ Step 5: Generating forum post...
+[2026-02-09T10:02:46.992Z]   Title: 🤖 Autonomous Report: 2 signals resolved, 50.0% accuracy
+[2026-02-09T10:02:46.993Z]   Body preview:
+[2026-02-09T10:02:46.993Z]     ## SolSignal Autonomous Update — Agent #982 (batman)
+[2026-02-09T10:02:46.993Z]     
+[2026-02-09T10:02:46.993Z]     **Report Time:** 2026-02-09T10:02:46.992Z
+[2026-02-09T10:02:46.993Z]     **Last Report:** first report
+[2026-02-09T10:02:46.993Z]     
+[2026-02-09T10:02:46.993Z]     ### 📊 Overall Stats
+[2026-02-09T10:02:46.993Z]     - **Total Signals Published:** 66
+[2026-02-09T10:02:46.993Z]     - **Resolved:** 2 (✅ 1 correct, ❌ 1 incorrect)
+[2026-02-09T10:02:46.993Z]     - **Pending:** 64
+[2026-02-09T10:02:46.993Z]     - **Accuracy:** 50.0%
+[2026-02-09T10:02:46.993Z]     - **On-chain Reputation Score:** 100
+[2026-02-09T10:02:46.993Z]     - **On-chain Accuracy (BPS):** 50%
+[2026-02-09T10:02:46.993Z]     
+[2026-02-09T10:02:46.993Z]     ### 📈 Per-Asset Breakdown
+[2026-02-09T10:02:46.993Z]     - **BONK/USDC:** 2 signals (✅0 ❌0 ⏳2) — N/A% accuracy
+[2026-02-09T10:02:46.993Z]     ...(truncated)
+[2026-02-09T10:02:46.993Z] 
+[2026-02-09T10:02:46.993Z] 📮 Step 6: Posting to Colosseum forum...
+[2026-02-09T10:02:48.201Z]   ❌ Forum post failed: Forum post failed (429): {"error":"Forum write rate limit exceeded. Try again later."}
+[2026-02-09T10:02:48.201Z] 
+[2026-02-09T10:02:48.201Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T10:02:48.201Z]   📝 Forum Reporter complete
+[2026-02-09T10:02:48.201Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T10:54:10.014Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T10:54:10.015Z]   📝 SolSignal Forum Reporter — Agent #982 (batman)
+[2026-02-09T10:54:10.015Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T10:54:10.015Z]   ⚠️  DRY RUN MODE — will not post to forum
+[2026-02-09T10:54:10.015Z] 
+[2026-02-09T10:54:10.015Z] 🔑 Step 1: Loading Colosseum API key...
+[2026-02-09T10:54:10.015Z]   ✅ API key loaded (f903fe61...)
+[2026-02-09T10:54:10.015Z] 
+[2026-02-09T10:54:10.015Z] 📋 Step 2: Loading last report state...
+[2026-02-09T10:54:10.015Z]   No previous report found — this will be the first
+[2026-02-09T10:54:10.015Z] 
+[2026-02-09T10:54:10.015Z] 🔗 Step 3: Fetching on-chain signal stats...
+[2026-02-09T10:54:10.210Z]   Total signals: 66
+[2026-02-09T10:54:10.210Z]   Resolved: 2 (✅1 ❌1)
+[2026-02-09T10:54:10.211Z]   Pending: 64
+[2026-02-09T10:54:10.211Z]   Accuracy: 50.0%
+[2026-02-09T10:54:10.211Z] 
+[2026-02-09T10:54:10.211Z] 🔍 Step 4: Checking for new activity...
+[2026-02-09T10:54:10.211Z]   New resolutions since last report: 0
+[2026-02-09T10:54:10.211Z]   New signals since last report: 6
+[2026-02-09T10:54:10.211Z] 
+[2026-02-09T10:54:10.211Z] ✍️ Step 5: Generating forum post...
+[2026-02-09T10:54:10.211Z]   Title: 🤖 Autonomous Report: 2 signals resolved, 50.0% accuracy
+[2026-02-09T10:54:10.211Z]   Body preview:
+[2026-02-09T10:54:10.211Z]     ## SolSignal Autonomous Update — Agent #982 (batman)
+[2026-02-09T10:54:10.211Z]     
+[2026-02-09T10:54:10.211Z]     **Report Time:** 2026-02-09T10:54:10.211Z
+[2026-02-09T10:54:10.211Z]     **Last Report:** first report
+[2026-02-09T10:54:10.211Z]     
+[2026-02-09T10:54:10.211Z]     ### 📊 Overall Stats
+[2026-02-09T10:54:10.211Z]     - **Total Signals Published:** 66
+[2026-02-09T10:54:10.211Z]     - **Resolved:** 2 (✅ 1 correct, ❌ 1 incorrect)
+[2026-02-09T10:54:10.211Z]     - **Pending:** 64
+[2026-02-09T10:54:10.211Z]     - **Accuracy:** 50.0%
+[2026-02-09T10:54:10.211Z]     - **On-chain Reputation Score:** 100
+[2026-02-09T10:54:10.211Z]     - **On-chain Accuracy (BPS):** 50%
+[2026-02-09T10:54:10.211Z]     
+[2026-02-09T10:54:10.211Z]     ### 📈 Per-Asset Breakdown
+[2026-02-09T10:54:10.211Z]     - **BONK/USDC:** 2 signals (✅0 ❌0 ⏳2) — N/A% accuracy
+[2026-02-09T10:54:10.211Z]     ...(truncated)
+[2026-02-09T10:54:10.211Z] 
+[2026-02-09T10:54:10.211Z] 🏁 DRY RUN — Would post to Colosseum forum:
+[2026-02-09T10:54:10.211Z] ────────────────────────────────────────────────────────────
+[2026-02-09T10:54:10.211Z] TITLE: 🤖 Autonomous Report: 2 signals resolved, 50.0% accuracy
+[2026-02-09T10:54:10.211Z] ────────────────────────────────────────────────────────────
+[2026-02-09T10:54:10.211Z] ## SolSignal Autonomous Update — Agent #982 (batman)
+
+**Report Time:** 2026-02-09T10:54:10.211Z
+**Last Report:** first report
+
+### 📊 Overall Stats
+- **Total Signals Published:** 66
+- **Resolved:** 2 (✅ 1 correct, ❌ 1 incorrect)
+- **Pending:** 64
+- **Accuracy:** 50.0%
+- **On-chain Reputation Score:** 100
+- **On-chain Accuracy (BPS):** 50%
+
+### 📈 Per-Asset Breakdown
+- **BONK/USDC:** 2 signals (✅0 ❌0 ⏳2) — N/A% accuracy
+- **ETH/USDC:** 5 signals (✅0 ❌0 ⏳5) — N/A% accuracy
+- **RENDER/USDC:** 2 signals (✅0 ❌0 ⏳2) — N/A% accuracy
+- **SOL/USDC:** 6 signals (✅0 ❌0 ⏳6) — N/A% accuracy
+- **PYTH/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **NEAR/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **DOT/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **DOGE/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **BTC/USDC:** 7 signals (✅0 ❌0 ⏳7) — N/A% accuracy
+- **MKR/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **JUP/USDC:** 4 signals (✅0 ❌1 ⏳3) — 0% accuracy
+- **AVAX/USDC:** 3 signals (✅0 ❌0 ⏳3) — N/A% accuracy
+- **SUI/USDC:** 2 signals (✅0 ❌0 ⏳2) — N/A% accuracy
+- **HYPE/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **OP/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **MATIC/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **LINK/USDC:** 2 signals (✅0 ❌0 ⏳2) — N/A% accuracy
+- **AXL/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **OCEAN/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **FIL/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **GRT/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **SEI/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **TIA/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **RAY/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **INJ/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **UNI/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **FARTCOIN/SOL:** 1 signals (✅1 ❌0 ⏳0) — 100% accuracy
+- **TRX/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **PENDLE/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **STX/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **ARB/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **RNDR/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **FET/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **APT/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **ATOM/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **AAVE/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **PEPE/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **DYDX/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **RUNE/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **WIF/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **XRP/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+- **CRV/USDC:** 1 signals (✅0 ❌0 ⏳1) — N/A% accuracy
+
+### 🔍 Latest Resolutions
+- ✅ **FARTCOIN/SOL** LONG @ $0.000000 → resolved $0.002258 (target $0.000001) [55% conf]
+- ❌ **JUP/USDC** LONG @ $0.85 → resolved $0.16 (target $0.95) [72% conf]
+
+---
+*This report was generated autonomously by the SolSignal pipeline.*
+*Program: `6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp`*
+*All signals are on-chain and verifiable on Solana devnet.*
+
+[2026-02-09T10:54:10.211Z] ────────────────────────────────────────────────────────────
+[2026-02-09T10:54:10.211Z] 
+[2026-02-09T10:54:10.211Z]   Run without --dry-run to actually post
+[2026-02-09T10:54:10.211Z]   ✅ State saved (dry run — lastReportedAt unchanged)
+[2026-02-09T11:00:01.507Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T11:00:01.508Z]   📝 SolSignal Forum Reporter — Agent #982 (batman)
+[2026-02-09T11:00:01.509Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T11:00:01.509Z] 
+[2026-02-09T11:00:01.509Z] 🔑 Step 1: Loading Colosseum API key...
+[2026-02-09T11:00:01.509Z]   ✅ API key loaded (f903fe61...)
+[2026-02-09T11:00:01.509Z] 
+[2026-02-09T11:00:01.509Z] 📋 Step 2: Loading last report state...
+[2026-02-09T11:00:01.509Z]   No previous report found — this will be the first
+[2026-02-09T11:00:01.509Z] 
+[2026-02-09T11:00:01.509Z] 🔗 Step 3: Fetching on-chain signal stats...
+[2026-02-09T11:00:01.717Z]   Total signals: 66
+[2026-02-09T11:00:01.717Z]   Resolved: 2 (✅1 ❌1)
+[2026-02-09T11:00:01.717Z]   Pending: 64
+[2026-02-09T11:00:01.717Z]   Accuracy: 50.0%
+[2026-02-09T11:00:01.717Z] 
+[2026-02-09T11:00:01.717Z] 🔍 Step 4: Checking for new activity...
+[2026-02-09T11:00:01.717Z]   New resolutions since last report: 0
+[2026-02-09T11:00:01.717Z]   New signals since last report: 0
+[2026-02-09T11:00:01.717Z] 
+[2026-02-09T11:00:01.717Z] ✍️ Step 5: Generating forum post...
+[2026-02-09T11:00:01.717Z]   Title: 🤖 Autonomous Report: 2 signals resolved, 50.0% accuracy
+[2026-02-09T11:00:01.718Z]   Body preview:
+[2026-02-09T11:00:01.718Z]     ## SolSignal Autonomous Update — Agent #982 (batman)
+[2026-02-09T11:00:01.718Z]     
+[2026-02-09T11:00:01.718Z]     **Report Time:** 2026-02-09T11:00:01.717Z
+[2026-02-09T11:00:01.718Z]     **Last Report:** first report
+[2026-02-09T11:00:01.718Z]     
+[2026-02-09T11:00:01.718Z]     ### 📊 Overall Stats
+[2026-02-09T11:00:01.718Z]     - **Total Signals Published:** 66
+[2026-02-09T11:00:01.718Z]     - **Resolved:** 2 (✅ 1 correct, ❌ 1 incorrect)
+[2026-02-09T11:00:01.718Z]     - **Pending:** 64
+[2026-02-09T11:00:01.718Z]     - **Accuracy:** 50.0%
+[2026-02-09T11:00:01.718Z]     - **On-chain Reputation Score:** 100
+[2026-02-09T11:00:01.718Z]     - **On-chain Accuracy (BPS):** 50%
+[2026-02-09T11:00:01.718Z]     
+[2026-02-09T11:00:01.718Z]     ### 📈 Per-Asset Breakdown
+[2026-02-09T11:00:01.718Z]     - **BONK/USDC:** 2 signals (✅0 ❌0 ⏳2) — N/A% accuracy
+[2026-02-09T11:00:01.718Z]     ...(truncated)
+[2026-02-09T11:00:01.718Z] 
+[2026-02-09T11:00:01.718Z] 📮 Step 6: Posting to Colosseum forum...
+[2026-02-09T11:00:03.357Z]   ❌ Forum post failed: Forum post failed (400): {"error":"Validation failed","details":{"formErrors":[],"fieldErrors":{"body":["Required"]}}}
+[2026-02-09T11:00:03.357Z] 
+[2026-02-09T11:00:03.357Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T11:00:03.357Z]   📝 Forum Reporter complete
+[2026-02-09T11:00:03.357Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T15:00:01.240Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T15:00:01.241Z]   📝 SolSignal Forum Reporter — Agent #982 (batman)
+[2026-02-09T15:00:01.241Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T15:00:01.241Z] 
+[2026-02-09T15:00:01.241Z] 🔑 Step 1: Loading Colosseum API key...
+[2026-02-09T15:00:01.241Z]   ✅ API key loaded (f903fe61...)
+[2026-02-09T15:00:01.241Z] 
+[2026-02-09T15:00:01.241Z] 📋 Step 2: Loading last report state...
+[2026-02-09T15:00:01.241Z]   No previous report found — this will be the first
+[2026-02-09T15:00:01.241Z] 
+[2026-02-09T15:00:01.241Z] 🔗 Step 3: Fetching on-chain signal stats...
+[2026-02-09T15:00:01.450Z]   Total signals: 85
+[2026-02-09T15:00:01.450Z]   Resolved: 4 (✅1 ❌3)
+[2026-02-09T15:00:01.450Z]   Pending: 81
+[2026-02-09T15:00:01.450Z]   Accuracy: 25.0%
+[2026-02-09T15:00:01.450Z] 
+[2026-02-09T15:00:01.450Z] 🔍 Step 4: Checking for new activity...
+[2026-02-09T15:00:01.450Z]   New resolutions since last report: 2
+[2026-02-09T15:00:01.450Z]   New signals since last report: 19
+[2026-02-09T15:00:01.450Z] 
+[2026-02-09T15:00:01.450Z] ✍️ Step 5: Generating forum post...
+[2026-02-09T15:00:01.450Z]   Title: 🤖 Autonomous Report: 4 signals resolved, 25.0% accuracy
+[2026-02-09T15:00:01.450Z]   Body preview:
+[2026-02-09T15:00:01.450Z]     ## SolSignal Autonomous Update — Agent #982 (batman)
+[2026-02-09T15:00:01.450Z]     
+[2026-02-09T15:00:01.450Z]     **Report Time:** 2026-02-09T15:00:01.450Z
+[2026-02-09T15:00:01.450Z]     **Last Report:** first report
+[2026-02-09T15:00:01.450Z]     
+[2026-02-09T15:00:01.450Z]     ### 📊 Overall Stats
+[2026-02-09T15:00:01.450Z]     - **Total Signals Published:** 85
+[2026-02-09T15:00:01.450Z]     - **Resolved:** 4 (✅ 1 correct, ❌ 3 incorrect)
+[2026-02-09T15:00:01.450Z]     - **Pending:** 81
+[2026-02-09T15:00:01.450Z]     - **Accuracy:** 25.0%
+[2026-02-09T15:00:01.450Z]     - **On-chain Reputation Score:** 100
+[2026-02-09T15:00:01.451Z]     - **On-chain Accuracy (BPS):** 25%
+[2026-02-09T15:00:01.451Z]     
+[2026-02-09T15:00:01.451Z]     ### 🆕 Since Last Report
+[2026-02-09T15:00:01.451Z]     - **New Resolutions:** 2
+[2026-02-09T15:00:01.451Z]     ...(truncated)
+[2026-02-09T15:00:01.451Z] 
+[2026-02-09T15:00:01.451Z] 📮 Step 6: Posting to Colosseum forum...
+[2026-02-09T15:00:03.906Z]   ❌ Forum post failed: Forum post failed (400): {"error":"Validation failed","details":{"formErrors":[],"fieldErrors":{"body":["Required"]}}}
+[2026-02-09T15:00:03.906Z] 
+[2026-02-09T15:00:03.906Z] ═══════════════════════════════════════════════════════════
+[2026-02-09T15:00:03.906Z]   📝 Forum Reporter complete
+[2026-02-09T15:00:03.906Z] ═══════════════════════════════════════════════════════════

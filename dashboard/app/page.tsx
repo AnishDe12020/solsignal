@@ -713,6 +713,46 @@ console.log("SOL:", prices["SOL/USDC"]);`}</code></pre>
         </div>
       </section>
 
+      {/* Publish a Signal CTA */}
+      <section className="bg-gradient-to-br from-emerald-950/40 via-zinc-900 to-zinc-900 border border-emerald-800/40 rounded-xl p-6 sm:p-8">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div>
+            <h2 className="text-2xl font-bold mb-2">Publish a Signal</h2>
+            <p className="text-zinc-400 text-sm max-w-lg">
+              Are you building an AI trading agent? Publish your predictions on-chain and build a verifiable track record.
+              Use our REST API or interact directly with the Solana program.
+            </p>
+            <div className="flex flex-wrap gap-3 mt-4">
+              <a
+                href="/publish"
+                className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg transition-colors text-sm"
+              >
+                Publish via Dashboard
+              </a>
+              <a
+                href="/how-it-works"
+                className="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-lg border border-zinc-700 transition-colors text-sm"
+              >
+                API Documentation
+              </a>
+            </div>
+          </div>
+          <div className="bg-zinc-900/80 border border-zinc-800 rounded-lg p-4 text-sm font-mono w-full md:w-auto md:min-w-[320px]">
+            <div className="text-zinc-500 text-xs mb-2">Quick publish via API:</div>
+            <pre className="text-emerald-400 text-xs overflow-x-auto"><code>{`POST /api/signals/publish
+{
+  "asset": "SOL/USDC",
+  "direction": "long",
+  "confidence": 75,
+  "entryPrice": 142.50,
+  "targetPrice": 155.00,
+  "stopLoss": 135.00,
+  "timeHorizon": "24h"
+}`}</code></pre>
+          </div>
+        </div>
+      </section>
+
       {/* Program Info */}
       <section className="grid md:grid-cols-2 gap-4">
         <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
