@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { usePrices } from '../../../hooks/usePrices';
+import { Breadcrumb } from '../../../components/Breadcrumb';
 
 interface SignalDetail {
   publicKey: string;
@@ -132,10 +133,12 @@ export default function SignalDetailPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      {/* Back link */}
-      <a href="/" className="text-sm text-zinc-500 hover:text-zinc-300 inline-flex items-center gap-1">
-        &larr; Back to signals
-      </a>
+      {/* Breadcrumb */}
+      <Breadcrumb items={[
+        { label: 'Home', href: '/' },
+        { label: 'Signals', href: '/#signals' },
+        { label: `${signal.asset} #${signal.index}` },
+      ]} />
 
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -181,7 +184,7 @@ export default function SignalDetailPage() {
           <span className={`w-3 h-3 rounded-full ${
             signal.outcome === 'correct' ? 'bg-emerald-500' :
             signal.outcome === 'incorrect' ? 'bg-red-500' :
-            isExpired ? 'bg-yellow-500' : 'bg-blue-500 animate-pulse'
+            isExpired ? 'bg-yellow-500 badge-pulse' : 'bg-blue-500 badge-pulse'
           }`}></span>
           <span className="font-medium">
             {signal.outcome === 'pending'

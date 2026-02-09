@@ -88,10 +88,14 @@ export async function GET() {
     // Sort by createdAt descending
     signals.sort((a: any, b: any) => b.createdAt - a.createdAt);
 
-    return NextResponse.json({ 
-      signals, 
+    return NextResponse.json({
+      signals,
       count: signals.length,
-      timestamp: Date.now() 
+      timestamp: Date.now()
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=30',
+      },
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

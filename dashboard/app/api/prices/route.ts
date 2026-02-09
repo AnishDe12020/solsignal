@@ -25,7 +25,11 @@ export async function GET() {
       }
     }
     
-    return NextResponse.json({ prices, timestamp: Date.now() });
+    return NextResponse.json({ prices, timestamp: Date.now() }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=20',
+      },
+    });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch prices' }, { status: 500 });
   }

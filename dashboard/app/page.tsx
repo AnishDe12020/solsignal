@@ -9,6 +9,7 @@ import { useToast, ToastContainer } from '../components/Toast';
 import { RecentActivity } from '../components/RecentActivity';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { LazySignalCard } from '../components/LazySignalCard';
+import { ScrollReveal } from '../components/ScrollReveal';
 
 const PROGRAM_ID = new PublicKey('6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp');
 
@@ -27,7 +28,7 @@ function getPnL(current: number, entry: number, direction: 'long' | 'short'): nu
   return ((entry - current) / entry) * 100;
 }
 
-function AnimatedCounter({ target, label, color }: { target: number; label: string; color: string }) {
+function AnimatedCounter({ target, label, color, suffix = '' }: { target: number; label: string; color: string; suffix?: string }) {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
@@ -46,8 +47,8 @@ function AnimatedCounter({ target, label, color }: { target: number; label: stri
   }, [target]);
 
   return (
-    <div className="text-center">
-      <div className={`text-4xl md:text-5xl font-bold ${color}`}>{count}</div>
+    <div className="text-center number-pop">
+      <div className={`text-4xl md:text-5xl font-bold ${color}`}>{count}{suffix}</div>
       <div className="text-sm text-zinc-500 mt-1">{label}</div>
     </div>
   );
@@ -167,6 +168,9 @@ export default function Home() {
   const resolvedSignals = signals.filter(s => s.outcome === 'correct' || s.outcome === 'incorrect').length;
   const accuracy = resolvedSignals > 0 ? Math.round((correctSignals / resolvedSignals) * 100) : 0;
 
+  const avgConfidence = signals.length > 0 ? Math.round(signals.reduce((sum, s) => sum + s.confidence, 0) / signals.length) : 0;
+  const resolutionRate = signals.length > 0 ? Math.round((resolvedSignals / signals.length) * 100) : 0;
+
   const uniqueAssets = [...new Set(signals.map(s => s.asset))].sort();
 
   const filteredSignals = signals.filter(s => {
@@ -185,6 +189,31 @@ export default function Home() {
     }
     return true;
   });
+
+  const exportCSV = useCallback(() => {
+    const headers = ['Public Key', 'Asset', 'Direction', 'Confidence', 'Entry Price', 'Target Price', 'Stop Loss', 'Created', 'Expires', 'Outcome', 'Agent'];
+    const rows = filteredSignals.map(s => [
+      s.publicKey,
+      s.asset,
+      s.direction,
+      s.confidence,
+      s.entryPrice,
+      s.targetPrice,
+      s.stopLoss,
+      new Date(s.createdAt).toISOString(),
+      new Date(s.timeHorizon).toISOString(),
+      s.outcome,
+      s.agent,
+    ].join(','));
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `solsignal-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [filteredSignals]);
 
   return (
     <div className="space-y-12">
@@ -243,6 +272,54 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Protocol Health */}
+      {!signalsLoading && signals.length > 0 && (
+        <ScrollReveal>
+          <section className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 md:p-8">
+            <div className="flex items-center gap-2 mb-6">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 badge-pulse" />
+              <h2 className="text-xl font-bold">Protocol Health</h2>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div>
+                <div className="text-3xl font-bold text-emerald-400">{signals.length}</div>
+                <div className="text-sm text-zinc-500 mt-1">Total Signals</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-blue-400">{resolutionRate}%</div>
+                <div className="text-sm text-zinc-500 mt-1">Resolution Rate</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-yellow-400">{avgConfidence}%</div>
+                <div className="text-sm text-zinc-500 mt-1">Avg Confidence</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-purple-400">{registry.totalAgents}</div>
+                <div className="text-sm text-zinc-500 mt-1">Active Agents</div>
+              </div>
+            </div>
+            <div className="mt-6 pt-4 border-t border-zinc-800 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="text-zinc-400">{correctSignals} correct</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-red-500" />
+                <span className="text-zinc-400">{resolvedSignals - correctSignals} incorrect</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-blue-500 badge-pulse" />
+                <span className="text-zinc-400">{activeSignals} active</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                <span className="text-zinc-400">{signals.length - resolvedSignals - activeSignals} awaiting</span>
+              </div>
+            </div>
+          </section>
+        </ScrollReveal>
+      )}
+
       {/* How it works */}
       <section className="grid md:grid-cols-4 gap-4">
         {[
@@ -250,14 +327,16 @@ export default function Home() {
           { step: '2', title: 'On-Chain Forever', desc: 'Every signal is stored as a Solana account — permanent and verifiable' },
           { step: '3', title: 'Auto-Resolved', desc: 'Signals resolve against Pyth oracle prices when the time horizon expires' },
           { step: '4', title: 'Reputation Built', desc: 'Agents build verifiable track records — accuracy is public and immutable' },
-        ].map((item) => (
-          <div key={item.step} className="bg-zinc-900 border border-zinc-800 rounded-lg p-5">
-            <div className="w-8 h-8 rounded-full bg-emerald-900/50 text-emerald-400 flex items-center justify-center text-sm font-bold mb-3">
-              {item.step}
+        ].map((item, i) => (
+          <ScrollReveal key={item.step} delay={i * 80}>
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 h-full">
+              <div className="w-8 h-8 rounded-full bg-emerald-900/50 text-emerald-400 flex items-center justify-center text-sm font-bold mb-3">
+                {item.step}
+              </div>
+              <h3 className="font-semibold mb-1">{item.title}</h3>
+              <p className="text-sm text-zinc-400">{item.desc}</p>
             </div>
-            <h3 className="font-semibold mb-1">{item.title}</h3>
-            <p className="text-sm text-zinc-400">{item.desc}</p>
-          </div>
+          </ScrollReveal>
         ))}
       </section>
 
@@ -302,6 +381,12 @@ export default function Home() {
                 Feed
               </button>
             </div>
+            <button
+              onClick={exportCSV}
+              className="text-xs text-zinc-500 hover:text-emerald-400 border border-zinc-800 hover:border-emerald-800 px-3 py-1.5 rounded-lg transition-colors"
+            >
+              Export CSV
+            </button>
             <a
               href={`https://solscan.io/account/${PROGRAM_ID.toBase58()}?cluster=devnet`}
               target="_blank"
@@ -387,19 +472,20 @@ export default function Home() {
         ) : (
           <div className="grid gap-4" ref={signalCardsRef}>
             {filteredSignals.map((signal, idx) => (
-              <LazySignalCard
-                key={signal.publicKey}
-                signal={signal}
-                prices={prices}
-                now={now}
-                index={idx}
-                isFocused={idx === focusedIndex}
-                copiedId={copiedId}
-                onCopy={copySignalId}
-                formatPrice={formatPrice}
-                getPnL={getPnL}
-                formatCountdown={formatCountdown}
-              />
+              <ScrollReveal key={signal.publicKey} delay={Math.min(idx * 50, 300)}>
+                <LazySignalCard
+                  signal={signal}
+                  prices={prices}
+                  now={now}
+                  index={idx}
+                  isFocused={idx === focusedIndex}
+                  copiedId={copiedId}
+                  onCopy={copySignalId}
+                  formatPrice={formatPrice}
+                  getPnL={getPnL}
+                  formatCountdown={formatCountdown}
+                />
+              </ScrollReveal>
             ))}
           </div>
         )}

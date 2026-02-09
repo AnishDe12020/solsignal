@@ -75,6 +75,10 @@ export async function GET() {
       agents,
       count: agents.length,
       timestamp: Date.now(),
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+      },
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });

@@ -87,6 +87,10 @@ export async function GET(
       resolved,
       outcome,
       resolutionPrice,
+    }, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=15, stale-while-revalidate=30',
+      },
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
