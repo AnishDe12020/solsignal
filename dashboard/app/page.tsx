@@ -11,6 +11,7 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { LazySignalCard } from '../components/LazySignalCard';
 import { ScrollReveal } from '../components/ScrollReveal';
 import { MarketTicker } from '../components/MarketTicker';
+import { AgentStatus } from '../components/AgentStatus';
 
 const PROGRAM_ID = new PublicKey('6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp');
 
@@ -473,6 +474,13 @@ export default function Home() {
       {/* Recent Activity Timeline */}
       {!signalsLoading && signals.length > 0 && (
         <RecentActivity signals={signals} />
+      )}
+
+      {/* Autonomous Agent Status */}
+      {!signalsLoading && signals.length > 0 && (
+        <ScrollReveal>
+          <AgentStatus signals={signals} />
+        </ScrollReveal>
       )}
 
       {/* Live Signals */}
