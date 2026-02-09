@@ -374,6 +374,13 @@ export default function StatsPage() {
   const maxConf = Math.max(...confBuckets.map(d => d.value), 1);
 
   const topAgent = agents.length > 0 ? agents.reduce((a, b) => a.reputationScore > b.reputationScore ? a : b) : null;
+  const batmanAgent = agents.find(a => a.name.toLowerCase().includes('batman')) || null;
+  const agentSignals = batmanAgent ? signals.filter(s => s.agent === batmanAgent.authority) : signals;
+
+  const agentCorrect = agentSignals.filter(s => s.outcome === 'correct').length;
+  const agentIncorrect = agentSignals.filter(s => s.outcome === 'incorrect').length;
+  const agentExpired = agentSignals.filter(s => s.outcome === 'expired').length;
+  const agentPending = agentSignals.filter(s => s.outcome === 'pending').length;
 
   return (
     <div className="space-y-8">
@@ -405,10 +412,10 @@ export default function StatsPage() {
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-5 sm:p-6">
             <div className="flex items-center gap-2 mb-6">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-xs font-bold">
-                {topAgent ? topAgent.name.slice(0, 2).toUpperCase() : '??'}
+                {batmanAgent ? batmanAgent.name.slice(0, 2).toUpperCase() : (topAgent ? topAgent.name.slice(0, 2).toUpperCase() : '??')}
               </div>
               <div>
-                <h2 className="text-xl font-bold">Agent Performance{topAgent ? `: @${topAgent.name}` : ''}</h2>
+                <h2 className="text-xl font-bold">Agent Performance{batmanAgent ? `: @${batmanAgent.name}` : ' (All Agents)'}</h2>
                 <p className="text-xs text-zinc-500">Accuracy, win rate, and P&L analysis</p>
               </div>
             </div>
@@ -416,24 +423,24 @@ export default function StatsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="bg-zinc-950/50 rounded-lg p-4">
                 <h3 className="font-medium text-sm text-zinc-400 mb-4 text-center">Signal Outcomes</h3>
-                <DonutChart correct={correct} incorrect={incorrect} expired={expiredOutcome} pending={active + expired} />
+                <DonutChart correct={agentCorrect} incorrect={agentIncorrect} expired={agentExpired} pending={agentPending} />
               </div>
 
               <div className="bg-zinc-950/50 rounded-lg p-4 lg:col-span-2">
                 <h3 className="font-medium text-sm text-zinc-400 mb-4">Accuracy Over Time</h3>
-                <AccuracyOverTimeChart signals={signals} />
+                <AccuracyOverTimeChart signals={agentSignals} />
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
               <div className="bg-zinc-950/50 rounded-lg p-4">
                 <h3 className="font-medium text-sm text-zinc-400 mb-4">Win Rate by Asset</h3>
-                <WinRateByAssetChart signals={signals} />
+                <WinRateByAssetChart signals={agentSignals} />
               </div>
 
               <div className="bg-zinc-950/50 rounded-lg p-4">
                 <h3 className="font-medium text-sm text-zinc-400 mb-4">Cumulative P&L</h3>
-                <PnLChart signals={signals} />
+                <PnLChart signals={agentSignals} />
               </div>
             </div>
           </div>
