@@ -5,6 +5,7 @@ import type { PricesResponse } from '../lib/types';
 
 export function usePrices() {
   const [prices, setPrices] = useState<Record<string, number>>({});
+  const [changes, setChanges] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,6 +17,9 @@ export function usePrices() {
         if (data.prices) {
           setPrices(data.prices);
         }
+        if (data.changes) {
+          setChanges(data.changes);
+        }
         setLoading(false);
       } catch (e) {
         setError('Failed to fetch prices');
@@ -24,10 +28,9 @@ export function usePrices() {
     }
 
     fetchPrices();
-    // Refresh every 30 seconds
     const interval = setInterval(fetchPrices, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  return { prices, loading, error };
+  return { prices, changes, loading, error };
 }

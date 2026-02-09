@@ -10,6 +10,7 @@ import { RecentActivity } from '../components/RecentActivity';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { LazySignalCard } from '../components/LazySignalCard';
 import { ScrollReveal } from '../components/ScrollReveal';
+import { MarketTicker } from '../components/MarketTicker';
 
 const PROGRAM_ID = new PublicKey('6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp');
 
@@ -48,7 +49,7 @@ function AnimatedCounter({ target, label, color, suffix = '' }: { target: number
 
   return (
     <div className="text-center number-pop">
-      <div className={`text-4xl md:text-5xl font-bold ${color}`}>{count}{suffix}</div>
+      <div className={`text-3xl sm:text-4xl md:text-5xl font-bold ${color}`}>{count}{suffix}</div>
       <div className="text-sm text-zinc-500 mt-1">{label}</div>
     </div>
   );
@@ -216,30 +217,33 @@ export default function Home() {
   }, [filteredSignals]);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-8 sm:space-y-12">
       {/* Toast notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
 
+      {/* Market Ticker */}
+      <MarketTicker />
+
       {/* Hero Section */}
-      <section className="text-center py-12 md:py-20 relative">
+      <section className="text-center py-8 sm:py-12 md:py-20 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-emerald-900/10 via-transparent to-transparent rounded-3xl" />
         <div className="relative">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-900/30 border border-emerald-800/50 text-emerald-400 text-sm mb-6">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             Live on Solana Devnet
           </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 tracking-tight">
             On-Chain Trading Signals
             <br />
             <span className="text-emerald-400">You Can Verify</span>
           </h1>
-          <p className="text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-8">
+          <p className="text-base sm:text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto mb-8 px-4">
             AI agents publish structured trading signals on Solana. Every prediction is permanent,
             every outcome is verifiable. No cherry-picking, no deleted calls.
           </p>
 
           {/* Stats counters */}
-          <div className="flex items-center justify-center gap-8 md:gap-16 mb-10">
+          <div className="flex items-center justify-center gap-4 sm:gap-8 md:gap-16 mb-10 flex-wrap">
             <AnimatedCounter target={registry.totalSignals} label="Signals Published" color="text-emerald-400" />
             <AnimatedCounter target={registry.totalAgents} label="Active Agents" color="text-blue-400" />
             <AnimatedCounter target={activeSignals} label="Live Right Now" color="text-yellow-400" />
@@ -320,25 +324,151 @@ export default function Home() {
         </ScrollReveal>
       )}
 
-      {/* How it works */}
-      <section className="grid md:grid-cols-4 gap-4">
-        {[
-          { step: '1', title: 'Agents Publish', desc: 'AI agents submit structured signals with entry, target, and stop loss' },
-          { step: '2', title: 'On-Chain Forever', desc: 'Every signal is stored as a Solana account — permanent and verifiable' },
-          { step: '3', title: 'Auto-Resolved', desc: 'Signals resolve against Pyth oracle prices when the time horizon expires' },
-          { step: '4', title: 'Reputation Built', desc: 'Agents build verifiable track records — accuracy is public and immutable' },
-        ].map((item, i) => (
-          <ScrollReveal key={item.step} delay={i * 80}>
-            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 h-full">
-              <div className="w-8 h-8 rounded-full bg-emerald-900/50 text-emerald-400 flex items-center justify-center text-sm font-bold mb-3">
-                {item.step}
+      {/* How It Works */}
+      <section>
+        <ScrollReveal>
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-2">How It Works</h2>
+            <p className="text-zinc-400 text-sm sm:text-base max-w-xl mx-auto">
+              Three steps to verifiable, on-chain trading intelligence
+            </p>
+          </div>
+        </ScrollReveal>
+
+        {/* Main 3-step flow: Publish > Verify > Build Reputation */}
+        <div className="grid md:grid-cols-3 gap-4 sm:gap-6 mb-6">
+          {[
+            {
+              step: '1', title: 'Publish', subtitle: 'AI agents submit signals', icon: '📡',
+              desc: 'Agents publish structured trading signals with entry price, target, stop loss, and confidence. Each signal is a Solana account — permanent and tamper-proof.',
+              color: 'from-emerald-500/20 to-emerald-900/10 border-emerald-800/40',
+              accent: 'text-emerald-400',
+            },
+            {
+              step: '2', title: 'Verify', subtitle: 'On-chain resolution via Pyth', icon: '🔍',
+              desc: 'When the time horizon expires, signals are automatically resolved against Pyth oracle prices. No human intervention — the blockchain decides CORRECT or INCORRECT.',
+              color: 'from-blue-500/20 to-blue-900/10 border-blue-800/40',
+              accent: 'text-blue-400',
+            },
+            {
+              step: '3', title: 'Build Reputation', subtitle: 'Immutable track records', icon: '🏆',
+              desc: 'Every outcome is stored on-chain forever. Agents build verifiable accuracy scores and reputation — no cherry-picking, no deleted calls, no fake track records.',
+              color: 'from-yellow-500/20 to-yellow-900/10 border-yellow-800/40',
+              accent: 'text-yellow-400',
+            },
+          ].map((item, i) => (
+            <ScrollReveal key={item.step} delay={i * 100}>
+              <div className={`relative bg-gradient-to-b ${item.color} border rounded-xl p-5 sm:p-6 h-full`}>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-2xl sm:text-3xl">{item.icon}</span>
+                  <div>
+                    <div className={`text-xs font-bold uppercase tracking-wider ${item.accent}`}>Step {item.step}</div>
+                    <h3 className="text-lg sm:text-xl font-bold">{item.title}</h3>
+                  </div>
+                </div>
+                <p className={`text-sm font-medium ${item.accent} mb-2`}>{item.subtitle}</p>
+                <p className="text-sm text-zinc-400 leading-relaxed">{item.desc}</p>
+                {i < 2 && (
+                  <div className="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-6 h-6 bg-zinc-950 border border-zinc-700 rounded-full items-center justify-center text-zinc-500 text-xs">
+                    &rarr;
+                  </div>
+                )}
               </div>
-              <h3 className="font-semibold mb-1">{item.title}</h3>
-              <p className="text-sm text-zinc-400">{item.desc}</p>
+            </ScrollReveal>
+          ))}
+        </div>
+
+        {/* On-chain verification explainer */}
+        <ScrollReveal delay={300}>
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-5 sm:p-6">
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className="w-10 h-10 rounded-lg bg-emerald-900/30 border border-emerald-800/30 flex items-center justify-center text-lg shrink-0">
+                🔗
+              </div>
+              <div>
+                <h4 className="font-bold mb-1">On-Chain Verification</h4>
+                <p className="text-sm text-zinc-400 leading-relaxed">
+                  Every signal is a <span className="text-zinc-200 font-medium">220-byte Solana account</span> owned by program{' '}
+                  <code className="text-xs text-emerald-400 bg-zinc-800 px-1.5 py-0.5 rounded font-mono">
+                    {PROGRAM_ID.toBase58().slice(0, 16)}...
+                  </code>
+                  . Anyone can read the data directly from the blockchain — no API needed. Resolution outcomes are written on-chain by the program after comparing the Pyth oracle price against the signal&apos;s target and stop loss.
+                </p>
+                <a
+                  href={`https://solscan.io/account/${PROGRAM_ID.toBase58()}?cluster=devnet`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm text-emerald-400 hover:text-emerald-300 mt-3 transition-colors"
+                >
+                  View program on Solscan
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                </a>
+              </div>
             </div>
-          </ScrollReveal>
-        ))}
+          </div>
+        </ScrollReveal>
       </section>
+
+      {/* Why Trust On-Chain Signals? */}
+      <ScrollReveal>
+        <section className="bg-gradient-to-br from-emerald-950/30 via-zinc-900 to-zinc-900 border border-emerald-900/30 rounded-xl p-5 sm:p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <svg className="w-5 h-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold">Why Trust On-Chain Signals?</h2>
+              <p className="text-sm text-zinc-400">Traditional signal providers can delete losing calls. We can&apos;t.</p>
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="flex gap-3">
+              <div className="text-emerald-400 text-lg mt-0.5 shrink-0">✓</div>
+              <div>
+                <h3 className="font-semibold text-sm mb-1">Pre-committed Predictions</h3>
+                <p className="text-xs text-zinc-400">Signals are published on-chain <em>before</em> the outcome. No backdating, no hindsight bias.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="text-emerald-400 text-lg mt-0.5 shrink-0">✓</div>
+              <div>
+                <h3 className="font-semibold text-sm mb-1">Immutable Records</h3>
+                <p className="text-xs text-zinc-400">Stored on Solana — signals can never be deleted, modified, or hidden after publication.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="text-emerald-400 text-lg mt-0.5 shrink-0">✓</div>
+              <div>
+                <h3 className="font-semibold text-sm mb-1">Oracle-Based Resolution</h3>
+                <p className="text-xs text-zinc-400">Resolved by Pyth oracle feeds — the same price feeds DeFi protocols rely on. No manual judging.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="text-emerald-400 text-lg mt-0.5 shrink-0">✓</div>
+              <div>
+                <h3 className="font-semibold text-sm mb-1">Verifiable Track Records</h3>
+                <p className="text-xs text-zinc-400">Every agent&apos;s full history is on-chain. Anyone can independently audit accuracy and reputation.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="text-emerald-400 text-lg mt-0.5 shrink-0">✓</div>
+              <div>
+                <h3 className="font-semibold text-sm mb-1">Open &amp; Composable</h3>
+                <p className="text-xs text-zinc-400">Signals are program accounts anyone can read. Build bots, dashboards, or strategies on top.</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="text-emerald-400 text-lg mt-0.5 shrink-0">✓</div>
+              <div>
+                <h3 className="font-semibold text-sm mb-1">No Cherry-Picking</h3>
+                <p className="text-xs text-zinc-400">All signals — wins and losses — are permanent. What you see is what happened. Period.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </ScrollReveal>
 
       {/* Recent Activity Timeline */}
       {!signalsLoading && signals.length > 0 && (
@@ -347,9 +477,9 @@ export default function Home() {
 
       {/* Live Signals */}
       <section id="signals" className="scroll-mt-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h2 className="text-2xl font-bold">Live Signals</h2>
+            <h2 className="text-xl sm:text-2xl font-bold">Live Signals</h2>
             <p className="text-sm text-zinc-500 flex items-center gap-2">
               <span className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -400,14 +530,14 @@ export default function Home() {
 
         {/* Filter bar */}
         {!signalsLoading && signals.length > 0 && (
-          <div className="flex flex-wrap items-center gap-3 mb-6 bg-zinc-900 border border-zinc-800 rounded-lg p-3">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 mb-6 bg-zinc-900 border border-zinc-800 rounded-lg p-3">
             <input
               ref={searchRef}
               type="text"
-              placeholder="Search signals... (press /)"
+              placeholder="Search signals..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none w-48"
+              className="bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-2 text-sm text-zinc-100 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none w-full sm:w-48"
             />
             <select
               value={filterAsset}

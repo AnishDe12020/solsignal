@@ -36,9 +36,14 @@
     color: rgb(167 243 208); /* emerald-200 */
   }
 
-  /* Smooth scrolling */
+  /* Smooth scrolling + overflow prevention */
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    overflow-x: hidden;
   }
 
   /* Focus ring styling */
@@ -176,4 +181,27 @@
 
 .number-pop {
   animation: number-pop 0.6s ease-out both;
+}
+
+/* Ticker scroll animation for market overview */
+@keyframes ticker-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-scroll {
+  animation: ticker-scroll 30s linear infinite;
+}
+
+.ticker-scroll:hover {
+  animation-play-state: paused;
+}
+
+/* Resolved signal glow */
+.resolved-correct {
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.1), 0 1px 3px rgba(16, 185, 129, 0.05);
+}
+
+.resolved-incorrect {
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.1), 0 1px 3px rgba(239, 68, 68, 0.05);
 }

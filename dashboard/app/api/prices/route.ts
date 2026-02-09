@@ -8,24 +8,47 @@ const PYTH_FEEDS: Record<string, string> = {
   'BONK/USDC': '72b021217ca3fe68922a19aaf990109cb9d84e9ad004b4d2025ad6f529314419',
 };
 
+const COINGECKO_IDS: Record<string, string> = {
+  'SOL/USDC': 'solana',
+  'BTC/USDC': 'bitcoin',
+  'ETH/USDC': 'ethereum',
+};
+
 export async function GET() {
   try {
     const ids = Object.values(PYTH_FEEDS).map(id => `ids[]=${id}`).join('&');
     const url = `https://hermes.pyth.network/api/latest_price_feeds?${ids}`;
-    
+
     const res = await fetch(url, { next: { revalidate: 30 } });
     const data = await res.json();
-    
+
     const prices: Record<string, number> = {};
-    
+
     for (const [asset, feedId] of Object.entries(PYTH_FEEDS)) {
       const feed = data.find((f: any) => f.id === feedId);
       if (feed) {
         prices[asset] = parseFloat(feed.price.price) * Math.pow(10, feed.price.expo);
       }
     }
-    
-    return NextResponse.json({ prices, timestamp: Date.now() }, {
+
+    // Optional 24h change from CoinGecko (fallback to 0 if unavailable)
+    let changes: Record<string, number> = {};
+    try {
+      const cgIds = Object.values(COINGECKO_IDS).join(',');
+      const cgUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${cgIds}&vs_currencies=usd&include_24hr_change=true`;
+      const cgRes = await fetch(cgUrl, { next: { revalidate: 300 } });
+      const cgData = await cgRes.json();
+      for (const [asset, id] of Object.entries(COINGECKO_IDS)) {
+        const change = cgData?.[id]?.usd_24h_change;
+        if (typeof change === 'number') {
+          changes[asset] = change;
+        }
+      }
+    } catch {
+      changes = {};
+    }
+
+    return NextResponse.json({ prices, changes, timestamp: Date.now() }, {
       headers: {
         'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=20',
       },

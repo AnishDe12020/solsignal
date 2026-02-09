@@ -132,6 +132,28 @@ export default function StatsPage() {
   // Agent stats
   const topAgent = agents.length > 0 ? agents.reduce((a, b) => a.reputationScore > b.reputationScore ? a : b) : null;
 
+  // Win rate by agent
+  const agentWinRates = agents.map(a => ({
+    name: a.name,
+    wins: a.correctSignals,
+    losses: a.incorrectSignals,
+    total: a.totalSignals,
+    accuracy: a.totalSignals > 0 ? ((a.correctSignals / Math.max(1, a.correctSignals + a.incorrectSignals)) * 100) : 0,
+    reputation: a.reputationScore,
+  })).filter(a => a.total > 0).sort((a, b) => b.accuracy - a.accuracy);
+
+  // Performance by asset: correct vs incorrect per asset
+  const assetPerformance: Record<string, { correct: number; incorrect: number; total: number }> = {};
+  signals.forEach(s => {
+    if (!assetPerformance[s.asset]) assetPerformance[s.asset] = { correct: 0, incorrect: 0, total: 0 };
+    assetPerformance[s.asset].total++;
+    if (s.outcome === 'correct') assetPerformance[s.asset].correct++;
+    if (s.outcome === 'incorrect') assetPerformance[s.asset].incorrect++;
+  });
+  const assetPerfData = Object.entries(assetPerformance)
+    .sort((a, b) => b[1].total - a[1].total);
+  const maxAssetPerf = Math.max(...assetPerfData.map(([, d]) => d.total), 1);
+
   return (
     <div className="space-y-8">
       <div>
@@ -237,9 +259,141 @@ export default function StatsPage() {
             <BarChart data={confBuckets} maxValue={maxConf} />
           </div>
 
+          {/* Agent Performance Overview */}
+          {resolved > 0 && (
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 sm:p-6">
+              <h3 className="font-semibold mb-4">Agent Performance</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                <div className="text-center p-3 bg-zinc-800/50 rounded-lg">
+                  <div className="text-2xl sm:text-3xl font-bold text-emerald-400">{correct}</div>
+                  <div className="text-xs text-zinc-500 mt-1">Wins</div>
+                </div>
+                <div className="text-center p-3 bg-zinc-800/50 rounded-lg">
+                  <div className="text-2xl sm:text-3xl font-bold text-red-400">{incorrect}</div>
+                  <div className="text-xs text-zinc-500 mt-1">Losses</div>
+                </div>
+                <div className="text-center p-3 bg-zinc-800/50 rounded-lg">
+                  <div className="text-2xl sm:text-3xl font-bold text-zinc-100">{accuracy}%</div>
+                  <div className="text-xs text-zinc-500 mt-1">Win Rate</div>
+                </div>
+                <div className="text-center p-3 bg-zinc-800/50 rounded-lg">
+                  <div className="text-2xl sm:text-3xl font-bold text-yellow-400">{expired}</div>
+                  <div className="text-xs text-zinc-500 mt-1">Awaiting</div>
+                </div>
+              </div>
+              {/* Win rate bar */}
+              <div>
+                <div className="flex justify-between text-xs text-zinc-400 mb-1">
+                  <span>Win Rate</span>
+                  <span>{accuracy}% ({correct}W / {incorrect}L)</span>
+                </div>
+                <div className="h-4 bg-zinc-800 rounded-full overflow-hidden flex">
+                  <div
+                    className="h-full bg-emerald-500 transition-all duration-700"
+                    style={{ width: resolved > 0 ? `${(correct / resolved) * 100}%` : '0%' }}
+                  />
+                  <div
+                    className="h-full bg-red-500 transition-all duration-700"
+                    style={{ width: resolved > 0 ? `${(incorrect / resolved) * 100}%` : '0%' }}
+                  />
+                </div>
+                <div className="flex justify-between text-[10px] text-zinc-600 mt-1">
+                  <span>Correct</span>
+                  <span>Incorrect</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Performance by Asset - CSS only bar chart */}
+          {assetPerfData.length > 0 && (
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 sm:p-6">
+              <h3 className="font-semibold mb-4">Performance by Asset</h3>
+              <div className="space-y-4">
+                {assetPerfData.map(([asset, data]) => {
+                  const assetResolved = data.correct + data.incorrect;
+                  const assetAccuracy = assetResolved > 0 ? Math.round((data.correct / assetResolved) * 100) : null;
+                  return (
+                    <div key={asset}>
+                      <div className="flex items-center justify-between text-sm mb-1.5">
+                        <span className="font-medium text-zinc-200">{asset}</span>
+                        <span className="text-zinc-400 text-xs">
+                          {data.total} signals
+                          {assetAccuracy !== null && (
+                            <span className={`ml-2 font-bold ${assetAccuracy >= 50 ? 'text-emerald-400' : 'text-red-400'}`}>
+                              {assetAccuracy}% win
+                            </span>
+                          )}
+                        </span>
+                      </div>
+                      <div className="h-6 bg-zinc-800 rounded overflow-hidden flex">
+                        {data.correct > 0 && (
+                          <div
+                            className="h-full bg-emerald-500 flex items-center justify-center text-[10px] font-bold text-white transition-all duration-700"
+                            style={{ width: `${(data.correct / maxAssetPerf) * 100}%` }}
+                          >
+                            {data.correct > 0 ? `${data.correct}W` : ''}
+                          </div>
+                        )}
+                        {data.incorrect > 0 && (
+                          <div
+                            className="h-full bg-red-500 flex items-center justify-center text-[10px] font-bold text-white transition-all duration-700"
+                            style={{ width: `${(data.incorrect / maxAssetPerf) * 100}%` }}
+                          >
+                            {data.incorrect > 0 ? `${data.incorrect}L` : ''}
+                          </div>
+                        )}
+                        <div
+                          className="h-full bg-zinc-700 flex items-center justify-center text-[10px] text-zinc-400 transition-all duration-700"
+                          style={{ width: `${((data.total - data.correct - data.incorrect) / maxAssetPerf) * 100}%` }}
+                        >
+                          {data.total - data.correct - data.incorrect > 0 ? `${data.total - data.correct - data.incorrect}` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex items-center gap-4 mt-4 text-[10px] text-zinc-500">
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-emerald-500" /> Correct</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-red-500" /> Incorrect</span>
+                <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-sm bg-zinc-700" /> Pending</span>
+              </div>
+            </div>
+          )}
+
+          {/* Agent Win Rates */}
+          {agentWinRates.length > 0 && (
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 sm:p-6">
+              <h3 className="font-semibold mb-4">Agent Win Rates</h3>
+              <div className="space-y-3">
+                {agentWinRates.map((agent, idx) => (
+                  <div key={agent.name} className="flex items-center gap-3">
+                    <span className="text-sm font-bold text-zinc-500 w-6 shrink-0">#{idx + 1}</span>
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-xs font-bold shrink-0">
+                      {agent.name.slice(0, 2).toUpperCase()}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-medium text-sm truncate">@{agent.name}</span>
+                        <span className={`text-sm font-bold ${agent.accuracy >= 50 ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {agent.accuracy.toFixed(0)}%
+                        </span>
+                      </div>
+                      <div className="h-2 bg-zinc-800 rounded-full overflow-hidden flex">
+                        <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${agent.accuracy}%` }} />
+                      </div>
+                      <div className="text-[10px] text-zinc-500 mt-0.5">{agent.wins}W / {agent.losses}L / {agent.total} total</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Agent stats */}
           {agents.length > 0 && (
-            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-6">
+            <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 sm:p-6">
               <h3 className="font-semibold mb-4">Top Agents by Reputation</h3>
               <div className="space-y-3">
                 {agents.slice(0, 5).map((agent, idx) => (

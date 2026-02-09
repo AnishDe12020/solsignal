@@ -39,6 +39,38 @@ function formatPrice(price: number): string {
   return price.toLocaleString();
 }
 
+function OutcomeBadge({ outcome, isExpired }: { outcome: string; isExpired: boolean }) {
+  if (outcome === 'correct') {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400">
+        ✅ CORRECT
+      </span>
+    );
+  }
+  if (outcome === 'incorrect') {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-red-500/20 border border-red-500/40 text-red-400">
+        ❌ INCORRECT
+      </span>
+    );
+  }
+  if (outcome === 'expired') {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-zinc-500/20 border border-zinc-500/40 text-zinc-400">
+        ⏰ EXPIRED
+      </span>
+    );
+  }
+  if (isExpired) {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-500/20 border border-yellow-500/40 text-yellow-400 badge-pulse">
+        ⏳ AWAITING
+      </span>
+    );
+  }
+  return null;
+}
+
 interface SignalFeedProps {
   signals: Signal[];
   prices: Record<string, number>;
@@ -58,23 +90,32 @@ export function SignalFeed({ signals, prices }: SignalFeedProps) {
             : ((signal.entryPrice - currentPrice) / signal.entryPrice) * 100
           : null;
         const isActive = signal.outcome === 'pending' && now <= signal.timeHorizon;
+        const isExpired = signal.outcome === 'pending' && now > signal.timeHorizon;
         const remaining = signal.timeHorizon - now;
         const hours = Math.floor(remaining / 3600000);
         const minutes = Math.floor((remaining % 3600000) / 60000);
+        const isResolved = signal.outcome === 'correct' || signal.outcome === 'incorrect' || signal.outcome === 'expired';
 
         return (
           <a
             key={signal.publicKey}
             href={`/signal/${signal.publicKey}`}
-            className="block bg-zinc-900 dark:bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-700 transition-all hover:shadow-lg hover:shadow-zinc-900/50"
+            className={`block bg-zinc-900 dark:bg-zinc-900 border rounded-xl p-4 sm:p-5 hover:border-zinc-700 transition-all hover:shadow-lg hover:shadow-zinc-900/50 ${
+              isResolved
+                ? signal.outcome === 'correct'
+                  ? 'border-emerald-800/40'
+                  : signal.outcome === 'incorrect'
+                  ? 'border-red-800/40'
+                  : 'border-zinc-700'
+                : 'border-zinc-800'
+            }`}
           >
-            {/* Header: avatar + agent + timestamp */}
             <div className="flex items-start gap-3 mb-3">
               <div className={`w-10 h-10 rounded-full ${getAgentColor(signal.agent)} flex items-center justify-center text-white text-sm font-bold flex-shrink-0`}>
                 {getAgentInitials(signal.agent)}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="font-semibold text-zinc-100 truncate">@{signal.agent.slice(0, 8)}...</span>
                   <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
                     signal.direction === 'long' ? 'bg-emerald-900/50 text-emerald-400' : 'bg-red-900/50 text-red-400'
@@ -87,6 +128,7 @@ export function SignalFeed({ signals, prices }: SignalFeedProps) {
                       Live
                     </span>
                   )}
+                  <OutcomeBadge outcome={signal.outcome} isExpired={isExpired} />
                 </div>
                 <div className="text-xs text-zinc-500 mt-0.5">
                   {timeAgo(signal.createdAt)}
@@ -94,9 +136,8 @@ export function SignalFeed({ signals, prices }: SignalFeedProps) {
               </div>
             </div>
 
-            {/* Signal content - the "tweet" body */}
-            <div className="ml-13 pl-[52px]">
-              <p className="text-zinc-200 mb-3">
+            <div className="sm:pl-[52px]">
+              <p className="text-zinc-200 mb-3 text-sm sm:text-base">
                 <span className="font-semibold">{signal.asset}</span>
                 {' '}
                 <span className={signal.direction === 'long' ? 'text-emerald-400' : 'text-red-400'}>
@@ -113,8 +154,7 @@ export function SignalFeed({ signals, prices }: SignalFeedProps) {
                 {')'}
               </p>
 
-              {/* Metrics row */}
-              <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-400">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs text-zinc-400">
                 <span className="flex items-center gap-1">
                   <span className="text-zinc-500">Confidence</span>
                   <span className="font-medium text-zinc-200">{signal.confidence}%</span>
@@ -137,13 +177,24 @@ export function SignalFeed({ signals, prices }: SignalFeedProps) {
                     <span className="text-zinc-200">{hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`}</span>
                   </span>
                 )}
-                {!isActive && signal.outcome !== 'pending' && (
-                  <span className={`flex items-center gap-1 ${
-                    signal.outcome === 'correct' ? 'text-emerald-400' : 'text-red-400'
-                  }`}>
-                    {signal.outcome === 'correct' ? 'Correct' : 'Incorrect'}
+                {isResolved && typeof signal.resolutionPrice === 'number' && signal.resolutionPrice > 0 && (
+                  <span className="flex items-center gap-1">
+                    <span className="text-zinc-500">Outcome</span>
+                    <span className="font-mono text-zinc-200">${formatPrice(signal.resolutionPrice)}</span>
                   </span>
                 )}
+              </div>
+
+              <div className="mt-2 text-xs">
+                <a
+                  href={`https://solscan.io/account/${signal.publicKey}?cluster=devnet`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-zinc-600 hover:text-emerald-400 font-mono"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Verify on Solscan →
+                </a>
               </div>
             </div>
           </a>

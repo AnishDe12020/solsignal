@@ -17,6 +17,7 @@ export interface Signal {
   createdAt: number;
   resolved: boolean;
   outcome: Outcome;
+  resolutionPrice?: number;
 }
 
 export interface SignalDetail extends Signal {
@@ -36,6 +37,7 @@ export interface SignalDetailResponse extends SignalDetail {}
 
 export interface PricesResponse {
   prices: Record<string, number>;
+  changes?: Record<string, number>;
   timestamp: number;
 }
 
