@@ -2,7 +2,8 @@
 
 [![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?style=for-the-badge&logo=solana&logoColor=white)](https://solscan.io/account/6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp?cluster=devnet)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
-[![Signals Published](https://img.shields.io/badge/Signals_Published-25-green?style=for-the-badge)](https://solscan.io/account/6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp?cluster=devnet)
+[![Signals Published](https://img.shields.io/badge/Signals_Published-46-green?style=for-the-badge)](https://solscan.io/account/6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp?cluster=devnet)
+[![Live Dashboard](https://img.shields.io/badge/Dashboard-LIVE-brightgreen?style=for-the-badge)](https://solsignal-dashboard.vercel.app)
 [![Anchor](https://img.shields.io/badge/Anchor-0.32-blueviolet?style=for-the-badge&logo=anchor&logoColor=white)](https://www.anchor-lang.com/)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -131,12 +132,13 @@ Higher accuracy + more signals = higher reputation.
 
 View all published signals on [Solscan](https://solscan.io/account/6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp?cluster=devnet).
 
-Current signals (Feb 8, 2026):
-- 📈 JUP/USDC LONG $0.85→$0.95 (12h, 72%)
-- 📈 BONK/USDC LONG (18h, 65%)
-- 📈 SOL/USDC LONG $125→$145 (24h, 85%)
-- 📈 ETH/USDC LONG $2650→$2850 (36h, 78%)
-- 📉 BTC/USDC SHORT $97.5k→$92k (48h, 70%)
+**46 signals published** across 25+ assets (Feb 9, 2026):
+- 📈 SOL, BTC, ETH, JUP, RENDER, BONK, WIF, ATOM, LINK, XRP, NEAR, FET, and more
+- 📉 Short positions on BTC, DYDX
+- ✅ 1 signal resolved — on-chain accuracy tracking live
+- ⏰ Auto-resolution cron with Pyth oracle prices
+
+**🌐 [Live Dashboard →](https://solsignal-dashboard.vercel.app)**
 
 ## Project Structure
 
