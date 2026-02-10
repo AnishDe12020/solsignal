@@ -24,18 +24,14 @@ const LOG_FILE = path.join(__dirname, "../logs/autonomous-analyst.log");
 const PRICE_HISTORY_FILE = path.join(__dirname, "../data/price-history.json");
 const DRY_RUN = process.argv.includes("--dry-run");
 
-// Assets we track — subset with reliable Pyth feeds
+// Assets we track — ONLY assets with WORKING Pyth devnet price feeds
+// Removed: SUI, AVAX, LINK, WIF, DOGE — these fail to resolve on devnet
 const TRACKED_ASSETS = [
   { symbol: "SOL/USDC", base: "SOL", pythFeedId: "ef0d8b6fda2ceba41da15d4095d1da392a0d2f8ed0c6c7bc0f4cfac8c280b56d" },
   { symbol: "BTC/USDC", base: "BTC", pythFeedId: "e62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43" },
   { symbol: "ETH/USDC", base: "ETH", pythFeedId: "ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace" },
   { symbol: "JUP/USDC", base: "JUP", pythFeedId: "0a0408d619e9380abad35060f9192039ed5042fa6f82301d0e48bb52be830996" },
   { symbol: "BONK/USDC", base: "BONK", pythFeedId: "72b021217ca3fe68922a19aaf990109cb9d84e9ad004b4d2025ad6f529314419" },
-  { symbol: "SUI/USDC", base: "SUI", pythFeedId: "23d7315113f5b1d3ba7a83604c44b94d79f4fd69af77f804fc7f920a6dc65744" },
-  { symbol: "DOGE/USDC", base: "DOGE", pythFeedId: "dcef50dd0a4cd2dcc17e45df1676dcb336a11a61c69df7a0299b0150c672d25c" },
-  { symbol: "AVAX/USDC", base: "AVAX", pythFeedId: "93da3352f9f1d105fdfe4971cfa80e9dd777bfc5d0f683ebb6e1294b92137bb7" },
-  { symbol: "LINK/USDC", base: "LINK", pythFeedId: "8ac0c70fff57e9aefdf5edf44b51d62c2d433653cbb2cf5cc06bb115af04d221" },
-  { symbol: "WIF/USDC", base: "WIF", pythFeedId: "4ca4beeca86f0d164160323817a4e42b10010a724c2217c6ee41b54cd4cc61fc" },
 ];
 
 // ── Logging ─────────────────────────────────────────────────────
@@ -207,9 +203,9 @@ function generateSignals(prices, history, pastSignals) {
         direction: "long",
         confidence: baseConf,
         entry: price,
-        target: price * (1 + Math.min(ta.momentum / 100 * 1.5, 0.08)),
+        target: price * (1 + Math.min(ta.momentum / 100 * 0.8, 0.03)),
         stop: price * (1 - Math.max(ta.volatility / 100 * 2, 0.02)),
-        hours: 12,
+        hours: 8,
         reasoning: `Momentum continuation: ${ta.momentum.toFixed(1)}% upward momentum over ${Math.min(ta.dataPoints, 12)} periods, short-term momentum ${ta.shortMomentum.toFixed(1)}%. Trend is ${ta.trend}. Volatility ${ta.volatility.toFixed(2)}%.`,
         score: ta.momentum * 2 + (ta.shortMomentum > 0 ? 10 : 0),
       });
@@ -222,9 +218,9 @@ function generateSignals(prices, history, pastSignals) {
         direction: "short",
         confidence: baseConf,
         entry: price,
-        target: price * (1 - Math.min(Math.abs(ta.momentum) / 100 * 1.5, 0.08)),
+        target: price * (1 - Math.min(Math.abs(ta.momentum) / 100 * 0.8, 0.03)),
         stop: price * (1 + Math.max(ta.volatility / 100 * 2, 0.02)),
-        hours: 12,
+        hours: 8,
         reasoning: `Momentum continuation (bearish): ${ta.momentum.toFixed(1)}% downward momentum. Short-term momentum ${ta.shortMomentum.toFixed(1)}%. Volatility ${ta.volatility.toFixed(2)}%.`,
         score: Math.abs(ta.momentum) * 2 + (ta.shortMomentum < 0 ? 10 : 0),
       });

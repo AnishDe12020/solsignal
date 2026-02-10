@@ -223,7 +223,7 @@ async function postToForum(apiKey, title, body) {
   
   const payload = {
     title,
-    content: body,
+    body: body,
     tags: ["progress-update", "trading"],
   };
 

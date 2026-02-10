@@ -1,9 +1,21 @@
 {
-  "lastReportedAt": null,
-  "lastResolvedCount": 2,
-  "lastCorrectCount": 1,
-  "lastIncorrectCount": 1,
-  "lastTotalSignals": 66,
-  "reportHistory": [],
-  "lastDryRunAt": "2026-02-09T10:54:10.211Z"
+  "lastReportedAt": "2026-02-10T07:00:04.298Z",
+  "lastResolvedCount": 83,
+  "lastCorrectCount": 16,
+  "lastIncorrectCount": 67,
+  "lastTotalSignals": 162,
+  "reportHistory": [
+    {
+      "at": "2026-02-10T06:36:58.838Z",
+      "resolved": 80,
+      "accuracy": 20,
+      "newResolutions": 78
+    },
+    {
+      "at": "2026-02-10T07:00:04.298Z",
+      "resolved": 83,
+      "accuracy": 19.27710843373494,
+      "newResolutions": 3
+    }
+  ]
 }
