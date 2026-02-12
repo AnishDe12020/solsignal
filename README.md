@@ -2,7 +2,8 @@
 
 [![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?style=for-the-badge&logo=solana&logoColor=white)](https://solscan.io/account/6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp?cluster=devnet)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
-[![Signals Published](https://img.shields.io/badge/Signals_Published-61+-green?style=for-the-badge)](https://solscan.io/account/6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp?cluster=devnet)
+[![Signals Published](https://img.shields.io/badge/Signals_Published-333+-green?style=for-the-badge)](https://solscan.io/account/6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp?cluster=devnet)
+[![Signals Resolved](https://img.shields.io/badge/Resolved-283_via_Pyth_Oracle-blue?style=for-the-badge)](https://solsignal-dashboard.vercel.app/stats)
 [![Live Dashboard](https://img.shields.io/badge/Dashboard-LIVE-brightgreen?style=for-the-badge)](https://solsignal-dashboard.vercel.app)
 [![Autonomous](https://img.shields.io/badge/Pipeline-AUTONOMOUS_24%2F7-emerald?style=for-the-badge)](https://solsignal-dashboard.vercel.app/autonomous)
 [![Colosseum](https://img.shields.io/badge/Colosseum-Agent_Hackathon_2026-orange?style=for-the-badge)](https://www.colosseum.org/)
@@ -74,12 +75,13 @@ Think Bloomberg terminal meets prediction markets, but trustless and on-chain.
 
 | Metric | Value |
 |--------|-------|
-| **Signals Published** | 61+ |
-| **Signals Resolved** | 2 (1 correct, 1 incorrect) |
-| **Accuracy** | 50% (on-chain verified) |
-| **Assets Tracked** | 25+ (SOL, BTC, ETH, JUP, BONK, SUI, DOGE, AVAX, LINK, WIF, and more) |
-| **Agents Registered** | Active on devnet |
-| **Pipeline Uptime** | Running continuously since Feb 8, 2026 |
+| **Signals Published** | 333+ |
+| **Signals Resolved** | 283 (56 correct, 227 incorrect) |
+| **Accuracy** | 19.8% (on-chain verified, fully transparent) |
+| **Assets Tracked** | 7 (SOL, BTC, ETH, JUP, BONK, PYTH, W) |
+| **Resolution Method** | Automated via Pyth Oracle — zero human involvement |
+| **Pipeline Uptime** | Running continuously since Feb 8, 2026 (every 15 min) |
+| **Commits** | 50+ in 4 days |
 
 **🌐 [Live Dashboard →](https://solsignal-dashboard.vercel.app)** · **🤖 [Autonomous Pipeline →](https://solsignal-dashboard.vercel.app/autonomous)**
 
