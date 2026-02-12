@@ -8892,3 +8892,610 @@ error TS5083: Cannot read file '/home/anish/solsignal/sol-signal/tsconfig.json'.
 [2026-02-12T04:30:07.570Z]   📊 Run Summary: 2/2 signals published
 [2026-02-12T04:30:07.570Z]   🕐 Next run: scheduled via cron
 [2026-02-12T04:30:07.570Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T04:45:01.290Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T04:45:01.293Z]   🤖 SolSignal Autonomous Analyst — Agent #982 (batman)
+[2026-02-12T04:45:01.293Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T04:45:01.293Z] 
+[2026-02-12T04:45:01.293Z] 📡 Step 1: Fetching live prices from Pyth...
+(node:2689781) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[2026-02-12T04:45:03.716Z]   ✅ Got prices for 7 assets
+[2026-02-12T04:45:03.716Z]     SOL/USDC: $80.6261 (±$0.0531)
+[2026-02-12T04:45:03.716Z]     BTC/USDC: $67181.3294 (±$31.3894)
+[2026-02-12T04:45:03.716Z]     ETH/USDC: $1970.2559 (±$0.9931)
+[2026-02-12T04:45:03.716Z]     JUP/USDC: $0.1398 (±$0.0002)
+[2026-02-12T04:45:03.716Z]     BONK/USDC: $0.00000601 (±$0.00000001)
+[2026-02-12T04:45:03.716Z]     PYTH/USDC: $0.0449 (±$0.0001)
+[2026-02-12T04:45:03.716Z]     W/USDC: $0.0197 (±$0.0001)
+[2026-02-12T04:45:03.716Z] 
+[2026-02-12T04:45:03.716Z] 📊 Step 2: Loading price history...
+[2026-02-12T04:45:03.718Z]   History: SOL/USDC:200pts, BTC/USDC:200pts, ETH/USDC:200pts, JUP/USDC:200pts, BONK/USDC:200pts, SUI/USDC:81pts, DOGE/USDC:81pts, AVAX/USDC:81pts, LINK/USDC:81pts, WIF/USDC:79pts, PYTH/USDC:14pts, W/USDC:14pts
+[2026-02-12T04:45:03.718Z] 
+[2026-02-12T04:45:03.718Z] 🔗 Step 3: Connecting to Solana devnet...
+[2026-02-12T04:45:03.764Z]   Wallet: HhC3onKVvMcW1vdBR5W6hYFJMr9ehpPerEZ4yKzdJnhb
+[2026-02-12T04:45:03.764Z]   RPC: https://api.devnet.solana.com
+[2026-02-12T04:45:03.764Z] 
+[2026-02-12T04:45:03.764Z] 📜 Step 4: Fetching past on-chain signals...
+[2026-02-12T04:45:03.944Z]   Total: 349 | Resolved: 289 (✅56 ❌233) | Pending: 60
+[2026-02-12T04:45:03.944Z]   Overall accuracy: 19.4%
+[2026-02-12T04:45:03.944Z] 
+[2026-02-12T04:45:03.944Z] 🧠 Step 5: Running technical analysis & signal generation...
+[2026-02-12T04:45:03.945Z]   📊 Calibration for PYTH/USDC: 1 past signals, 0% accuracy → confidence 40 → 20 (adj -25)
+[2026-02-12T04:45:03.945Z]   Generated 3 signal(s):
+[2026-02-12T04:45:03.945Z] 
+[2026-02-12T04:45:03.945Z]   ─── Signal 1 ───
+[2026-02-12T04:45:03.945Z]   Asset:      W/USDC
+[2026-02-12T04:45:03.945Z]   Direction:  LONG
+[2026-02-12T04:45:03.945Z]   Confidence: 58%
+[2026-02-12T04:45:03.945Z]   Entry:      $0.0197
+[2026-02-12T04:45:03.945Z]   Target:     $0.0200
+[2026-02-12T04:45:03.945Z]   Stop:       $0.0193
+[2026-02-12T04:45:03.945Z]   Horizon:    8h
+[2026-02-12T04:45:03.945Z]   Reasoning:  Momentum continuation: 1.6% upward momentum over 12 periods, short-term momentum 0.5%. Trend is bullish. Volatility 0.16...
+[2026-02-12T04:45:03.945Z] 
+[2026-02-12T04:45:03.945Z]   ─── Signal 2 ───
+[2026-02-12T04:45:03.945Z]   Asset:      PYTH/USDC
+[2026-02-12T04:45:03.945Z]   Direction:  LONG
+[2026-02-12T04:45:03.945Z]   Confidence: 20%
+[2026-02-12T04:45:03.945Z]   Entry:      $0.0449
+[2026-02-12T04:45:03.945Z]   Target:     $0.0467
+[2026-02-12T04:45:03.945Z]   Stop:       $0.0436
+[2026-02-12T04:45:03.945Z]   Horizon:    24h
+[2026-02-12T04:45:03.945Z]   Reasoning:  Volatility compression: 0.210% vol with 14 periods of data. Expecting breakout long. Momentum bias: 0.9%....
+[2026-02-12T04:45:03.945Z] 
+[2026-02-12T04:45:03.945Z]   ─── Signal 3 ───
+[2026-02-12T04:45:03.945Z]   Asset:      W/USDC
+[2026-02-12T04:45:03.945Z]   Direction:  LONG
+[2026-02-12T04:45:03.945Z]   Confidence: 40%
+[2026-02-12T04:45:03.945Z]   Entry:      $0.0197
+[2026-02-12T04:45:03.945Z]   Target:     $0.0205
+[2026-02-12T04:45:03.945Z]   Stop:       $0.0192
+[2026-02-12T04:45:03.945Z]   Horizon:    24h
+[2026-02-12T04:45:03.945Z]   Reasoning:  Volatility compression: 0.156% vol with 14 periods of data. Expecting breakout long. Momentum bias: 1.6%....
+[2026-02-12T04:45:03.945Z] 
+[2026-02-12T04:45:03.945Z] 🚀 Step 6: Publishing signals on-chain...
+[2026-02-12T04:45:03.945Z]   Publishing W/USDC LONG...
+[2026-02-12T04:45:04.490Z]   ✅ Published! Tx: afAo5ApvQ7pZDWkjEVeLTYbCc1grPoHQRV1Crt8kCBkLxdZNhGB2Fiy1FDMcEdJypxGFVPzQjAvrBT3bSWgxiSx
+[2026-02-12T04:45:04.490Z]      PDA: ENZPRtgMzLrBujKZQhpXkZd4PLDiLYTYpzxQJHNzTLyW
+[2026-02-12T04:45:04.490Z]      Expires: 2026-02-12T12:45:03.000Z
+[2026-02-12T04:45:06.491Z]   Publishing PYTH/USDC LONG...
+[2026-02-12T04:45:07.393Z]   ✅ Published! Tx: 5N7VsAaycERmtU5iUxtYqqTByMKQfbq9HtH6n5YEkfuUiV1PmEXYFqjMvgQuDkZcLzz4TaXJ6Wi5YPYNnoEshMpJ
+[2026-02-12T04:45:07.393Z]      PDA: BdNVxBUMzARRLtcKf3vTCXHJeRKWZJWgztzeMVKFo7oW
+[2026-02-12T04:45:07.393Z]      Expires: 2026-02-13T04:45:06.000Z
+[2026-02-12T04:45:09.395Z]   Publishing W/USDC LONG...
+[2026-02-12T04:45:09.900Z]   ✅ Published! Tx: 4Gfc3ymfAtHzR5Trx43pQgSJKc94eFCRbZWtFaT2iisH2dQVPgBP6LkEyeGydkv8qxAe8Ebz3W8kRwmxGvAJeodm
+[2026-02-12T04:45:09.900Z]      PDA: DmEstUGnpbjeXBuwtwZSnUhiAChy6qwHdFx9hRHErYu8
+[2026-02-12T04:45:09.900Z]      Expires: 2026-02-13T04:45:09.000Z
+[2026-02-12T04:45:09.900Z] 
+[2026-02-12T04:45:09.900Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T04:45:09.900Z]   📊 Run Summary: 3/3 signals published
+[2026-02-12T04:45:09.900Z]   🕐 Next run: scheduled via cron
+[2026-02-12T04:45:09.900Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:00:01.565Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:00:01.566Z]   🤖 SolSignal Autonomous Analyst — Agent #982 (batman)
+[2026-02-12T05:00:01.566Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:00:01.566Z] 
+[2026-02-12T05:00:01.566Z] 📡 Step 1: Fetching live prices from Pyth...
+(node:2815545) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+╔══════════════════════════════════════════════╗
+║   SolSignal Batch Resolution — Agent #982   ║
+╚══════════════════════════════════════════════╝
+
+⏰ Time: 2026-02-12T05:00:01.609Z
+🌐 Network: devnet
+👤 Resolver: HhC3onKVvMcW1vdBR5W6hYFJMr9ehpPerEZ4yKzdJnhb
+
+(node:2815547) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+📊 Total signals on-chain: 355
+
+  ✅ Already resolved: 289
+  ⏳ Not yet expired:  47
+  🔄 Expired & pending (to resolve): 19
+
+═══════════════════════════════════════════════
+  RESOLVING EXPIRED SIGNALS
+═══════════════════════════════════════════════
+
+🔄 RENDER/USDC LONG 📈
+   Entry: $4.500000 | Target: $5.800000 | Stop: $3.900000
+   Confidence: 68% | Expired: 2026-02-11T06:49:22.000Z
+  ⚠️ Pyth fetch error for RENDER: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 INJ/USDC LONG 📈
+   Entry: $25.000000 | Target: $30.000000 | Stop: $22.500000
+   Confidence: 75% | Expired: 2026-02-10T19:54:38.000Z
+  ⚠️ Pyth fetch error for INJ: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 PEPE/USDC LONG 📈
+   Entry: $0.000010 | Target: $0.000013 | Stop: $0.000008
+   Confidence: 52% | Expired: 2026-02-09T13:57:17.000Z
+  ⚠️ Pyth fetch error for PEPE: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 WIF/USDC LONG 📈
+   Entry: $1.850000 | Target: $2.200000 | Stop: $1.650000
+   Confidence: 60% | Expired: 2026-02-09T18:43:04.000Z
+  ⚠️ Pyth fetch error for WIF: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 MKR/USDC LONG 📈
+   Entry: $1850.000000 | Target: $2200.000000 | Stop: $1650.000000
+   Confidence: 70% | Expired: 2026-02-10T20:19:05.000Z
+  ⚠️ Pyth fetch error for MKR: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 FIL/USDC SHORT 📉
+   Entry: $5.500000 | Target: $4.200000 | Stop: $6.300000
+   Confidence: 54% | Expired: 2026-02-10T20:22:08.000Z
+  ⚠️ Pyth fetch error for FIL: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 DOT/USDC LONG 📈
+   Entry: $7.200000 | Target: $8.500000 | Stop: $6.400000
+   Confidence: 60% | Expired: 2026-02-10T08:01:39.000Z
+  ⚠️ Pyth fetch error for DOT: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 HYPE/USDC LONG 📈
+   Entry: $33.000000 | Target: $38.000000 | Stop: $30.000000
+   Confidence: 72% | Expired: 2026-02-11T07:24:09.000Z
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 SOL/USDC SHORT 📉
+   Entry: $79.560751 | Target: $77.969536 | Stop: $81.151966
+   Confidence: 20% | Expired: 2026-02-12T04:56:55.000Z
+   📊 Current Pyth price: $80.257879
+   ❌ INCORRECT — Tx: 5SNXxSVfctycXEFYHqpu...
+
+[2026-02-12T05:00:04.044Z]   ✅ Got prices for 7 assets
+[2026-02-12T05:00:04.044Z]     SOL/USDC: $80.2579 (±$0.0434)
+[2026-02-12T05:00:04.044Z]     BTC/USDC: $66970.4400 (±$22.0429)
+[2026-02-12T05:00:04.045Z]     ETH/USDC: $1964.4012 (±$0.9988)
+[2026-02-12T05:00:04.045Z]     JUP/USDC: $0.1391 (±$0.0002)
+[2026-02-12T05:00:04.045Z]     BONK/USDC: $0.00000600 (±$0.00000001)
+[2026-02-12T05:00:04.045Z]     PYTH/USDC: $0.0447 (±$0.0001)
+[2026-02-12T05:00:04.045Z]     W/USDC: $0.0198 (±$0.0001)
+[2026-02-12T05:00:04.045Z] 
+[2026-02-12T05:00:04.045Z] 📊 Step 2: Loading price history...
+[2026-02-12T05:00:04.046Z]   History: SOL/USDC:200pts, BTC/USDC:200pts, ETH/USDC:200pts, JUP/USDC:200pts, BONK/USDC:200pts, SUI/USDC:81pts, DOGE/USDC:81pts, AVAX/USDC:81pts, LINK/USDC:81pts, WIF/USDC:79pts, PYTH/USDC:16pts, W/USDC:16pts
+[2026-02-12T05:00:04.046Z] 
+[2026-02-12T05:00:04.046Z] 🔗 Step 3: Connecting to Solana devnet...
+[2026-02-12T05:00:04.075Z]   Wallet: HhC3onKVvMcW1vdBR5W6hYFJMr9ehpPerEZ4yKzdJnhb
+[2026-02-12T05:00:04.075Z]   RPC: https://api.devnet.solana.com
+[2026-02-12T05:00:04.075Z] 
+[2026-02-12T05:00:04.075Z] 📜 Step 4: Fetching past on-chain signals...
+[2026-02-12T05:00:04.236Z]   Total: 355 | Resolved: 290 (✅56 ❌234) | Pending: 65
+[2026-02-12T05:00:04.236Z]   Overall accuracy: 19.3%
+[2026-02-12T05:00:04.236Z] 
+[2026-02-12T05:00:04.236Z] 🧠 Step 5: Running technical analysis & signal generation...
+[2026-02-12T05:00:04.237Z]   📊 Calibration for PYTH/USDC: 1 past signals, 0% accuracy → confidence 40 → 20 (adj -25)
+[2026-02-12T05:00:04.237Z]   Generated 3 signal(s):
+[2026-02-12T05:00:04.237Z] 
+[2026-02-12T05:00:04.237Z]   ─── Signal 1 ───
+[2026-02-12T05:00:04.237Z]   Asset:      W/USDC
+[2026-02-12T05:00:04.237Z]   Direction:  LONG
+[2026-02-12T05:00:04.237Z]   Confidence: 58%
+[2026-02-12T05:00:04.237Z]   Entry:      $0.0198
+[2026-02-12T05:00:04.237Z]   Target:     $0.0201
+[2026-02-12T05:00:04.237Z]   Stop:       $0.0194
+[2026-02-12T05:00:04.237Z]   Horizon:    8h
+[2026-02-12T05:00:04.237Z]   Reasoning:  Momentum continuation: 2.0% upward momentum over 12 periods, short-term momentum 0.5%. Trend is bullish. Volatility 0.17...
+[2026-02-12T05:00:04.237Z] 
+[2026-02-12T05:00:04.237Z]   ─── Signal 2 ───
+[2026-02-12T05:00:04.237Z]   Asset:      PYTH/USDC
+[2026-02-12T05:00:04.237Z]   Direction:  SHORT
+[2026-02-12T05:00:04.237Z]   Confidence: 20%
+[2026-02-12T05:00:04.237Z]   Entry:      $0.0447
+[2026-02-12T05:00:04.237Z]   Target:     $0.0429
+[2026-02-12T05:00:04.237Z]   Stop:       $0.0461
+[2026-02-12T05:00:04.237Z]   Horizon:    24h
+[2026-02-12T05:00:04.237Z]   Reasoning:  Volatility compression: 0.228% vol with 16 periods of data. Expecting breakout short. Momentum bias: -0.0%....
+[2026-02-12T05:00:04.237Z] 
+[2026-02-12T05:00:04.237Z]   ─── Signal 3 ───
+[2026-02-12T05:00:04.237Z]   Asset:      W/USDC
+[2026-02-12T05:00:04.237Z]   Direction:  LONG
+[2026-02-12T05:00:04.237Z]   Confidence: 40%
+[2026-02-12T05:00:04.237Z]   Entry:      $0.0198
+[2026-02-12T05:00:04.237Z]   Target:     $0.0206
+[2026-02-12T05:00:04.237Z]   Stop:       $0.0192
+[2026-02-12T05:00:04.237Z]   Horizon:    24h
+[2026-02-12T05:00:04.237Z]   Reasoning:  Volatility compression: 0.172% vol with 16 periods of data. Expecting breakout long. Momentum bias: 2.0%....
+[2026-02-12T05:00:04.237Z] 
+[2026-02-12T05:00:04.237Z] 🚀 Step 6: Publishing signals on-chain...
+[2026-02-12T05:00:04.237Z]   Publishing W/USDC LONG...
+🔄 MATIC/USDC SHORT 📉
+   Entry: $0.920000 | Target: $0.780000 | Stop: $1.020000
+   Confidence: 64% | Expired: 2026-02-10T07:53:18.000Z
+  ⚠️ Pyth fetch error for MATIC: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 GRT/USDC LONG 📈
+   Entry: $0.220000 | Target: $0.300000 | Stop: $0.180000
+   Confidence: 71% | Expired: 2026-02-09T20:22:11.000Z
+  ⚠️ Pyth fetch error for GRT: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 UNI/USDC SHORT 📉
+   Entry: $7.800000 | Target: $6.500000 | Stop: $8.600000
+   Confidence: 62% | Expired: 2026-02-10T08:19:01.000Z
+  ⚠️ Pyth fetch error for UNI: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 FET/USDC LONG 📈
+   Entry: $1.850000 | Target: $2.300000 | Stop: $1.600000
+   Confidence: 74% | Expired: 2026-02-10T01:59:22.000Z
+[2026-02-12T05:00:04.795Z]   ✅ Published! Tx: 5aBBUvt3D5AgBSrYGrJBCibx8dNTTsM3KmvoKGsn1K2cxWucRWVXEGBR6zfAGPkqE9cSedrwzCFFyPrqY2YzzBzV
+[2026-02-12T05:00:04.795Z]      PDA: 723qJSbSHRb8V1H87izQrFwc13bKyt7Kx9Xvqy2Uojhx
+[2026-02-12T05:00:04.795Z]      Expires: 2026-02-12T13:00:04.000Z
+  ⚠️ Pyth fetch error for FET: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 WIF/USDC LONG 📈
+   Entry: $0.222991 | Target: $0.230087 | Stop: $0.218531
+   Confidence: 59% | Expired: 2026-02-10T02:57:02.000Z
+  ⚠️ Pyth fetch error for WIF: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 WIF/USDC LONG 📈
+   Entry: $0.223337 | Target: $0.230747 | Stop: $0.218870
+   Confidence: 59% | Expired: 2026-02-10T03:00:07.000Z
+  ⚠️ Pyth fetch error for WIF: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 OCEAN/USDC LONG 📈
+   Entry: $0.850000 | Target: $1.100000 | Stop: $0.700000
+   Confidence: 70% | Expired: 2026-02-10T08:43:32.000Z
+  ⚠️ Pyth fetch error for OCEAN: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 TRX/USDC SHORT 📉
+   Entry: $0.120000 | Target: $0.100000 | Stop: $0.140000
+   Confidence: 53% | Expired: 2026-02-11T02:43:29.000Z
+  ⚠️ Pyth fetch error for TRX: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 RNDR/USDC LONG 📈
+   Entry: $7.500000 | Target: $9.000000 | Stop: $6.800000
+   Confidence: 70% | Expired: 2026-02-10T06:56:30.000Z
+  ⚠️ Pyth fetch error for RNDR: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+🔄 ATOM/USDC LONG 📈
+   Entry: $9.500000 | Target: $11.500000 | Stop: $8.300000
+   Confidence: 68% | Expired: 2026-02-10T20:18:54.000Z
+  ⚠️ Pyth fetch error for ATOM: Unexpected token 'P', "Price ids "... is not valid JSON
+   ⚠️ Could not fetch Pyth price — skipping
+
+
+═══════════════════════════════════════════════
+  BATCH RESOLUTION RESULTS
+═══════════════════════════════════════════════
+
+  Signals resolved this run:   1
+    ✅ Correct:                0
+    ❌ Incorrect:              1
+  ⚠️ Failed/skipped:           18
+  📊 Batch accuracy:           0.0%
+
+═══════════════════════════════════════════════
+  ON-CHAIN AGENT PROFILE
+═══════════════════════════════════════════════
+
+  Agent:           batman
+  Total Signals:   356
+  Correct:         56
+  Incorrect:       234
+  Expired:         0
+  Accuracy:        19.31%
+  Reputation:      5599
+
+  ── Resolved Signals Breakdown ──
+  ❌ BONK/USDC      L | entry=$0.00 target=$0.00 resolved=$0.00
+  ❌ SOL/USDC       S | entry=$86.51 target=$84.78 resolved=$85.40
+  ❌ ETH/USDC       L | entry=$2125.40 target=$2235.77 resolved=$2029.61
+  ❌ NEAR/USDC      L | entry=$5.20 target=$6.50 resolved=$0.98
+  ❌ SOL/USDC       L | entry=$87.00 target=$98.00 resolved=$82.82
+  ❌ LINK/USDC      S | entry=$8.49 target=$8.00 resolved=$8.39
+  ✅ SOL/USDC       S | entry=$83.39 target=$81.73 resolved=$80.86
+  ❌ SOL/USDC       L | entry=$87.61 target=$89.37 resolved=$85.40
+  ❌ SOL/USDC       L | entry=$84.42 target=$86.11 resolved=$80.86
+  ❌ SOL/USDC       L | entry=$87.44 target=$89.19 resolved=$85.40
+  ❌ SOL/USDC       S | entry=$80.75 target=$79.13 resolved=$79.61
+  ✅ ETH/USDC       S | entry=$2124.82 target=$2057.38 resolved=$2040.19
+  ✅ SOL/USDC       S | entry=$82.89 target=$81.23 resolved=$80.86
+  ✅ SOL/USDC       S | entry=$87.30 target=$85.55 resolved=$85.41
+  ❌ SOL/USDC       L | entry=$83.43 target=$85.10 resolved=$80.86
+  ✅ SOL/USDC       S | entry=$82.67 target=$81.02 resolved=$80.86
+  ❌ SOL/USDC       S | entry=$80.87 target=$79.25 resolved=$79.61
+  ❌ SOL/USDC       S | entry=$81.00 target=$79.38 resolved=$79.61
+  ❌ SUI/USDC       S | entry=$0.93 target=$0.88 resolved=$0.91
+  ❌ ETH/USDC       S | entry=$2069.50 target=$1992.86 resolved=$2013.65
+  ✅ SOL/USDC       S | entry=$80.48 target=$78.87 resolved=$78.36
+  ❌ LINK/USDC      L | entry=$8.92 target=$9.36 resolved=$8.62
+  ❌ ETH/USDC       L | entry=$2400.00 target=$2700.00 resolved=$1946.22
+  ✅ SOL/USDC       S | entry=$83.05 target=$81.39 resolved=$80.86
+  ❌ SOL/USDC       S | entry=$82.50 target=$80.85 resolved=$80.85
+  ❌ SOL/USDC       L | entry=$86.49 target=$88.22 resolved=$85.41
+  ❌ SOL/USDC       S | entry=$84.58 target=$82.89 resolved=$83.57
+  ❌ JUP/USDC       L | entry=$0.15 target=$0.15 resolved=$0.14
+  ❌ JUP/USDC       S | entry=$0.14 target=$0.14 resolved=$0.14
+  ❌ SOL/USDC       L | entry=$79.82 target=$81.42 resolved=$80.11
+  ❌ SOL/USDC       S | entry=$84.12 target=$82.44 resolved=$82.78
+  ❌ SOL/USDC       L | entry=$85.24 target=$86.95 resolved=$85.41
+  ❌ SOL/USDC       L | entry=$82.95 target=$84.61 resolved=$80.85
+  ❌ SOL/USDC       L | entry=$83.50 target=$85.17 resolved=$80.95
+  ❌ ETH/USDC       S | entry=$2007.66 target=$1865.59 resolved=$2008.32
+  ❌ SOL/USDC       L | entry=$87.26 target=$89.00 resolved=$85.42
+  ❌ SOL/USDC       S | entry=$87.15 target=$85.40 resolved=$85.43
+  ❌ SOL/USDC       S | entry=$79.80 target=$78.21 resolved=$80.17
+  ❌ RAY/USDC       L | entry=$4.80 target=$5.80 resolved=$0.58
+  ❌ ETH/USDC       S | entry=$1947.62 target=$1893.85 resolved=$1930.58
+  ❌ ETH/USDC       S | entry=$1970.38 target=$1937.05 resolved=$1952.43
+  ✅ FARTCOIN/SOL   L | entry=$0.00 target=$0.00 resolved=$0.00
+  ❌ JUP/USDC       S | entry=$0.15 target=$0.14 resolved=$0.14
+  ❌ SOL/USDC       L | entry=$84.47 target=$86.16 resolved=$80.85
+  ✅ SOL/USDC       S | entry=$87.28 target=$85.54 resolved=$85.44
+  ❌ SOL/USDC       L | entry=$83.03 target=$84.69 resolved=$80.62
+  ❌ SOL/USDC       L | entry=$83.85 target=$85.52 resolved=$82.78
+  ✅ SOL/USDC       S | entry=$82.58 target=$80.93 resolved=$80.86
+  ❌ SUI/USDC       L | entry=$3.20 target=$3.80 resolved=$0.94
+  ❌ AVAX/USDC      S | entry=$9.10 target=$8.20 resolved=$8.73
+  ❌ BTC/USDC       S | entry=$68708.35 target=$65898.25 resolved=$69193.50
+  ❌ SOL/USDC       L | entry=$85.28 target=$86.99 resolved=$85.45
+  ❌ LINK/USDC      S | entry=$8.63 target=$8.35 resolved=$8.39
+  ❌ SOL/USDC       S | entry=$84.31 target=$82.62 resolved=$84.39
+  ❌ SOL/USDC       S | entry=$83.75 target=$82.07 resolved=$87.51
+  ❌ JUP/USDC       S | entry=$0.15 target=$0.14 resolved=$0.15
+  ❌ ETH/USDC       S | entry=$2039.88 target=$1957.08 resolved=$2008.28
+  ❌ SUI/USDC       S | entry=$0.93 target=$0.87 resolved=$0.94
+  ✅ BONK/USDC      S | entry=$0.00 target=$0.00 resolved=$0.00
+  ✅ BTC/USDC       S | entry=$97000.00 target=$89000.00 resolved=$69129.50
+  ✅ SOL/USDC       S | entry=$83.12 target=$81.46 resolved=$80.86
+  ❌ JUP/USDC       S | entry=$0.15 target=$0.14 resolved=$0.15
+  ✅ BTC/USDC       S | entry=$97500.00 target=$92000.00 resolved=$68857.12
+  ❌ RUNE/USDC      L | entry=$4.80 target=$6.00 resolved=$0.40
+  ❌ BTC/USDC       L | entry=$97000.00 target=$105000.00 resolved=$66812.07
+  ❌ SOL/USDC       S | entry=$87.97 target=$85.10 resolved=$85.45
+  ❌ SOL/USDC       L | entry=$84.11 target=$85.80 resolved=$80.86
+  ✅ SOL/USDC       S | entry=$82.56 target=$80.91 resolved=$80.86
+  ❌ ETH/USDC       S | entry=$2120.00 target=$1950.00 resolved=$2012.77
+  ❌ ETH/USDC       L | entry=$2095.04 target=$2209.66 resolved=$2041.84
+  ✅ SOL/USDC       S | entry=$87.26 target=$85.51 resolved=$85.47
+  ❌ SOL/USDC       L | entry=$84.04 target=$85.72 resolved=$80.86
+  ❌ SOL/USDC       S | entry=$84.57 target=$82.88 resolved=$84.46
+  ✅ JUP/USDC       S | entry=$0.14 target=$0.14 resolved=$0.14
+  ✅ SOL/USDC       S | entry=$82.60 target=$80.95 resolved=$80.86
+  ❌ SOL/USDC       L | entry=$87.53 target=$91.04 resolved=$85.10
+  ❌ BTC/USDC       S | entry=$67073.16 target=$65457.60 resolved=$66490.71
+  ❌ SOL/USDC       S | entry=$93.00 target=$82.00 resolved=$84.49
+  ❌ SOL/USDC       L | entry=$87.75 target=$89.50 resolved=$85.50
+  ❌ SOL/USDC       S | entry=$81.05 target=$79.43 resolved=$79.62
+  ❌ SOL/USDC       L | entry=$80.87 target=$82.48 resolved=$78.37
+  ❌ JUP/USDC       L | entry=$0.14 target=$0.14 resolved=$0.14
+  ❌ SOL/USDC       S | entry=$84.50 target=$82.81 resolved=$83.81
+  ❌ SOL/USDC       S | entry=$80.80 target=$79.19 resolved=$79.48
+  ✅ BONK/USDC      L | entry=$0.00 target=$0.00 resolved=$0.00
+  ❌ SOL/USDC       S | entry=$79.63 target=$78.04 resolved=$79.55
+  ❌ SOL/USDC       L | entry=$79.61 target=$81.20 resolved=$80.10
+  ❌ ETH/USDC       L | entry=$2020.00 target=$2150.00 resolved=$2116.29
+  ❌ SOL/USDC       L | entry=$79.63 target=$81.22 resolved=$80.28
+  ❌ SOL/USDC       S | entry=$84.40 target=$82.71 resolved=$83.58
+  ❌ BTC/USDC       L | entry=$70500.00 target=$76000.00 resolved=$66807.23
+  ❌ SOL/USDC       S | entry=$86.72 target=$84.99 resolved=$85.50
+  ❌ SOL/USDC       L | entry=$84.18 target=$85.87 resolved=$82.78
+  ❌ SOL/USDC       S | entry=$84.16 target=$82.47 resolved=$82.82
+  ❌ SOL/USDC       S | entry=$84.13 target=$82.45 resolved=$82.98
+  ❌ LINK/USDC      S | entry=$8.68 target=$8.37 resolved=$8.39
+  ✅ SOL/USDC       S | entry=$84.38 target=$82.69 resolved=$80.86
+  ❌ SOL/USDC       L | entry=$84.70 target=$86.40 resolved=$80.87
+  ❌ SOL/USDC       L | entry=$81.30 target=$82.93 resolved=$79.73
+  ✅ SOL/USDC       S | entry=$86.62 target=$84.89 resolved=$84.87
+  ❌ ETH/USDC       L | entry=$2090.01 target=$2192.68 resolved=$2042.81
+  ❌ SOL/USDC       L | entry=$79.83 target=$81.43 resolved=$80.60
+  ❌ JUP/USDC       L | entry=$0.16 target=$0.16 resolved=$0.15
+  ❌ BONK/USDC      L | entry=$0.00 target=$0.00 resolved=$0.00
+  ❌ SOL/USDC       S | entry=$84.13 target=$82.44 resolved=$82.83
+  ❌ JUP/USDC       S | entry=$0.14 target=$0.14 resolved=$0.14
+  ❌ SOL/USDC       S | entry=$84.74 target=$83.05 resolved=$83.81
+  ✅ BONK/USDC      L | entry=$0.00 target=$0.00 resolved=$0.00
+  ❌ SOL/USDC       S | entry=$79.15 target=$77.57 resolved=$80.29
+  ✅ SOL/USDC       S | entry=$84.31 target=$82.63 resolved=$80.87
+  ❌ SOL/USDC       S | entry=$80.96 target=$79.34 resolved=$81.82
+  ❌ SOL/USDC       L | entry=$87.44 target=$89.19 resolved=$85.50
+  ❌ SOL/USDC       L | entry=$87.49 target=$89.24 resolved=$85.51
+  ❌ SOL/USDC       L | entry=$81.24 target=$82.87 resolved=$79.84
+  ❌ SUI/USDC       S | entry=$0.93 target=$0.87 resolved=$0.94
+  ❌ DOGE/USDC      L | entry=$0.09 target=$0.10 resolved=$0.09
+  ❌ SEI/USDC       L | entry=$0.42 target=$0.55 resolved=$0.07
+  ❌ SOL/USDC       S | entry=$84.18 target=$82.49 resolved=$82.98
+  ✅ SOL/USDC       S | entry=$82.63 target=$80.98 resolved=$80.87
+  ❌ TIA/USDC       L | entry=$8.50 target=$10.50 resolved=$0.32
+  ❌ JUP/USDC       S | entry=$0.15 target=$0.14 resolved=$0.14
+  ❌ SOL/USDC       L | entry=$83.26 target=$84.92 resolved=$80.87
+  ❌ SOL/USDC       L | entry=$80.20 target=$81.81 resolved=$80.55
+  ❌ SOL/USDC       L | entry=$81.23 target=$82.85 resolved=$78.78
+  ❌ STX/USDC       L | entry=$1.45 target=$1.85 resolved=$0.26
+  ✅ ARB/USDC       S | entry=$1.15 target=$0.95 resolved=$0.11
+  ❌ SOL/USDC       S | entry=$83.98 target=$82.30 resolved=$87.33
+  ✅ SOL/USDC       S | entry=$86.36 target=$84.63 resolved=$84.24
+  ❌ SOL/USDC       S | entry=$87.06 target=$85.32 resolved=$85.51
+  ✅ BONK/USDC      S | entry=$0.00 target=$0.00 resolved=$0.00
+  ❌ SOL/USDC       S | entry=$83.67 target=$81.99 resolved=$82.77
+  ❌ SOL/USDC       S | entry=$84.55 target=$82.86 resolved=$84.46
+  ❌ SUI/USDC       S | entry=$0.93 target=$0.86 resolved=$0.94
+  ❌ APT/USDC       L | entry=$9.80 target=$12.00 resolved=$0.95
+  ❌ SOL/USDC       S | entry=$83.88 target=$82.21 resolved=$82.82
+  ❌ SOL/USDC       L | entry=$84.74 target=$86.43 resolved=$83.81
+  ❌ DOGE/USDC      L | entry=$0.09 target=$0.10 resolved=$0.09
+  ❌ SUI/USDC       S | entry=$0.93 target=$0.89 resolved=$0.91
+  ❌ SOL/USDC       S | entry=$83.78 target=$82.10 resolved=$84.39
+  ❌ DYDX/USDC      L | entry=$2.10 target=$2.80 resolved=$0.10
+  ❌ SOL/USDC       S | entry=$80.94 target=$79.32 resolved=$79.61
+  ❌ JUP/USDC       S | entry=$0.15 target=$0.14 resolved=$0.15
+  ❌ AVAX/USDC      L | entry=$8.20 target=$9.50 resolved=$8.73
+  ❌ JUP/USDC       L | entry=$0.15 target=$0.15 resolved=$0.15
+  ❌ ETH/USDC       S | entry=$2063.51 target=$1984.68 resolved=$2012.39
+  ❌ ETH/USDC       L | entry=$2008.66 target=$2077.54 resolved=$2014.01
+  ❌ SOL/USDC       L | entry=$84.19 target=$85.68 resolved=$80.84
+  ❌ SOL/USDC       S | entry=$79.76 target=$78.17 resolved=$80.11
+  ❌ SOL/USDC       S | entry=$79.60 target=$78.01 resolved=$80.29
+  ❌ JUP/USDC       S | entry=$0.15 target=$0.14 resolved=$0.14
+  ❌ CRV/USDC       L | entry=$0.65 target=$0.85 resolved=$0.23
+  ✅ SOL/USDC       L | entry=$84.35 target=$86.04 resolved=$86.78
+  ✅ SOL/USDC       S | entry=$87.28 target=$85.54 resolved=$84.49
+  ❌ SOL/USDC       S | entry=$84.50 target=$82.81 resolved=$83.83
+  ❌ PYTH/USDC      L | entry=$0.42 target=$0.52 resolved=$0.04
+  ✅ SOL/USDC       S | entry=$83.00 target=$81.34 resolved=$80.87
+  ❌ SOL/USDC       S | entry=$82.42 target=$80.77 resolved=$80.87
+  ❌ SOL/USDC       S | entry=$80.75 target=$79.14 resolved=$79.60
+  ❌ DOGE/USDC      S | entry=$0.09 target=$0.07 resolved=$0.10
+  ✅ BONK/USDC      L | entry=$0.00 target=$0.00 resolved=$0.00
+  ❌ JUP/USDC       L | entry=$0.15 target=$0.15 resolved=$0.14
+  ✅ SOL/USDC       S | entry=$82.74 target=$81.09 resolved=$80.87
+  ❌ SOL/USDC       S | entry=$80.03 target=$78.42 resolved=$79.55
+  ✅ SOL/USDC       S | entry=$87.29 target=$85.55 resolved=$85.40
+  ✅ SOL/USDC       S | entry=$80.66 target=$79.04 resolved=$78.38
+  ❌ SOL/USDC       S | entry=$84.26 target=$82.57 resolved=$84.39
+  ❌ SOL/USDC       S | entry=$80.84 target=$79.22 resolved=$79.61
+  ❌ SUI/USDC       S | entry=$0.95 target=$0.91 resolved=$0.94
+  ❌ SOL/USDC       S | entry=$86.37 target=$84.64 resolved=$84.92
+  ❌ SOL/USDC       S | entry=$79.78 target=$78.18 resolved=$79.55
+  ❌ JUP/USDC       L | entry=$0.16 target=$0.17 resolved=$0.15
+  ❌ SOL/USDC       L | entry=$80.60 target=$82.22 resolved=$80.57
+  ✅ OP/USDC        S | entry=$2.80 target=$2.30 resolved=$0.19
+  ❌ SOL/USDC       S | entry=$79.00 target=$77.42 resolved=$80.28
+  ✅ SOL/USDC       S | entry=$87.22 target=$85.48 resolved=$84.58
+  ❌ SOL/USDC       S | entry=$84.56 target=$82.86 resolved=$83.56
+  ❌ SOL/USDC       S | entry=$82.32 target=$80.67 resolved=$80.87
+  ❌ SOL/USDC       S | entry=$84.21 target=$82.53 resolved=$84.19
+  ❌ LINK/USDC      S | entry=$8.50 target=$8.06 resolved=$8.39
+  ❌ SOL/USDC       L | entry=$84.59 target=$86.28 resolved=$82.98
+  ✅ SOL/USDC       S | entry=$86.50 target=$84.77 resolved=$84.18
+  ✅ BONK/USDC      S | entry=$0.00 target=$0.00 resolved=$0.00
+  ✅ SOL/USDC       S | entry=$86.69 target=$84.96 resolved=$84.54
+  ❌ SOL/USDC       L | entry=$83.42 target=$85.09 resolved=$80.87
+  ❌ BTC/USDC       L | entry=$70000.00 target=$75600.00 resolved=$66819.57
+  ❌ SOL/USDC       L | entry=$81.29 target=$82.91 resolved=$79.72
+  ✅ BONK/USDC      L | entry=$0.00 target=$0.00 resolved=$0.00
+  ❌ SOL/USDC       L | entry=$81.11 target=$82.74 resolved=$79.84
+  ❌ SOL/USDC       S | entry=$83.39 target=$81.72 resolved=$88.42
+  ❌ SOL/USDC       S | entry=$80.28 target=$78.67 resolved=$79.57
+  ❌ SOL/USDC       L | entry=$81.32 target=$82.95 resolved=$79.83
+  ❌ SOL/USDC       S | entry=$78.81 target=$77.21 resolved=$80.11
+  ❌ SOL/USDC       S | entry=$84.48 target=$82.79 resolved=$84.19
+  ✅ SOL/USDC       S | entry=$82.58 target=$81.21 resolved=$80.87
+  ❌ SOL/USDC       L | entry=$84.92 target=$87.62 resolved=$85.44
+  ❌ SOL/USDC       S | entry=$84.58 target=$82.89 resolved=$83.57
+  ✅ SOL/USDC       S | entry=$82.54 target=$80.89 resolved=$80.86
+  ❌ SOL/USDC       L | entry=$80.86 target=$82.48 resolved=$78.37
+  ❌ SOL/USDC       L | entry=$125.00 target=$145.00 resolved=$87.52
+  ❌ LINK/USDC      S | entry=$8.61 target=$8.31 resolved=$8.39
+  ✅ JUP/USDC       S | entry=$0.14 target=$0.14 resolved=$0.14
+  ❌ SOL/USDC       L | entry=$84.62 target=$86.31 resolved=$80.87
+  ❌ SOL/USDC       L | entry=$87.75 target=$93.07 resolved=$85.45
+  ✅ BONK/USDC      S | entry=$0.00 target=$0.00 resolved=$0.00
+  ✅ AAVE/USDC      L | entry=$88.00 target=$105.00 resolved=$109.08
+  ❌ ETH/USDC       L | entry=$2126.31 target=$2272.92 resolved=$2041.20
+  ❌ BTC/USDC       S | entry=$73400.00 target=$68000.00 resolved=$70876.03
+  ❌ ETH/USDC       L | entry=$2650.00 target=$2850.00 resolved=$2041.33
+  ❌ SOL/USDC       S | entry=$84.55 target=$82.86 resolved=$84.19
+  ❌ SOL/USDC       S | entry=$83.41 target=$81.74 resolved=$87.54
+  ❌ JUP/USDC       S | entry=$0.15 target=$0.14 resolved=$0.15
+  ✅ BONK/USDC      S | entry=$0.00 target=$0.00 resolved=$0.00
+  ❌ JUP/USDC       S | entry=$0.14 target=$0.13 resolved=$0.14
+  ✅ XRP/USDC       L | entry=$0.58 target=$0.72 resolved=$1.45
+  ❌ SOL/USDC       S | entry=$84.40 target=$82.71 resolved=$87.94
+  ❌ SOL/USDC       S | entry=$84.06 target=$80.74 resolved=$85.46
+  ❌ ETH/USDC       S | entry=$1914.19 target=$1881.81 resolved=$1962.39
+  ❌ SOL/USDC       L | entry=$87.26 target=$89.00 resolved=$85.46
+  ❌ SOL/USDC       L | entry=$81.14 target=$82.76 resolved=$79.83
+  ❌ ETH/USDC       S | entry=$2100.00 target=$1950.00 resolved=$2008.71
+  ❌ SOL/USDC       L | entry=$85.25 target=$86.95 resolved=$85.50
+  ❌ SOL/USDC       L | entry=$80.11 target=$81.71 resolved=$80.77
+  ❌ SOL/USDC       L | entry=$79.88 target=$81.47 resolved=$80.60
+  ❌ SOL/USDC       L | entry=$80.53 target=$82.14 resolved=$80.56
+  ❌ JUP/USDC       S | entry=$0.15 target=$0.14 resolved=$0.15
+  ✅ JUP/USDC       S | entry=$0.14 target=$0.14 resolved=$0.14
+  ❌ SOL/USDC       S | entry=$82.36 target=$80.72 resolved=$80.86
+  ❌ SOL/USDC       L | entry=$79.67 target=$81.27 resolved=$80.17
+  ❌ ETH/USDC       S | entry=$2004.46 target=$1855.23 resolved=$2008.27
+  ✅ JUP/USDC       S | entry=$0.15 target=$0.15 resolved=$0.15
+  ❌ AVAX/USDC      L | entry=$38.50 target=$45.00 resolved=$8.73
+  ❌ ETH/USDC       S | entry=$1957.74 target=$1906.18 resolved=$1931.22
+  ❌ SOL/USDC       S | entry=$79.12 target=$76.98 resolved=$80.17
+  ❌ SOL/USDC       L | entry=$79.61 target=$81.20 resolved=$80.11
+  ❌ SOL/USDC       L | entry=$79.72 target=$81.31 resolved=$80.18
+  ❌ SOL/USDC       L | entry=$86.05 target=$87.77 resolved=$85.50
+  ❌ SOL/USDC       S | entry=$84.16 target=$82.47 resolved=$84.18
+  ❌ AVAX/USDC      L | entry=$9.07 target=$9.55 resolved=$8.87
+  ❌ JUP/USDC       L | entry=$0.85 target=$0.95 resolved=$0.16
+  ✅ SOL/USDC       L | entry=$84.41 target=$86.10 resolved=$86.79
+  ❌ SOL/USDC       L | entry=$87.32 target=$89.06 resolved=$85.50
+  ❌ SOL/USDC       L | entry=$80.85 target=$82.46 resolved=$79.50
+  ❌ JUP/USDC       S | entry=$0.14 target=$0.14 resolved=$0.14
+  ❌ SOL/USDC       S | entry=$83.95 target=$82.27 resolved=$87.66
+  ❌ LINK/USDC      L | entry=$18.50 target=$22.00 resolved=$8.39
+  ❌ SOL/USDC       S | entry=$82.03 target=$80.39 resolved=$81.05
+  ❌ AXL/USDC       L | entry=$0.95 target=$1.25 resolved=$0.06
+  ❌ SOL/USDC       L | entry=$85.43 target=$87.14 resolved=$85.50
+  ❌ SUI/USDC       L | entry=$0.96 target=$1.01 resolved=$0.94
+  ❌ SOL/USDC       S | entry=$83.97 target=$82.29 resolved=$82.83
+  ❌ SOL/USDC       S | entry=$78.96 target=$77.38 resolved=$79.55
+  ❌ SOL/USDC       L | entry=$84.25 target=$85.94 resolved=$80.86
+  ✅ SOL/USDC       S | entry=$82.53 target=$80.88 resolved=$80.84
+  ✅ JUP/USDC       S | entry=$0.15 target=$0.15 resolved=$0.15
+  ❌ JUP/USDC       S | entry=$0.15 target=$0.14 resolved=$0.15
+  ❌ SUI/USDC       L | entry=$0.96 target=$1.02 resolved=$0.94
+  ❌ SOL/USDC       S | entry=$79.66 target=$78.06 resolved=$80.07
+  ❌ ETH/USDC       S | entry=$2051.48 target=$1976.14 resolved=$2029.15
+  ❌ PENDLE/USDC    L | entry=$4.50 target=$5.80 resolved=$1.12
+  ❌ SOL/USDC       L | entry=$87.92 target=$89.67 resolved=$85.51
+  ✅ SOL/USDC       S | entry=$87.30 target=$85.56 resolved=$85.51
+  ❌ SOL/USDC       L | entry=$84.52 target=$86.21 resolved=$80.87
+  ❌ JUP/USDC       S | entry=$0.16 target=$0.13 resolved=$0.14
+  ❌ SOL/USDC       S | entry=$81.06 target=$79.44 resolved=$79.61
+  ❌ SOL/USDC       L | entry=$84.87 target=$86.57 resolved=$80.87
+  ❌ SOL/USDC       S | entry=$79.59 target=$78.31 resolved=$79.55
+  ❌ SOL/USDC       L | entry=$84.60 target=$86.29 resolved=$82.98
+  ❌ JUP/USDC       L | entry=$0.14 target=$0.14 resolved=$0.14
+  ❌ SOL/USDC       S | entry=$81.85 target=$80.22 resolved=$81.05
+  ❌ SOL/USDC       L | entry=$79.56 target=$81.15 resolved=$80.17
+  ✅ LINK/USDC      S | entry=$8.68 target=$8.39 resolved=$8.39
+  ❌ ETH/USDC       L | entry=$1990.08 target=$2022.55 resolved=$1953.82
+  ❌ AVAX/USDC      L | entry=$9.06 target=$9.48 resolved=$8.87
+  ❌ SOL/USDC       L | entry=$86.33 target=$88.05 resolved=$84.06
+  ❌ SOL/USDC       S | entry=$84.69 target=$83.00 resolved=$84.46
+  ❌ SOL/USDC       L | entry=$83.70 target=$85.37 resolved=$80.86
+  ❌ SOL/USDC       S | entry=$83.77 target=$82.10 resolved=$84.39
+  ❌ SOL/USDC       S | entry=$83.86 target=$82.18 resolved=$87.65
+  ❌ BTC/USDC       S | entry=$66766.21 target=$65099.61 resolved=$66522.02
+  ❌ JUP/USDC       L | entry=$0.15 target=$0.15 resolved=$0.15
+  ❌ SOL/USDC       L | entry=$83.28 target=$84.95 resolved=$80.62
+  ❌ ETH/USDC       L | entry=$2127.83 target=$2260.44 resolved=$2043.22
+  ❌ LINK/USDC      L | entry=$8.97 target=$9.25 resolved=$8.39
+  ❌ SOL/USDC       L | entry=$87.81 target=$92.28 resolved=$85.52
+  ✅ BONK/USDC      L | entry=$0.00 target=$0.00 resolved=$0.00
+  ❌ SOL/USDC       S | entry=$78.69 target=$76.60 resolved=$80.11
+  ❌ SOL/USDC       L | entry=$87.03 target=$88.78 resolved=$85.52
+  ❌ SOL/USDC       S | entry=$80.73 target=$78.43 resolved=$79.64
+  ✅ BONK/USDC      S | entry=$0.00 target=$0.00 resolved=$0.00
+
+  Total: 56 correct, 233 incorrect out of 289 resolved
+  Overall accuracy: 19.4%
+[2026-02-12T05:00:06.797Z]   Publishing PYTH/USDC SHORT...
+[2026-02-12T05:00:07.397Z]   ✅ Published! Tx: 4Fgee1GDYj82MGFap5BsGxPiUsofn8e2QjR7yfYpQcw2iC4QcdUsbSLkpLkp38cpvEwHsDwB9ZuKAcmjvZGSLBUX
+[2026-02-12T05:00:07.397Z]      PDA: AKn96nbEA1Y3X6njJ3gG9DLmaEAVqGsE4sddqzXzTXqQ
+[2026-02-12T05:00:07.397Z]      Expires: 2026-02-13T05:00:06.000Z
+[2026-02-12T05:00:09.400Z]   Publishing W/USDC LONG...
+[2026-02-12T05:00:10.100Z]   ✅ Published! Tx: 5CfVY5CreD6SjA48eaQZuGQ4V4Qgp9KgLFpHb1uYsqN3mrjEjBHanPCR76CQr1fdTf465fGgXxFKgHmahLX5WmU
+[2026-02-12T05:00:10.100Z]      PDA: 29v28BmABFvAyD5G67ejFxdN2eyhpZQNkcZ4mj63ycXw
+[2026-02-12T05:00:10.100Z]      Expires: 2026-02-13T05:00:09.000Z
+[2026-02-12T05:00:10.100Z] 
+[2026-02-12T05:00:10.100Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:00:10.101Z]   📊 Run Summary: 3/3 signals published
+[2026-02-12T05:00:10.101Z]   🕐 Next run: scheduled via cron
+[2026-02-12T05:00:10.101Z] ═══════════════════════════════════════════════════════════
