@@ -32,6 +32,8 @@ const TRACKED_ASSETS = [
   { symbol: "ETH/USDC", base: "ETH", pythFeedId: "ff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace" },
   { symbol: "JUP/USDC", base: "JUP", pythFeedId: "0a0408d619e9380abad35060f9192039ed5042fa6f82301d0e48bb52be830996" },
   { symbol: "BONK/USDC", base: "BONK", pythFeedId: "72b021217ca3fe68922a19aaf990109cb9d84e9ad004b4d2025ad6f529314419" },
+  { symbol: "PYTH/USDC", base: "PYTH", pythFeedId: "0bbf28e9a841a1cc788f6a361b17ca072d0ea3098a1e5df1c3922d06719579ff" },
+  { symbol: "W/USDC", base: "W", pythFeedId: "eff7446475e218517566ea99e72a4abec2e1bd8498b43b7d8331e29dcb059389" },
 ];
 
 // ── Logging ─────────────────────────────────────────────────────
@@ -196,7 +198,7 @@ function generateSignals(prices, history, pastSignals) {
     const dataDiscount = ta.dataPoints < 6 ? 15 : 0;
 
     // Strategy 1: Momentum continuation
-    if (ta.momentum > 2 && ta.shortMomentum > 0.5 && ta.trend === "bullish") {
+    if (ta.momentum > 1.2 && ta.shortMomentum > 0.3 && ta.trend === "bullish") {
       const baseConf = Math.min(80, 55 + Math.floor(ta.momentum * 2)) - dataDiscount;
       candidates.push({
         asset: symbol,
@@ -211,7 +213,7 @@ function generateSignals(prices, history, pastSignals) {
       });
     }
 
-    if (ta.momentum < -2 && ta.shortMomentum < -0.5 && ta.trend === "bearish") {
+    if (ta.momentum < -1.2 && ta.shortMomentum < -0.3 && ta.trend === "bearish") {
       const baseConf = Math.min(80, 55 + Math.floor(Math.abs(ta.momentum) * 2)) - dataDiscount;
       candidates.push({
         asset: symbol,
@@ -227,7 +229,7 @@ function generateSignals(prices, history, pastSignals) {
     }
 
     // Strategy 2: Mean reversion
-    if (ta.meanReversion > 3 && ta.volatility > 0.5) {
+    if (ta.meanReversion > 2 && ta.volatility > 0.3) {
       const baseConf = Math.min(70, 45 + Math.floor(ta.meanReversion)) - dataDiscount;
       candidates.push({
         asset: symbol,
@@ -242,7 +244,7 @@ function generateSignals(prices, history, pastSignals) {
       });
     }
 
-    if (ta.meanReversion < -3 && ta.volatility > 0.5) {
+    if (ta.meanReversion < -2 && ta.volatility > 0.3) {
       const baseConf = Math.min(70, 45 + Math.floor(Math.abs(ta.meanReversion))) - dataDiscount;
       candidates.push({
         asset: symbol,
@@ -278,9 +280,9 @@ function generateSignals(prices, history, pastSignals) {
     }
   }
 
-  // Sort by score, pick top 3
+  // Sort by score, pick top 5
   candidates.sort((a, b) => b.score - a.score);
-  const selected = candidates.slice(0, 3);
+  const selected = candidates.slice(0, 5);
 
   // Apply confidence calibration based on past performance
   for (const signal of selected) {

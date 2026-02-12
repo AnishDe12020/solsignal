@@ -1,9 +1,9 @@
 {
-  "lastReportedAt": "2026-02-10T07:00:04.298Z",
-  "lastResolvedCount": 83,
-  "lastCorrectCount": 16,
-  "lastIncorrectCount": 67,
-  "lastTotalSignals": 162,
+  "lastReportedAt": "2026-02-12T03:00:04.195Z",
+  "lastResolvedCount": 256,
+  "lastCorrectCount": 53,
+  "lastIncorrectCount": 203,
+  "lastTotalSignals": 330,
   "reportHistory": [
     {
       "at": "2026-02-10T06:36:58.838Z",
@@ -16,6 +16,78 @@
       "resolved": 83,
       "accuracy": 19.27710843373494,
       "newResolutions": 3
+    },
+    {
+      "at": "2026-02-10T11:00:05.237Z",
+      "resolved": 93,
+      "accuracy": 23.655913978494624,
+      "newResolutions": 10
+    },
+    {
+      "at": "2026-02-10T15:00:04.056Z",
+      "resolved": 98,
+      "accuracy": 24.489795918367346,
+      "newResolutions": 5
+    },
+    {
+      "at": "2026-02-10T19:00:05.096Z",
+      "resolved": 124,
+      "accuracy": 19.35483870967742,
+      "newResolutions": 26
+    },
+    {
+      "at": "2026-02-10T23:00:04.202Z",
+      "resolved": 144,
+      "accuracy": 17.36111111111111,
+      "newResolutions": 20
+    },
+    {
+      "at": "2026-02-11T03:00:06.693Z",
+      "resolved": 144,
+      "accuracy": 17.36111111111111,
+      "newResolutions": 0
+    },
+    {
+      "at": "2026-02-11T07:00:06.186Z",
+      "resolved": 144,
+      "accuracy": 17.36111111111111,
+      "newResolutions": 0
+    },
+    {
+      "at": "2026-02-11T08:34:17.866Z",
+      "resolved": 187,
+      "accuracy": 22.994652406417114,
+      "newResolutions": 43
+    },
+    {
+      "at": "2026-02-11T11:00:05.563Z",
+      "resolved": 190,
+      "accuracy": 22.63157894736842,
+      "newResolutions": 3
+    },
+    {
+      "at": "2026-02-11T16:01:56.019Z",
+      "resolved": 197,
+      "accuracy": 22.33502538071066,
+      "newResolutions": 7
+    },
+    {
+      "at": "2026-02-11T19:00:04.802Z",
+      "resolved": 221,
+      "accuracy": 22.171945701357465,
+      "newResolutions": 24
+    },
+    {
+      "at": "2026-02-11T23:00:05.547Z",
+      "resolved": 232,
+      "accuracy": 21.982758620689655,
+      "newResolutions": 11
+    },
+    {
+      "at": "2026-02-12T03:00:04.195Z",
+      "resolved": 256,
+      "accuracy": 20.703125,
+      "newResolutions": 24
     }
   ]
 }
