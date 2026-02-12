@@ -66,16 +66,9 @@ pub mod sol_signal {
         let agent_key = ctx.accounts.agent.key();
         let signal_key = ctx.accounts.signal.key();
 
-        // Compute reasoning hash
-        let mut hash_bytes = [0u8; 32];
-        let reasoning_bytes = reasoning.as_bytes();
-        for (i, byte) in reasoning_bytes.iter().enumerate().take(32) {
-            hash_bytes[i] = *byte;
-        }
-        let len_bytes = (reasoning_bytes.len() as u64).to_le_bytes();
-        for i in 0..8 {
-            hash_bytes[24 + i] ^= len_bytes[i];
-        }
+        // Compute reasoning hash using SHA-256 (SECURITY FIX: was using plaintext copy)
+        let hash_result = anchor_lang::solana_program::hash::hash(reasoning.as_bytes());
+        let hash_bytes = hash_result.to_bytes();
 
         // Update registry first to get signal index
         let registry = &mut ctx.accounts.registry;
@@ -186,10 +179,17 @@ pub mod sol_signal {
     }
 
     /// Resolve a signal after its time horizon has passed
+    /// SECURITY FIX: Only registry authority can resolve signals
     pub fn resolve_signal(
         ctx: Context<ResolveSignal>,
         resolution_price: u64,
     ) -> Result<()> {
+        // Verify resolver is the registry authority (oracle/admin)
+        require!(
+            ctx.accounts.resolver.key() == ctx.accounts.registry.authority,
+            SolSignalError::Unauthorized
+        );
+
         let signal_key = ctx.accounts.signal.key();
         let signal = &mut ctx.accounts.signal;
         let now = Clock::get()?.unix_timestamp;
@@ -320,7 +320,13 @@ pub struct Subscribe<'info> {
         bump
     )]
     pub subscription: Account<'info, Subscription>,
-    /// CHECK: Agent wallet receiving the fee (validated by PDA seeds)
+    /// Validate agent is registered by requiring their profile PDA exists
+    #[account(
+        seeds = [b"agent", agent.key().as_ref()],
+        bump = agent_profile.bump,
+    )]
+    pub agent_profile: Account<'info, AgentProfile>,
+    /// CHECK: Agent wallet receiving the fee — validated via agent_profile constraint above
     #[account(mut)]
     pub agent: AccountInfo<'info>,
     #[account(mut)]
@@ -363,7 +369,13 @@ pub struct ResolveSignal<'info> {
         bump = agent_profile.bump
     )]
     pub agent_profile: Account<'info, AgentProfile>,
-    /// Anyone can resolve (permissionless resolution)
+    /// Registry account to verify resolver is the authority
+    #[account(
+        seeds = [b"registry"],
+        bump = registry.bump
+    )]
+    pub registry: Account<'info, Registry>,
+    /// Only registry authority can resolve signals (oracle/admin role)
     pub resolver: Signer<'info>,
 }
 
