@@ -10,7 +10,7 @@ export async function GET() {
 
     const accounts = await connection.getProgramAccounts(PROGRAM_ID, {
       filters: [
-        { dataSize: 220 },
+        { dataSize: 169 },
       ],
     });
 
