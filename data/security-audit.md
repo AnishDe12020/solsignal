@@ -1,297 +1,254 @@
-# SolSignal Security Audit Report
+# Security Audit Report: Squads Protocol v4 & Phoenix DEX
 
-**Program:** SolSignal (Anchor/Solana)  
-**Program ID:** `6TtRYmSVrymxprrKN1X6QJVho7qMqs1ayzucByNa7dXp`  
-**Repository:** https://github.com/AnishDe12020/solsignal  
-**Source:** `sol-signal/programs/sol-signal/src/lib.rs`  
-**Auditor:** Automated Security Analysis  
-**Date:** 2026-02-12  
+**Programs Audited:**
+1. **Squads Protocol v4** — Multisig program (`Squads-Protocol/v4`, commit latest main)
+2. **Phoenix DEX v1** — Order book DEX (`Ellipsis-Labs/phoenix-v1`, commit latest main)
+
+**Auditor:** Automated Security Analysis (Claude)
+**Date:** 2026-02-12
+**Report For:** Superteam Earn — "Audit & Fix Open-Source Solana Repositories for Vulnerabilities"
 
 ---
 
 ## Executive Summary
 
-This audit identified **2 critical**, **2 high**, and **3 medium** severity vulnerabilities in the SolSignal on-chain program. The most severe issue allows any user to resolve trading signals with arbitrary price data, enabling complete manipulation of agent reputation scores—the core trust mechanism of the protocol.
+This audit focused on two high-profile production Solana programs managing significant TVL. The primary finding is a **HIGH severity access control flaw** in Squads Protocol v4's spending limit mechanism, where removed multisig members retain the ability to drain vault funds via pre-existing spending limits — directly contradicting the program's documented security guarantees. Additional findings include a reentrancy surface in vault transaction execution and several medium-severity design concerns.
 
 ---
 
-## Finding #1 — CRITICAL: Permissionless Signal Resolution with Arbitrary Price Data
+## Squads Protocol v4 Findings
 
-**Severity:** Critical  
-**Impact:** Complete reputation system manipulation, protocol integrity destruction  
-**Location:** `resolve_signal` instruction, `ResolveSignal` accounts struct (lines ~130-175, ~210-220)
+### Finding #1 — HIGH: Removed Multisig Members Can Still Drain Funds Via Spending Limits
 
-### Description
+**Severity:** High
+**Impact:** Unauthorized fund withdrawal by removed members
+**Location:** `programs/squads_multisig_program/src/instructions/spending_limit_use.rs` (line 101)
+**Program ID:** `SQDS4ep65T869zMMBKyuUq6aD6EgTu8psMjkvj52pCf`
 
-The `resolve_signal` instruction allows **any signer** (`resolver`) to resolve **any signal** with **any `resolution_price`** value. There is no oracle integration, no price feed verification, and no authorization check on the resolver.
+#### Description
+
+The `spending_limit_use` instruction validates the caller against `spending_limit.members` but **never checks `multisig.is_member()`**. This means a key that was added to a spending limit and later removed from the multisig can still execute spending limit transfers without restriction.
+
+The program's own documentation explicitly states the opposite behavior:
 
 ```rust
-#[derive(Accounts)]
-pub struct ResolveSignal<'info> {
-    #[account(
-        mut,
-        constraint = signal.agent == agent_profile.authority @ SolSignalError::Unauthorized
-    )]
-    pub signal: Account<'info, Signal>,
-    #[account(
-        mut,
-        seeds = [b"agent", agent_profile.authority.as_ref()],
-        bump = agent_profile.bump
-    )]
-    pub agent_profile: Account<'info, AgentProfile>,
-    /// Anyone can resolve (permissionless resolution)
-    pub resolver: Signer<'info>,
+// From state/spending_limit.rs:
+/// Members of the multisig that can use the spending limit.
+/// In case a member is removed from the multisig, the spending limit will remain existent
+/// (until explicitly deleted), but the removed member will not be able to use it anymore.
+pub members: Vec<Pubkey>,
+```
+
+But the actual validation code is:
+
+```rust
+// From instructions/spending_limit_use.rs:
+fn validate(&self) -> Result<()> {
+    // member
+    require!(
+        spending_limit.members.contains(&member.key()),  // ← Only checks spending_limit.members
+        MultisigError::Unauthorized
+    );
+    // ... no multisig.is_member() check anywhere
 }
 ```
 
-The comment even acknowledges this is intentionally permissionless, but this creates catastrophic attack vectors:
+#### Complicating Factor
 
-### Attack Scenarios
+The `MultisigAddSpendingLimitArgs` struct explicitly documents that spending limit members "Don't have to be members of the multisig" — which means this was a deliberate design choice to allow external keys. However, this creates a dangerous contradiction with the `SpendingLimit` struct documentation that claims removed members lose access.
 
-1. **Self-resolution fraud:** An agent publishes a signal, waits for `time_horizon` to pass, then resolves it themselves with a `resolution_price` that guarantees `Outcome::Correct`. They can achieve 100% accuracy (10000 bps) and maximum reputation with zero actual trading skill.
+For multisigs that set spending limit members = multisig members (the common case), the documented security guarantee is **false**. An admin removing a compromised key from the multisig would believe that key has lost all access, when in reality it can still drain funds up to the spending limit amount.
 
-2. **Reputation destruction:** A competitor resolves another agent's signals with prices that guarantee `Outcome::Incorrect`, destroying their accuracy score and reputation.
+#### Attack Scenario
 
-3. **Subscriber deception:** Subscribers rely on `accuracy_bps` and `reputation_score` to choose agents. Since these metrics are completely gameable, subscribers are paying fees based on fraudulent data.
+1. Multisig has members [A, B, C] with threshold 2/3
+2. A spending limit is created with `members: [A, B, C]`, amount: 100 SOL/day, destinations: [] (any)
+3. Member C's key is compromised
+4. Members A & B vote to remove C from the multisig via config transaction
+5. A & B believe C is fully locked out (the code comments confirm this belief)
+6. **C can still call `spending_limit_use` and drain 100 SOL/day** because:
+   - `spending_limit.members` still contains C
+   - No `multisig.is_member()` check exists
+   - The spending limit was not explicitly deleted (requires a separate config transaction)
 
-### Verification Proof
+#### Verification
 
-Any wallet can call `resolve_signal` with these parameters:
-- `signal`: Any unresolved signal account where `time_horizon` has passed
-- `agent_profile`: The corresponding agent profile (derivable from signal.agent)
-- `resolution_price`: Any value that makes `resolution_price >= target_price` (for Long) or `resolution_price <= target_price` (for Short) to force a Correct outcome
+Examine `spending_limit_use.rs` validate function — search for `is_member` — it does not appear. The only authorization check is `spending_limit.members.contains()`.
 
-No oracle, no authority check, no price verification.
+#### Recommended Fix
 
-### Recommended Fix
+Add a multisig membership check to `spending_limit_use`:
 
 ```rust
-#[derive(Accounts)]
-pub struct ResolveSignal<'info> {
-    #[account(
-        mut,
-        constraint = signal.agent == agent_profile.authority @ SolSignalError::Unauthorized
-    )]
-    pub signal: Account<'info, Signal>,
-    #[account(
-        mut,
-        seeds = [b"agent", agent_profile.authority.as_ref()],
-        bump = agent_profile.bump
-    )]
-    pub agent_profile: Account<'info, AgentProfile>,
-    /// Only the registry authority (or a designated oracle) can resolve
-    #[account(
-        seeds = [b"registry"],
-        bump = registry.bump,
-        constraint = resolver.key() == registry.authority @ SolSignalError::Unauthorized
-    )]
-    pub registry: Account<'info, Registry>,
-    pub resolver: Signer<'info>,
+fn validate(&self) -> Result<()> {
+    let Self {
+        multisig,
+        member,
+        spending_limit,
+        mint,
+        ..
+    } = self;
+
+    // member must be in the spending limit's member list
+    require!(
+        spending_limit.members.contains(&member.key()),
+        MultisigError::Unauthorized
+    );
+
+    // SECURITY FIX: member must also still be a member of the multisig
+    // (unless the spending limit is intentionally configured for external keys)
+    require!(
+        multisig.is_member(member.key()).is_some(),
+        MultisigError::NotAMember
+    );
+
+    // ... rest of validation
 }
 ```
 
-Alternatively, integrate a Pyth/Switchboard oracle price feed and validate `resolution_price` against it.
+**Note:** If the design intent is to allow non-multisig-member spending limits, the documentation must be corrected, and a separate flag should indicate whether multisig membership is required.
 
 ---
 
-## Finding #2 — CRITICAL: Subscribe Sends SOL to Unvalidated Account
+### Finding #2 — MEDIUM: Vault Transaction Execution Missing Multisig Account Protection
 
-**Severity:** Critical  
-**Impact:** Fund loss — subscription fees sent to arbitrary wallets  
-**Location:** `subscribe` instruction, `Subscribe` accounts struct (lines ~98-130, ~190-205)
+**Severity:** Medium
+**Impact:** Potential state manipulation via self-CPI reentrancy
+**Location:** `programs/squads_multisig_program/src/instructions/vault_transaction_execute.rs` (line ~96)
 
-### Description
+#### Description
 
-The `agent` account in the `Subscribe` struct is an unchecked `AccountInfo`:
+During vault transaction execution, the `protected_accounts` list only includes `proposal.key()`:
 
 ```rust
-/// CHECK: Agent wallet receiving the fee (validated by PDA seeds)
-#[account(mut)]
-pub agent: AccountInfo<'info>,
+let protected_accounts = &[proposal.key()];
 ```
 
-The safety comment claims "validated by PDA seeds" but this is **incorrect**. The subscription PDA uses the agent key as a seed (`seeds = [b"subscription", subscriber.key().as_ref(), agent.key().as_ref()]`), but this only makes the subscription *unique* per agent—it does **not validate that the agent has a registered `AgentProfile`**.
+The `multisig` account is NOT protected. This means a crafted vault transaction could include a CPI call back into the squads program that writes to the multisig account.
 
-### Attack Scenario
-
-1. A malicious frontend or relayer passes any arbitrary wallet as the `agent` account
-2. The subscriber's SOL is transferred directly to that arbitrary wallet via `system_instruction::transfer`
-3. A subscription PDA is created for a non-existent agent
-4. The subscriber has paid for nothing — there are no signals from this "agent" and no recourse
-
-### Verification
-
-The `Subscribe` struct has no constraint linking `agent` to an existing `AgentProfile` account. Any `Pubkey` works.
-
-### Recommended Fix
-
-Add the `agent_profile` account to validate the agent is registered:
+In contrast, `batch_execute_transaction.rs` properly protects both `proposal` and `batch`:
 
 ```rust
-#[derive(Accounts)]
-pub struct Subscribe<'info> {
-    #[account(
-        init,
-        payer = subscriber,
-        space = 8 + Subscription::INIT_SPACE,
-        seeds = [b"subscription", subscriber.key().as_ref(), agent.key().as_ref()],
-        bump
-    )]
-    pub subscription: Account<'info, Subscription>,
-    /// Validate agent is registered by requiring their profile PDA exists
-    #[account(
-        seeds = [b"agent", agent.key().as_ref()],
-        bump = agent_profile.bump,
-    )]
-    pub agent_profile: Account<'info, AgentProfile>,
-    /// CHECK: Agent wallet receiving the fee — validated via agent_profile constraint above
-    #[account(mut)]
-    pub agent: AccountInfo<'info>,
-    #[account(mut)]
-    pub subscriber: Signer<'info>,
-    pub system_program: Program<'info, System>,
+let protected_accounts = &[proposal.key(), batch_key];
+```
+
+#### Impact Assessment
+
+Solana's runtime prevents cross-program writes to accounts not owned by the calling program, which significantly limits exploitation. However, a vault transaction that CPIs back into the squads program itself could modify multisig state (e.g., changing threshold, adding members) mid-execution. The multisig account's PDA seeds would still need to match, and the vault would need to be the signer, but this creates a non-trivial attack surface for sophisticated exploits.
+
+#### Recommended Fix
+
+```rust
+let protected_accounts = &[proposal.key(), multisig.key()];
+```
+
+---
+
+### Finding #3 — MEDIUM: Stale Approved Vault Transactions Remain Executable Indefinitely
+
+**Severity:** Medium
+**Impact:** Outdated transactions can be executed after membership/threshold changes
+**Location:** `programs/squads_multisig_program/src/instructions/vault_transaction_execute.rs` (line ~60)
+
+#### Description
+
+The code explicitly documents and allows stale vault transactions to be executed if they were approved before becoming stale:
+
+```rust
+// Stale vault transaction proposals CAN be executed if they were approved
+// before becoming stale, hence no check for staleness here.
+```
+
+This is by design but creates a risk: if a multisig's membership or threshold changes (which increments `stale_transaction_index`), previously approved vault transactions remain executable. A member who was removed might have previously approved a malicious transaction that is now executed by any remaining executor.
+
+The inconsistency is that `config_transaction_execute` DOES check for staleness:
+
+```rust
+// Stale config transaction proposals CANNOT be executed even if approved.
+require!(
+    proposal.transaction_index > multisig.stale_transaction_index,
+    MultisigError::StaleProposal
+);
+```
+
+Vault transactions should arguably follow the same pattern.
+
+---
+
+### Finding #4 — LOW: SpendingLimit Period Reset Allows Extra Spending After Long Inactivity
+
+**Severity:** Low
+**Impact:** Spending limit reset logic may allow double the intended amount in edge cases
+**Location:** `programs/squads_multisig_program/src/instructions/spending_limit_use.rs` (lines ~118-130)
+
+#### Description
+
+The spending limit reset logic jumps `last_reset` forward by `periods_passed * reset_period`:
+
+```rust
+if passed_since_last_reset > reset_period {
+    spending_limit.remaining_amount = spending_limit.amount;
+    let periods_passed = passed_since_last_reset.checked_div(reset_period).unwrap();
+    spending_limit.last_reset = spending_limit
+        .last_reset
+        .checked_add(periods_passed.checked_mul(reset_period).unwrap())
+        .unwrap();
 }
 ```
 
----
+If a spending limit with a daily period hasn't been used for 3 days, `remaining_amount` resets to `amount` on the first use. The user can then spend the full `amount`, wait for the next period boundary (which could be minutes away due to the reset calculation), and spend again. This means the effective spending rate immediately after a dormant period can be 2x the intended rate within a short window.
 
-## Finding #3 — HIGH: No Subscription Renewal Mechanism (Permanent Lockout)
-
-**Severity:** High  
-**Impact:** Denial of service — subscribers permanently locked out after expiry  
-**Location:** `Subscribe` accounts struct, `subscription` account uses `init`
-
-### Description
-
-The subscription account uses Anchor's `init` constraint, which only allows creation (not reinitialization). Once a subscription expires (`now >= expires_at`), the subscriber **cannot create a new subscription** to the same agent because the PDA already exists.
-
-There is no `renew_subscription` or `close_subscription` instruction.
-
-### Impact
-
-- After 30 days, every subscriber is permanently locked out from that agent
-- The only workaround would be for the subscriber to close the account externally, which requires knowledge of the account address and manual transaction construction
-- This effectively breaks the subscription model after the first cycle
-
-### Recommended Fix
-
-Add a `renew_subscription` instruction that updates `expires_at` and transfers additional fees, or add a `close_subscription` instruction that allows subscribers to close expired subscriptions and reclaim rent.
+This is by design (not accumulating unused periods) but may surprise users expecting strict per-period limits.
 
 ---
 
-## Finding #4 — HIGH: Agent Can Manipulate Own Accuracy to Defraud Subscribers
+## Phoenix DEX v1 Findings
 
-**Severity:** High  
-**Impact:** Financial fraud via fake reputation  
-**Location:** `resolve_signal` + `subscribe` flow
+### Finding #5 — LOW: No Input Validation on MultipleOrderPacket Vector Sizes
 
-### Description
+**Severity:** Low
+**Impact:** Potential compute unit exhaustion / transaction failure
+**Location:** `src/program/processor/new_order.rs` (process_multiple_new_orders)
 
-This is an economic attack combining Finding #1 with the subscription model:
+#### Description
 
-1. Malicious agent registers and publishes many signals with obvious outcomes
-2. After `time_horizon`, agent self-resolves all signals as Correct
-3. Agent achieves artificially high `accuracy_bps` (e.g., 9500 = 95%)
-4. Subscribers see high accuracy and pay subscription fees
-5. Agent's actual future signals are worthless, but subscribers have already paid
+The `MultipleOrderPacket` struct's `bids` and `asks` vectors have no enforced maximum length. A user could submit a packet with thousands of orders, causing the transaction to run out of compute units. The `itertools::sorted_by` and `group_by` operations on large vectors compound this.
 
-The subscription fee goes directly to the agent's wallet with no escrow or refund mechanism. Combined with the 30-day lockout (Finding #3), subscribers have zero recourse.
+While this would only cause the submitter's own transaction to fail (no fund loss), it creates unnecessary compute waste and could be used for minor griefing if combined with priority fee manipulation.
 
 ---
 
-## Finding #5 — MEDIUM: Subscription Fee Has No Upper Bound or Agent-Set Rate
+### Finding #6 — INFO: Authority Transfer Is Two-Step (Positive Finding)
 
-**Severity:** Medium  
-**Impact:** Potential griefing — subscription amount is caller-specified  
-**Location:** `subscribe` instruction, `fee_lamports` parameter
-
-### Description
-
-The `fee_lamports` is passed by the subscriber (or the calling client), not set by the agent. There's no on-chain record of what the agent's subscription price should be. The only validation is `fee_lamports > 0`.
-
-A malicious frontend could set `fee_lamports` to any amount. While the subscriber signs the transaction, confused or rushed users might approve excessive amounts.
-
-### Recommended Fix
-
-Add a `subscription_price` field to `AgentProfile` that agents set, and validate `fee_lamports == agent_profile.subscription_price`.
-
----
-
-## Finding #6 — MEDIUM: Signal Index Race Condition Under Concurrent Load
-
-**Severity:** Medium  
-**Impact:** Failed transactions under concurrent signal publishing  
-**Location:** `publish_signal`, PDA derivation using `registry.total_signals + 1`
-
-### Description
-
-The signal PDA is derived as:
-```rust
-seeds = [b"signal", agent.key().as_ref(), &(registry.total_signals + 1).to_le_bytes()]
-```
-
-Since `registry` is a mutable shared account, all `publish_signal` transactions globally will serialize on this account. Under high throughput, most transactions will fail because the `total_signals` value will have changed between simulation and execution.
-
-### Recommended Fix
-
-Use a per-agent signal counter (`agent_profile.total_signals`) instead of the global counter for PDA derivation.
-
----
-
-## Finding #7 — MEDIUM: Weak Reasoning Hash Provides No Integrity Guarantee
-
-**Severity:** Medium  
-**Impact:** False sense of security — reasoning can be forged  
-**Location:** `publish_signal`, reasoning hash computation (lines ~68-78)
-
-### Description
-
-The "hash" of the reasoning text is computed by simply copying the first 32 bytes and XORing the length into bytes 24-31:
-
-```rust
-let mut hash_bytes = [0u8; 32];
-let reasoning_bytes = reasoning.as_bytes();
-for (i, byte) in reasoning_bytes.iter().enumerate().take(32) {
-    hash_bytes[i] = *byte;
-}
-let len_bytes = (reasoning_bytes.len() as u64).to_le_bytes();
-for i in 0..8 {
-    hash_bytes[24 + i] ^= len_bytes[i];
-}
-```
-
-This is not a cryptographic hash. Two different reasoning strings with the same first 24 bytes and carefully chosen lengths will produce identical "hashes." The reasoning text is trivially recoverable from the hash (it's literally stored in plaintext in the first 24 bytes).
-
-### Recommended Fix
-
-Use `anchor_lang::solana_program::hash::hash(reasoning.as_bytes())` for SHA-256 hashing, or `anchor_lang::solana_program::keccak::hash`.
+Phoenix implements a secure two-step authority transfer pattern (`name_successor` → `claim_authority`), preventing accidental authority loss from typos. The market status transition system is also well-designed with proper state machine validation.
 
 ---
 
 ## Summary Table
 
-| # | Severity | Title | Status |
-|---|----------|-------|--------|
-| 1 | **Critical** | Permissionless signal resolution with arbitrary price | Open |
-| 2 | **Critical** | Subscribe sends SOL to unvalidated account | Open |
-| 3 | **High** | No subscription renewal (permanent lockout) | Open |
-| 4 | **High** | Self-resolution enables reputation fraud | Open |
-| 5 | **Medium** | No upper bound on subscription fee | Open |
-| 6 | **Medium** | Global signal counter causes serialization | Open |
-| 7 | **Medium** | Weak reasoning "hash" is not cryptographic | Open |
+| # | Program | Severity | Title |
+|---|---------|----------|-------|
+| 1 | Squads v4 | **High** | Removed multisig members can drain funds via spending limits |
+| 2 | Squads v4 | **Medium** | Vault tx execution missing multisig account protection |
+| 3 | Squads v4 | **Medium** | Stale approved vault transactions executable indefinitely |
+| 4 | Squads v4 | **Low** | Spending limit period reset allows burst spending |
+| 5 | Phoenix v1 | **Low** | No max size on multiple order packet vectors |
+| 6 | Phoenix v1 | **Info** | Good: Two-step authority transfer pattern |
 
 ---
 
-## Proposed Fix Summary
+## Methodology
 
-A comprehensive fix PR should:
-1. Add oracle/authority-gated resolution with price feed validation
-2. Add `agent_profile` validation to `Subscribe` accounts
-3. Add `renew_subscription` and `close_subscription` instructions
-4. Move signal PDA derivation to per-agent counter
-5. Replace custom hash with SHA-256
-6. Add agent-set subscription pricing
+- Manual source code review of on-chain Rust programs
+- Focus areas: access control, authorization checks, fund flow, reentrancy, state consistency
+- Cross-referenced documentation/comments against actual code behavior
+- Analyzed all state mutation paths for invariant violations
+
+## Repositories
+
+- **Squads v4:** https://github.com/Squads-Protocol/v4
+- **Phoenix v1:** https://github.com/Ellipsis-Labs/phoenix-v1
 
 ---
 
-*Report generated for Superteam Earn bounty submission.*
+*Report generated for Superteam Earn bounty submission — February 2026*
