@@ -1,9 +1,9 @@
 {
-  "lastReportedAt": "2026-02-12T03:13:06.599Z",
-  "lastResolvedCount": 283,
+  "lastReportedAt": "2026-02-12T08:06:59.526Z",
+  "lastResolvedCount": 308,
   "lastCorrectCount": 56,
-  "lastIncorrectCount": 227,
-  "lastTotalSignals": 334,
+  "lastIncorrectCount": 252,
+  "lastTotalSignals": 401,
   "reportHistory": [
     {
       "at": "2026-02-10T06:36:58.838Z",
@@ -94,6 +94,12 @@
       "resolved": 283,
       "accuracy": 19.78798586572438,
       "newResolutions": 27
+    },
+    {
+      "at": "2026-02-12T08:06:59.526Z",
+      "resolved": 308,
+      "accuracy": 18.181818181818183,
+      "newResolutions": 25
     }
   ]
 }
