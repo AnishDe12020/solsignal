@@ -12529,3 +12529,220 @@
 [2026-02-12T05:00:10.101Z]   📊 Run Summary: 3/3 signals published
 [2026-02-12T05:00:10.101Z]   🕐 Next run: scheduled via cron
 [2026-02-12T05:00:10.101Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:15:01.761Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:15:01.762Z]   🤖 SolSignal Autonomous Analyst — Agent #982 (batman)
+[2026-02-12T05:15:01.762Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:15:01.762Z] 
+[2026-02-12T05:15:01.762Z] 📡 Step 1: Fetching live prices from Pyth...
+[2026-02-12T05:15:04.480Z]   ✅ Got prices for 7 assets
+[2026-02-12T05:15:04.481Z]     SOL/USDC: $79.7542 (±$0.0526)
+[2026-02-12T05:15:04.481Z]     BTC/USDC: $66757.9380 (±$28.6060)
+[2026-02-12T05:15:04.481Z]     ETH/USDC: $1956.1500 (±$1.3450)
+[2026-02-12T05:15:04.481Z]     JUP/USDC: $0.1376 (±$0.0002)
+[2026-02-12T05:15:04.481Z]     BONK/USDC: $0.00000597 (±$0.00000001)
+[2026-02-12T05:15:04.481Z]     PYTH/USDC: $0.0445 (±$0.0001)
+[2026-02-12T05:15:04.481Z]     W/USDC: $0.0198 (±$0.0001)
+[2026-02-12T05:15:04.481Z] 
+[2026-02-12T05:15:04.481Z] 📊 Step 2: Loading price history...
+[2026-02-12T05:15:04.482Z]   History: SOL/USDC:200pts, BTC/USDC:200pts, ETH/USDC:200pts, JUP/USDC:200pts, BONK/USDC:200pts, SUI/USDC:81pts, DOGE/USDC:81pts, AVAX/USDC:81pts, LINK/USDC:81pts, WIF/USDC:79pts, PYTH/USDC:17pts, W/USDC:17pts
+[2026-02-12T05:15:04.482Z] 
+[2026-02-12T05:15:04.482Z] 🔗 Step 3: Connecting to Solana devnet...
+[2026-02-12T05:15:04.510Z]   Wallet: HhC3onKVvMcW1vdBR5W6hYFJMr9ehpPerEZ4yKzdJnhb
+[2026-02-12T05:15:04.510Z]   RPC: https://api.devnet.solana.com
+[2026-02-12T05:15:04.510Z] 
+[2026-02-12T05:15:04.510Z] 📜 Step 4: Fetching past on-chain signals...
+[2026-02-12T05:15:04.672Z]   Total: 358 | Resolved: 291 (✅56 ❌235) | Pending: 67
+[2026-02-12T05:15:04.672Z]   Overall accuracy: 19.2%
+[2026-02-12T05:15:04.672Z] 
+[2026-02-12T05:15:04.672Z] 🧠 Step 5: Running technical analysis & signal generation...
+[2026-02-12T05:15:04.672Z]   📊 Calibration for PYTH/USDC: 1 past signals, 0% accuracy → confidence 40 → 20 (adj -25)
+[2026-02-12T05:15:04.672Z]   Generated 2 signal(s):
+[2026-02-12T05:15:04.672Z] 
+[2026-02-12T05:15:04.672Z]   ─── Signal 1 ───
+[2026-02-12T05:15:04.672Z]   Asset:      PYTH/USDC
+[2026-02-12T05:15:04.672Z]   Direction:  SHORT
+[2026-02-12T05:15:04.672Z]   Confidence: 20%
+[2026-02-12T05:15:04.673Z]   Entry:      $0.0445
+[2026-02-12T05:15:04.673Z]   Target:     $0.0427
+[2026-02-12T05:15:04.673Z]   Stop:       $0.0459
+[2026-02-12T05:15:04.673Z]   Horizon:    24h
+[2026-02-12T05:15:04.673Z]   Reasoning:  Volatility compression: 0.246% vol with 17 periods of data. Expecting breakout short. Momentum bias: -0.4%....
+[2026-02-12T05:15:04.673Z] 
+[2026-02-12T05:15:04.673Z]   ─── Signal 2 ───
+[2026-02-12T05:15:04.673Z]   Asset:      W/USDC
+[2026-02-12T05:15:04.673Z]   Direction:  LONG
+[2026-02-12T05:15:04.673Z]   Confidence: 40%
+[2026-02-12T05:15:04.673Z]   Entry:      $0.0198
+[2026-02-12T05:15:04.673Z]   Target:     $0.0205
+[2026-02-12T05:15:04.673Z]   Stop:       $0.0192
+[2026-02-12T05:15:04.673Z]   Horizon:    24h
+[2026-02-12T05:15:04.673Z]   Reasoning:  Volatility compression: 0.209% vol with 17 periods of data. Expecting breakout long. Momentum bias: 1.2%....
+[2026-02-12T05:15:04.673Z] 
+[2026-02-12T05:15:04.673Z] 🚀 Step 6: Publishing signals on-chain...
+[2026-02-12T05:15:04.673Z]   Publishing PYTH/USDC SHORT...
+[2026-02-12T05:15:05.128Z]   ✅ Published! Tx: FRWKcmw5szsTD11tLvh42q7Vob57A76Geh2WxLh8oUrNUR5QXsxpEPPeveG8fkEsSFtWD9Q57EDK9zzherea7g8
+[2026-02-12T05:15:05.128Z]      PDA: 8xr8XnMdzyEWVMBGkxyXDhoMuhkUKRLHqUpfC2LHUrRs
+[2026-02-12T05:15:05.128Z]      Expires: 2026-02-13T05:15:04.000Z
+[2026-02-12T05:15:07.128Z]   Publishing W/USDC LONG...
+[2026-02-12T05:15:07.833Z]   ✅ Published! Tx: 5C1viAH8HbPxqQncSeZz9MiEG3zw4zwj9HjRjWnAj5wyUB2fG8ozp7oxZjtKkHSqLbFpU5YW8EgWKoeKKmyHw8xi
+[2026-02-12T05:15:07.833Z]      PDA: 7iAvakgLdWg9KcKsK1Q1d6XYjzptLRRThwH1JvyG15QW
+[2026-02-12T05:15:07.833Z]      Expires: 2026-02-13T05:15:07.000Z
+[2026-02-12T05:15:07.833Z] 
+[2026-02-12T05:15:07.833Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:15:07.833Z]   📊 Run Summary: 2/2 signals published
+[2026-02-12T05:15:07.833Z]   🕐 Next run: scheduled via cron
+[2026-02-12T05:15:07.833Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:26:53.494Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:26:53.495Z]   🤖 SolSignal Autonomous Analyst — Agent #982 (batman)
+[2026-02-12T05:26:53.495Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:26:53.495Z] 
+[2026-02-12T05:26:53.495Z] 📡 Step 1: Fetching live prices from Pyth...
+[2026-02-12T05:26:55.902Z]   ✅ Got prices for 7 assets
+[2026-02-12T05:26:55.902Z]     SOL/USDC: $80.0471 (±$0.0629)
+[2026-02-12T05:26:55.902Z]     BTC/USDC: $66862.1350 (±$30.6142)
+[2026-02-12T05:26:55.902Z]     ETH/USDC: $1961.1876 (±$0.9806)
+[2026-02-12T05:26:55.902Z]     JUP/USDC: $0.1384 (±$0.0003)
+[2026-02-12T05:26:55.902Z]     BONK/USDC: $0.00000599 (±$0.00000001)
+[2026-02-12T05:26:55.902Z]     PYTH/USDC: $0.0446 (±$0.0001)
+[2026-02-12T05:26:55.902Z]     W/USDC: $0.0199 (±$0.0001)
+[2026-02-12T05:26:55.902Z] 
+[2026-02-12T05:26:55.902Z] 📊 Step 2: Loading price history...
+[2026-02-12T05:26:55.904Z]   History: SOL/USDC:200pts, BTC/USDC:200pts, ETH/USDC:200pts, JUP/USDC:200pts, BONK/USDC:200pts, SUI/USDC:81pts, DOGE/USDC:81pts, AVAX/USDC:81pts, LINK/USDC:81pts, WIF/USDC:79pts, PYTH/USDC:18pts, W/USDC:18pts
+[2026-02-12T05:26:55.904Z] 
+[2026-02-12T05:26:55.904Z] 🔗 Step 3: Connecting to Solana devnet...
+[2026-02-12T05:26:55.932Z]   Wallet: HhC3onKVvMcW1vdBR5W6hYFJMr9ehpPerEZ4yKzdJnhb
+[2026-02-12T05:26:55.932Z]   RPC: https://api.devnet.solana.com
+[2026-02-12T05:26:55.932Z] 
+[2026-02-12T05:26:55.932Z] 📜 Step 4: Fetching past on-chain signals...
+[2026-02-12T05:26:56.096Z]   Total: 360 | Resolved: 291 (✅56 ❌235) | Pending: 69
+[2026-02-12T05:26:56.096Z]   Overall accuracy: 19.2%
+[2026-02-12T05:26:56.096Z] 
+[2026-02-12T05:26:56.096Z] 🧠 Step 5: Running technical analysis & signal generation...
+[2026-02-12T05:26:56.097Z]   📊 Calibration for PYTH/USDC: 1 past signals, 0% accuracy → confidence 40 → 20 (adj -25)
+[2026-02-12T05:26:56.097Z]   Generated 3 signal(s):
+[2026-02-12T05:26:56.097Z] 
+[2026-02-12T05:26:56.097Z]   ─── Signal 1 ───
+[2026-02-12T05:26:56.097Z]   Asset:      W/USDC
+[2026-02-12T05:26:56.097Z]   Direction:  LONG
+[2026-02-12T05:26:56.097Z]   Confidence: 59%
+[2026-02-12T05:26:56.097Z]   Entry:      $0.0199
+[2026-02-12T05:26:56.097Z]   Target:     $0.0203
+[2026-02-12T05:26:56.097Z]   Stop:       $0.0195
+[2026-02-12T05:26:56.097Z]   Horizon:    8h
+[2026-02-12T05:26:56.097Z]   Reasoning:  Momentum continuation: 2.0% upward momentum over 12 periods, short-term momentum 0.5%. Trend is bullish. Volatility 0.28...
+[2026-02-12T05:26:56.097Z] 
+[2026-02-12T05:26:56.097Z]   ─── Signal 2 ───
+[2026-02-12T05:26:56.097Z]   Asset:      PYTH/USDC
+[2026-02-12T05:26:56.097Z]   Direction:  SHORT
+[2026-02-12T05:26:56.097Z]   Confidence: 20%
+[2026-02-12T05:26:56.097Z]   Entry:      $0.0446
+[2026-02-12T05:26:56.097Z]   Target:     $0.0428
+[2026-02-12T05:26:56.097Z]   Stop:       $0.0460
+[2026-02-12T05:26:56.097Z]   Horizon:    24h
+[2026-02-12T05:26:56.097Z]   Reasoning:  Volatility compression: 0.246% vol with 18 periods of data. Expecting breakout short. Momentum bias: -0.1%....
+[2026-02-12T05:26:56.097Z] 
+[2026-02-12T05:26:56.097Z]   ─── Signal 3 ───
+[2026-02-12T05:26:56.097Z]   Asset:      W/USDC
+[2026-02-12T05:26:56.097Z]   Direction:  LONG
+[2026-02-12T05:26:56.097Z]   Confidence: 40%
+[2026-02-12T05:26:56.097Z]   Entry:      $0.0199
+[2026-02-12T05:26:56.097Z]   Target:     $0.0207
+[2026-02-12T05:26:56.097Z]   Stop:       $0.0193
+[2026-02-12T05:26:56.097Z]   Horizon:    24h
+[2026-02-12T05:26:56.097Z]   Reasoning:  Volatility compression: 0.278% vol with 18 periods of data. Expecting breakout long. Momentum bias: 2.0%....
+[2026-02-12T05:26:56.097Z] 
+[2026-02-12T05:26:56.097Z] 🚀 Step 6: Publishing signals on-chain...
+[2026-02-12T05:26:56.097Z]   Publishing W/USDC LONG...
+[2026-02-12T05:26:56.822Z]   ✅ Published! Tx: 1WyKTVWxnPfNNh97TD6UGqsjScAQwT2QV2e81UbbiHWmb8Dy35ZxQEjucT5n3F2w3gycRSV4haXSdphBD59GUgK
+[2026-02-12T05:26:56.822Z]      PDA: DnBMZfnjJZ9qpuhFDQLgPDthC2PHNQuufBKce57GxHJt
+[2026-02-12T05:26:56.822Z]      Expires: 2026-02-12T13:26:56.000Z
+[2026-02-12T05:26:58.823Z]   Publishing PYTH/USDC SHORT...
+[2026-02-12T05:26:59.827Z]   ✅ Published! Tx: 53tCfNR2r1HR2ThiS7dz1a7N6r4L8Le9cc78X66qJFp4UmLixPUqhgvU9XNGmrQk26gzWjC8nmgqQwEjpzMT8Mri
+[2026-02-12T05:26:59.827Z]      PDA: BtrYAkDANjmqbTuBCtmUS8Rgk6NUauKdGh876PpE6b8J
+[2026-02-12T05:26:59.827Z]      Expires: 2026-02-13T05:26:58.000Z
+[2026-02-12T05:27:01.827Z]   Publishing W/USDC LONG...
+[2026-02-12T05:27:02.632Z]   ✅ Published! Tx: 2xpaJAjXbae9P8nkkMw9afZo66hPzBFosXPsBFpyuV5a1RCg2SGgvrHT5NSFfG2f5eE4baVhuh3qocECVtvKrNib
+[2026-02-12T05:27:02.633Z]      PDA: EsGTYneMMc4osiJHbinYimRTqWFznwja33LxuvdxdmRX
+[2026-02-12T05:27:02.633Z]      Expires: 2026-02-13T05:27:01.000Z
+[2026-02-12T05:27:02.633Z] 
+[2026-02-12T05:27:02.633Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:27:02.633Z]   📊 Run Summary: 3/3 signals published
+[2026-02-12T05:27:02.633Z]   🕐 Next run: scheduled via cron
+[2026-02-12T05:27:02.633Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:30:01.552Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:30:01.554Z]   🤖 SolSignal Autonomous Analyst — Agent #982 (batman)
+[2026-02-12T05:30:01.554Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:30:01.554Z] 
+[2026-02-12T05:30:01.554Z] 📡 Step 1: Fetching live prices from Pyth...
+[2026-02-12T05:30:04.073Z]   ✅ Got prices for 7 assets
+[2026-02-12T05:30:04.073Z]     SOL/USDC: $80.1520 (±$0.0616)
+[2026-02-12T05:30:04.073Z]     BTC/USDC: $66826.5527 (±$29.8273)
+[2026-02-12T05:30:04.073Z]     ETH/USDC: $1960.0764 (±$1.1936)
+[2026-02-12T05:30:04.073Z]     JUP/USDC: $0.1384 (±$0.0002)
+[2026-02-12T05:30:04.073Z]     BONK/USDC: $0.00000598 (±$0.00000001)
+[2026-02-12T05:30:04.073Z]     PYTH/USDC: $0.0446 (±$0.0001)
+[2026-02-12T05:30:04.073Z]     W/USDC: $0.0199 (±$0.0001)
+[2026-02-12T05:30:04.073Z] 
+[2026-02-12T05:30:04.073Z] 📊 Step 2: Loading price history...
+[2026-02-12T05:30:04.074Z]   History: SOL/USDC:200pts, BTC/USDC:200pts, ETH/USDC:200pts, JUP/USDC:200pts, BONK/USDC:200pts, SUI/USDC:81pts, DOGE/USDC:81pts, AVAX/USDC:81pts, LINK/USDC:81pts, WIF/USDC:79pts, PYTH/USDC:19pts, W/USDC:19pts
+[2026-02-12T05:30:04.074Z] 
+[2026-02-12T05:30:04.074Z] 🔗 Step 3: Connecting to Solana devnet...
+[2026-02-12T05:30:04.103Z]   Wallet: HhC3onKVvMcW1vdBR5W6hYFJMr9ehpPerEZ4yKzdJnhb
+[2026-02-12T05:30:04.103Z]   RPC: https://api.devnet.solana.com
+[2026-02-12T05:30:04.103Z] 
+[2026-02-12T05:30:04.103Z] 📜 Step 4: Fetching past on-chain signals...
+[2026-02-12T05:30:04.559Z]   Total: 363 | Resolved: 291 (✅56 ❌235) | Pending: 72
+[2026-02-12T05:30:04.560Z]   Overall accuracy: 19.2%
+[2026-02-12T05:30:04.560Z] 
+[2026-02-12T05:30:04.560Z] 🧠 Step 5: Running technical analysis & signal generation...
+[2026-02-12T05:30:04.560Z]   📊 Calibration for PYTH/USDC: 1 past signals, 0% accuracy → confidence 40 → 20 (adj -25)
+[2026-02-12T05:30:04.560Z]   Generated 3 signal(s):
+[2026-02-12T05:30:04.560Z] 
+[2026-02-12T05:30:04.560Z]   ─── Signal 1 ───
+[2026-02-12T05:30:04.560Z]   Asset:      W/USDC
+[2026-02-12T05:30:04.560Z]   Direction:  LONG
+[2026-02-12T05:30:04.560Z]   Confidence: 58%
+[2026-02-12T05:30:04.560Z]   Entry:      $0.0199
+[2026-02-12T05:30:04.560Z]   Target:     $0.0203
+[2026-02-12T05:30:04.560Z]   Stop:       $0.0195
+[2026-02-12T05:30:04.560Z]   Horizon:    8h
+[2026-02-12T05:30:04.560Z]   Reasoning:  Momentum continuation: 1.9% upward momentum over 12 periods, short-term momentum 0.9%. Trend is bullish. Volatility 0.27...
+[2026-02-12T05:30:04.560Z] 
+[2026-02-12T05:30:04.560Z]   ─── Signal 2 ───
+[2026-02-12T05:30:04.560Z]   Asset:      PYTH/USDC
+[2026-02-12T05:30:04.560Z]   Direction:  SHORT
+[2026-02-12T05:30:04.560Z]   Confidence: 20%
+[2026-02-12T05:30:04.560Z]   Entry:      $0.0446
+[2026-02-12T05:30:04.560Z]   Target:     $0.0428
+[2026-02-12T05:30:04.560Z]   Stop:       $0.0459
+[2026-02-12T05:30:04.560Z]   Horizon:    24h
+[2026-02-12T05:30:04.560Z]   Reasoning:  Volatility compression: 0.242% vol with 19 periods of data. Expecting breakout short. Momentum bias: -0.3%....
+[2026-02-12T05:30:04.560Z] 
+[2026-02-12T05:30:04.560Z]   ─── Signal 3 ───
+[2026-02-12T05:30:04.561Z]   Asset:      W/USDC
+[2026-02-12T05:30:04.561Z]   Direction:  LONG
+[2026-02-12T05:30:04.561Z]   Confidence: 40%
+[2026-02-12T05:30:04.561Z]   Entry:      $0.0199
+[2026-02-12T05:30:04.561Z]   Target:     $0.0207
+[2026-02-12T05:30:04.561Z]   Stop:       $0.0193
+[2026-02-12T05:30:04.561Z]   Horizon:    24h
+[2026-02-12T05:30:04.561Z]   Reasoning:  Volatility compression: 0.271% vol with 19 periods of data. Expecting breakout long. Momentum bias: 1.9%....
+[2026-02-12T05:30:04.561Z] 
+[2026-02-12T05:30:04.561Z] 🚀 Step 6: Publishing signals on-chain...
+[2026-02-12T05:30:04.561Z]   Publishing W/USDC LONG...
+[2026-02-12T05:30:05.547Z]   ✅ Published! Tx: 54sUPgXq3EkwfmhAxm6VMvJrRFQnL2xdx5iVTSJCMrjm8qwou6TVR63nhQGz22wgyU8HGsPTQsuHC9xdfgido7LN
+[2026-02-12T05:30:05.547Z]      PDA: A1haDKmHkM5vhyKDDob42DEQnnZJ6BTq4AesB9nRyAo5
+[2026-02-12T05:30:05.547Z]      Expires: 2026-02-12T13:30:04.000Z
+[2026-02-12T05:30:07.548Z]   Publishing PYTH/USDC SHORT...
+[2026-02-12T05:30:08.254Z]   ✅ Published! Tx: THVgBoVdoZW8K6xzuL8TDtobLEZqkBekcfUh2ueUsYAmsnyL3u7QDkDcubSySqnUmMF5hkDD4ZMd3nRhn1TqFWd
+[2026-02-12T05:30:08.255Z]      PDA: 8MvRNNbACcjvUh46gYFHpaEphmc46hxtR8kkQAv2r1uU
+[2026-02-12T05:30:08.255Z]      Expires: 2026-02-13T05:30:07.000Z
+[2026-02-12T05:30:10.255Z]   Publishing W/USDC LONG...
+[2026-02-12T05:30:11.062Z]   ✅ Published! Tx: 2bcsnto5XGXECtuiNwcpcqjh1AfKHGFUmpLhyUMmWW35gDs1fapGwn2uAs8xRnpsyq6z6Wn7ByswfAh4NXRivZSB
+[2026-02-12T05:30:11.062Z]      PDA: GzbJZdjC4CmUm94wA4GoRwSrEgfKyLomyo2Sm6okJN5D
+[2026-02-12T05:30:11.062Z]      Expires: 2026-02-13T05:30:10.000Z
+[2026-02-12T05:30:11.062Z] 
+[2026-02-12T05:30:11.062Z] ═══════════════════════════════════════════════════════════
+[2026-02-12T05:30:11.062Z]   📊 Run Summary: 3/3 signals published
+[2026-02-12T05:30:11.062Z]   🕐 Next run: scheduled via cron
+[2026-02-12T05:30:11.062Z] ═══════════════════════════════════════════════════════════
