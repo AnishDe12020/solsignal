@@ -1,0 +1,503 @@
+{
+  "meta": {
+    "tool": "SolSignal",
+    "version": "1.0.0",
+    "generatedAt": "2026-02-12T06:30:05.395Z",
+    "description": "Solana ecosystem narrative detection and idea generation report"
+  },
+  "summary": {
+    "totalNarrativesDetected": 6,
+    "topNarrative": "AI Agents on Solana",
+    "topNarrativeStrength": 10,
+    "totalBuildIdeas": 24
+  },
+  "onchainMetrics": {
+    "epoch": 925,
+    "slotIndex": 108306,
+    "slotsInEpoch": 432000,
+    "blockHeight": 377823425,
+    "avgTps": 3283,
+    "tpsSpike": 3551,
+    "tpsSpikeZScore": 2.6,
+    "nonVoteTxRatio": 39.5,
+    "circulatingSupply": 567838082776457660,
+    "totalSupply": 620257515263593100,
+    "signals": []
+  },
+  "marketData": {
+    "prices": {
+      "SOL/USD": {
+        "price": 80.8275,
+        "confidence": 0.0525,
+        "confidencePct": 0.06,
+        "timestamp": "2026-02-12T06:29:48.000Z"
+      },
+      "JTO/USD": {
+        "price": 0.2549,
+        "confidence": 0.0004,
+        "confidencePct": 0.17,
+        "timestamp": "2026-02-12T06:29:49.000Z"
+      },
+      "PYTH/USD": {
+        "price": 0.0455,
+        "confidence": 0.0001,
+        "confidencePct": 0.2,
+        "timestamp": "2026-02-12T06:29:49.000Z"
+      },
+      "JUP/USD": {
+        "price": 0.1394,
+        "confidence": 0.0002,
+        "confidencePct": 0.17,
+        "timestamp": "2026-02-12T06:29:49.000Z"
+      },
+      "BONK/USD": {
+        "price": 0,
+        "confidence": 0,
+        "confidencePct": 0.21,
+        "timestamp": "2026-02-12T06:29:50.000Z"
+      }
+    },
+    "volatileAssets": []
+  },
+  "developerActivity": {
+    "totalReposAnalyzed": 31,
+    "categoryCounts": {
+      "ai-agents": 18,
+      "mev-infrastructure": 3,
+      "defi": 2,
+      "nfts": 4,
+      "token-extensions": 3,
+      "blinks-actions": 1
+    },
+    "topRepos": [
+      {
+        "name": "sendaifun/solana-agent-kit",
+        "stars": 1606,
+        "language": "TypeScript",
+        "description": "connect any ai agents to solana protocols",
+        "url": "https://github.com/sendaifun/solana-agent-kit"
+      },
+      {
+        "name": "jito-foundation/jito-solana",
+        "stars": 682,
+        "language": "Rust",
+        "description": "Jito Foundation MEV Solana Client",
+        "url": "https://github.com/jito-foundation/jito-solana"
+      },
+      {
+        "name": "SaoXuan/rust-mev-bot-shared",
+        "stars": 443,
+        "language": "Shell",
+        "description": "Rust Solana mev套利机器人",
+        "url": "https://github.com/SaoXuan/rust-mev-bot-shared"
+      },
+      {
+        "name": "adams322111233221/solana-mev-bot",
+        "stars": 382,
+        "language": "Rust",
+        "description": "solana-mev-bot https://t.me/solana_cod",
+        "url": "https://github.com/adams322111233221/solana-mev-bot"
+      },
+      {
+        "name": "urani-trade/solana-mev-literature",
+        "stars": 264,
+        "language": null,
+        "description": "Curated selection of technical publications on the solana blockchain, with a focus on DeFi, infrastructure, MEV, and fee (free) markets.",
+        "url": "https://github.com/urani-trade/solana-mev-literature"
+      },
+      {
+        "name": "niceberginc/agentipy",
+        "stars": 259,
+        "language": "Python",
+        "description": "The #Python framework for connecting AI agents to any onchain app on  @solana-labs  🤖🐍",
+        "url": "https://github.com/niceberginc/agentipy"
+      },
+      {
+        "name": "Nicolopez603/mev-bot-solana",
+        "stars": 229,
+        "language": "Rust",
+        "description": "is a simple template about a mev bot on solana network",
+        "url": "https://github.com/Nicolopez603/mev-bot-solana"
+      },
+      {
+        "name": "GalaxyLLMCI/lyraios",
+        "stars": 224,
+        "language": "Python",
+        "description": "LYRAI is a Model Context Protocol (MCP) operating system for multi-AI AGENTs designed to extend the functionality of AI applications by enabling them to interact with financial networks and blockchain public chains. The server offers a range of advanced AI assistants, including blockchain public chain operations (SOLANA,ETH,BSC,etc.)",
+        "url": "https://github.com/GalaxyLLMCI/lyraios"
+      },
+      {
+        "name": "Tee-py/solana-txn-parser",
+        "stars": 204,
+        "language": "TypeScript",
+        "description": "An open-source transaction parser for popular DeFi applications on the Solana blockchain 🚀🤖..",
+        "url": "https://github.com/Tee-py/solana-txn-parser"
+      },
+      {
+        "name": "ask-the-hive/the-hive",
+        "stars": 202,
+        "language": "TypeScript",
+        "description": "Multi-agent DeFi swarm for Solana research and execution.",
+        "url": "https://github.com/ask-the-hive/the-hive"
+      }
+    ]
+  },
+  "ecosystemData": {
+    "sources": [
+      {
+        "source": "solana-status",
+        "status": "All Systems Operational",
+        "incidents": []
+      },
+      {
+        "source": "defillama",
+        "currentTvl": 6362,
+        "tvl7dChange": -8.56,
+        "tvl30dChange": -29.79
+      }
+    ],
+    "topGrowingProtocols": [
+      {
+        "name": "BitMart",
+        "category": "CEX",
+        "tvl": 16,
+        "change7d": 642.14,
+        "change30d": 0
+      },
+      {
+        "name": "0xRoulette Protocol",
+        "category": "Luck Games",
+        "tvl": 0,
+        "change7d": 143.54,
+        "change30d": 0
+      },
+      {
+        "name": "CHOPCORP",
+        "category": "Gamified Mining",
+        "tvl": 0,
+        "change7d": 86.04,
+        "change30d": 0
+      },
+      {
+        "name": "Tothemoon",
+        "category": "CEX",
+        "tvl": 18,
+        "change7d": 80.31,
+        "change30d": 0
+      },
+      {
+        "name": "The Vault Unstake Pool",
+        "category": "Yield",
+        "tvl": 0,
+        "change7d": 51.64,
+        "change30d": 0
+      },
+      {
+        "name": "Streamflow",
+        "category": "Payments",
+        "tvl": 0,
+        "change7d": 39.02,
+        "change30d": 0
+      },
+      {
+        "name": "Solayer USD",
+        "category": "RWA",
+        "tvl": 0,
+        "change7d": 37.85,
+        "change30d": 0
+      },
+      {
+        "name": "Hastra",
+        "category": "RWA",
+        "tvl": 291,
+        "change7d": 35.98,
+        "change30d": 0
+      },
+      {
+        "name": "Bridgers",
+        "category": "Dexs",
+        "tvl": 4,
+        "change7d": 31.87,
+        "change30d": 0
+      },
+      {
+        "name": "Manifest Trade",
+        "category": "Dexs",
+        "tvl": 12,
+        "change7d": 26.96,
+        "change30d": 0
+      },
+      {
+        "name": "JupUSD",
+        "category": "Basis Trading",
+        "tvl": 14,
+        "change7d": 21.69,
+        "change30d": 0
+      },
+      {
+        "name": "Superstate USTB",
+        "category": "RWA",
+        "tvl": 746,
+        "change7d": 19.63,
+        "change30d": 0
+      },
+      {
+        "name": "Solv Basis Trading",
+        "category": "Basis Trading",
+        "tvl": 181,
+        "change7d": 19.6,
+        "change30d": 0
+      },
+      {
+        "name": "BlackRock BUIDL",
+        "category": "RWA",
+        "tvl": 2363,
+        "change7d": 18.05,
+        "change30d": 0
+      },
+      {
+        "name": "OSL",
+        "category": "CEX",
+        "tvl": 34,
+        "change7d": 16.98,
+        "change30d": 0
+      }
+    ]
+  },
+  "narratives": [
+    {
+      "narrative": "AI Agents on Solana",
+      "strength": 10,
+      "evidence": {
+        "repos": 18,
+        "topRepos": [
+          "sendaifun/solana-agent-kit",
+          "adams322111233221/solana-mev-bot",
+          "urani-trade/solana-mev-literature"
+        ],
+        "totalStars": 3655
+      },
+      "insight": "AI agent frameworks and autonomous trading bots are proliferating on Solana. The intersection of LLMs with onchain actions (swaps, governance voting, NFT minting) is creating a new category.",
+      "buildIdeas": [
+        "AI agent marketplace - let users deploy, share, and monetize autonomous Solana agents",
+        "Agent-to-agent communication protocol using Solana for settlement",
+        "AI-powered portfolio rebalancer with natural language strategy input",
+        "Verifiable AI inference on Solana using ZK proofs for trustless agent outputs"
+      ]
+    },
+    {
+      "narrative": "Token Extensions Adoption Wave",
+      "strength": 10,
+      "evidence": {
+        "repos": 3,
+        "topRepos": [
+          "donutnomad/solana-web3",
+          "funnycohesion/solana-web3",
+          "bark-community/bark-token-rs"
+        ]
+      },
+      "insight": "Token-2022 extensions (transfer fees, confidential transfers, permanent delegates) are enabling new token designs. Expect compliant RWA tokens and programmable money.",
+      "buildIdeas": [
+        "RWA tokenization platform using Token Extensions for compliance (transfer hooks, KYC)",
+        "Confidential payment rails for payroll and B2B using confidential transfers",
+        "Token launchpad with built-in transfer fees for creator monetization",
+        "Interest-bearing stablecoin wrapper using Token Extensions"
+      ]
+    },
+    {
+      "narrative": "Network Usage Surge",
+      "strength": 7,
+      "evidence": {
+        "avgTps": 3283,
+        "tpsSpike": 3551,
+        "spikeZScore": 2.6,
+        "nonVoteTxRatio": "39.5%"
+      },
+      "insight": "Solana is processing 3283 TPS with spike z-score of 2.6. Non-vote transaction ratio of 39.5% indicates real usage, not just consensus.",
+      "buildIdeas": [
+        "Real-time network health dashboard with anomaly detection and alerts",
+        "Transaction pattern classifier: identify bot vs human activity onchain",
+        "Fee market analyzer: predict optimal priority fees based on mempool state",
+        "Network stress testing framework for dApp developers"
+      ]
+    },
+    {
+      "narrative": "DeFi Renaissance on Solana",
+      "strength": 6,
+      "evidence": {
+        "growingProtocols": 1,
+        "topGrowers": [
+          "The Vault Unstake Pool (+51.64%)"
+        ],
+        "newRepos": 2,
+        "tvl7dChange": -8.56
+      },
+      "insight": "Solana DeFi is seeing renewed capital inflows and developer activity. Protocols are differentiating through novel mechanisms like concentrated liquidity, real yield, and composable leverage.",
+      "buildIdeas": [
+        "Intent-based DEX aggregator that routes through Jupiter, Orca, and Raydium with MEV protection",
+        "Solana-native options protocol with AMM-based pricing (vol surface from Pyth)",
+        "Cross-margin account abstraction layer for unified DeFi positions",
+        "Real-time DeFi analytics dashboard with narrative tagging"
+      ]
+    },
+    {
+      "narrative": "MEV & Infrastructure Maturation",
+      "strength": 6,
+      "evidence": {
+        "mevRepos": 3,
+        "infraRepos": 0,
+        "topRepos": [
+          "jito-foundation/jito-solana",
+          "SaoXuan/rust-mev-bot-shared",
+          "Nicolopez603/mev-bot-solana"
+        ]
+      },
+      "insight": "MEV on Solana is evolving from basic sandwich attacks to sophisticated infrastructure. Jito bundles, block engine access, and MEV-aware applications are becoming standard.",
+      "buildIdeas": [
+        "MEV protection middleware for dApp developers (like Flashbots Protect for Solana)",
+        "MEV dashboard showing real-time extraction, top searchers, and bundle analytics",
+        "Priority fee optimizer SDK that dynamically adjusts based on network conditions",
+        "Backrunning-as-a-Service for liquidation and arbitrage opportunities"
+      ]
+    },
+    {
+      "narrative": "Blinks & Actions: Web2 Distribution",
+      "strength": 6,
+      "evidence": {
+        "repos": 1,
+        "topRepos": [
+          "SolDapper/solana-action-express"
+        ]
+      },
+      "insight": "Solana Actions and Blinks are embedding onchain interactions into any web surface — tweets, websites, messages. This is a distribution revolution.",
+      "buildIdeas": [
+        "Blink-powered tipping and micropayment system for content creators",
+        "E-commerce checkout Blinks that work inside social media posts",
+        "Blink builder platform: no-code tool to create custom Solana Actions",
+        "Blink analytics: track conversion rates and engagement across embedded actions"
+      ]
+    }
+  ],
+  "actionableBuildIdeas": [
+    {
+      "idea": "AI agent marketplace - let users deploy, share, and monetize autonomous Solana agents",
+      "relatedNarrative": "AI Agents on Solana",
+      "narrativeStrength": 10
+    },
+    {
+      "idea": "Agent-to-agent communication protocol using Solana for settlement",
+      "relatedNarrative": "AI Agents on Solana",
+      "narrativeStrength": 10
+    },
+    {
+      "idea": "AI-powered portfolio rebalancer with natural language strategy input",
+      "relatedNarrative": "AI Agents on Solana",
+      "narrativeStrength": 10
+    },
+    {
+      "idea": "Verifiable AI inference on Solana using ZK proofs for trustless agent outputs",
+      "relatedNarrative": "AI Agents on Solana",
+      "narrativeStrength": 10
+    },
+    {
+      "idea": "RWA tokenization platform using Token Extensions for compliance (transfer hooks, KYC)",
+      "relatedNarrative": "Token Extensions Adoption Wave",
+      "narrativeStrength": 10
+    },
+    {
+      "idea": "Confidential payment rails for payroll and B2B using confidential transfers",
+      "relatedNarrative": "Token Extensions Adoption Wave",
+      "narrativeStrength": 10
+    },
+    {
+      "idea": "Token launchpad with built-in transfer fees for creator monetization",
+      "relatedNarrative": "Token Extensions Adoption Wave",
+      "narrativeStrength": 10
+    },
+    {
+      "idea": "Interest-bearing stablecoin wrapper using Token Extensions",
+      "relatedNarrative": "Token Extensions Adoption Wave",
+      "narrativeStrength": 10
+    },
+    {
+      "idea": "Real-time network health dashboard with anomaly detection and alerts",
+      "relatedNarrative": "Network Usage Surge",
+      "narrativeStrength": 7
+    },
+    {
+      "idea": "Transaction pattern classifier: identify bot vs human activity onchain",
+      "relatedNarrative": "Network Usage Surge",
+      "narrativeStrength": 7
+    },
+    {
+      "idea": "Fee market analyzer: predict optimal priority fees based on mempool state",
+      "relatedNarrative": "Network Usage Surge",
+      "narrativeStrength": 7
+    },
+    {
+      "idea": "Network stress testing framework for dApp developers",
+      "relatedNarrative": "Network Usage Surge",
+      "narrativeStrength": 7
+    },
+    {
+      "idea": "Intent-based DEX aggregator that routes through Jupiter, Orca, and Raydium with MEV protection",
+      "relatedNarrative": "DeFi Renaissance on Solana",
+      "narrativeStrength": 6
+    },
+    {
+      "idea": "Solana-native options protocol with AMM-based pricing (vol surface from Pyth)",
+      "relatedNarrative": "DeFi Renaissance on Solana",
+      "narrativeStrength": 6
+    },
+    {
+      "idea": "Cross-margin account abstraction layer for unified DeFi positions",
+      "relatedNarrative": "DeFi Renaissance on Solana",
+      "narrativeStrength": 6
+    },
+    {
+      "idea": "Real-time DeFi analytics dashboard with narrative tagging",
+      "relatedNarrative": "DeFi Renaissance on Solana",
+      "narrativeStrength": 6
+    },
+    {
+      "idea": "MEV protection middleware for dApp developers (like Flashbots Protect for Solana)",
+      "relatedNarrative": "MEV & Infrastructure Maturation",
+      "narrativeStrength": 6
+    },
+    {
+      "idea": "MEV dashboard showing real-time extraction, top searchers, and bundle analytics",
+      "relatedNarrative": "MEV & Infrastructure Maturation",
+      "narrativeStrength": 6
+    },
+    {
+      "idea": "Priority fee optimizer SDK that dynamically adjusts based on network conditions",
+      "relatedNarrative": "MEV & Infrastructure Maturation",
+      "narrativeStrength": 6
+    },
+    {
+      "idea": "Backrunning-as-a-Service for liquidation and arbitrage opportunities",
+      "relatedNarrative": "MEV & Infrastructure Maturation",
+      "narrativeStrength": 6
+    },
+    {
+      "idea": "Blink-powered tipping and micropayment system for content creators",
+      "relatedNarrative": "Blinks & Actions: Web2 Distribution",
+      "narrativeStrength": 6
+    },
+    {
+      "idea": "E-commerce checkout Blinks that work inside social media posts",
+      "relatedNarrative": "Blinks & Actions: Web2 Distribution",
+      "narrativeStrength": 6
+    },
+    {
+      "idea": "Blink builder platform: no-code tool to create custom Solana Actions",
+      "relatedNarrative": "Blinks & Actions: Web2 Distribution",
+      "narrativeStrength": 6
+    },
+    {
+      "idea": "Blink analytics: track conversion rates and engagement across embedded actions",
+      "relatedNarrative": "Blinks & Actions: Web2 Distribution",
+      "narrativeStrength": 6
+    }
+  ]
+}
