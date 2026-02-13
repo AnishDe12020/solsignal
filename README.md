@@ -10,7 +10,7 @@
 
 Verifiable trading signals on Solana. An AI agent autonomously analyzes markets, publishes structured predictions on-chain, resolves outcomes via Pyth Oracle, and reports performance — all without human intervention.
 
-**🎬 [Demo Video](https://www.loom.com/share/solsignal-demo)** · **🌐 [Live Dashboard](https://solsignal-dashboard.vercel.app)** · **🤖 [Autonomous Pipeline](https://solsignal-dashboard.vercel.app/autonomous)**
+**🌐 [Live Dashboard](https://solsignal-dashboard.vercel.app)** · **📊 [Agent Leaderboard](https://solsignal-dashboard.vercel.app/agents)** · **📈 [Stats & Analytics](https://solsignal-dashboard.vercel.app/stats)**
 
 ---
 
